@@ -1,0 +1,90 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../styles/variables";
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+html, body, main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+body {
+  position: relative;
+}
+
+header {
+  border-right: 1px solid $secondary;
+  border-left: 1px solid $secondary;
+  flex: 0 0 auto;
+}
+
+main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.full-height {
+  min-height: 0;
+  height: 100%;
+}
+
+.center-me {
+  text-align: center;
+}
+
+.full-width {
+  min-width: 0;
+  width: 100%;
+}
+
+.flexible {
+  display: flex;
+}
+
+.null-padding {
+  padding: 0;
+}
+
+.null-margin {
+  margin: 0;
+}
+
+.btn-wide {
+  width: 75px;
+}
+.ic-small {
+  cursor: pointer;
+  padding: 0;
+}
+
+.card {
+  .card-header {
+    flex: 0 0 auto;
+  }
+  .card-footer {
+    flex: 0 0 auto;
+  }
+  .card-title {
+    font-weight: 700;
+  }
+  .card-subtitle {
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 0.325rem;
+  }
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  label {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.main-wrapper {
+  min-height: 0;
+  height: 100%;
+  flex: 1 1 auto;
+  border: 0;
+}

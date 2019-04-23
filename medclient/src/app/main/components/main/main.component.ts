@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
       routerLink: '/schedule',
     },
     {
-      label: 'НСИ',
+      label: 'Справочники',
       routerLink: '/dictionaries',
     },
     {

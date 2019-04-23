@@ -3,10 +3,11 @@ import {CommonModule} from '@angular/common';
 import {NavBarComponent} from './components/nav-bar/nav-bar.component';
 import {RouterModule} from '@angular/router';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import {BreadcrumbsComponent} from './components/breadcrumbs/breadcrumbs.component';
+import { CardMenuComponent } from './components/card-menu/card-menu.component';
 
 @NgModule({
-  declarations: [NavBarComponent, BreadcrumbsComponent],
+  declarations: [NavBarComponent, BreadcrumbsComponent, CardMenuComponent],
   imports: [
     CommonModule,
     RouterModule,
@@ -14,7 +15,8 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
   ],
   exports: [
     NavBarComponent,
-    BreadcrumbsComponent
+    BreadcrumbsComponent,
+    CardMenuComponent
   ]
 })
 export class NavigationModule {

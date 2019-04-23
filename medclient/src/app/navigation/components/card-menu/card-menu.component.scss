@@ -1,0 +1,38 @@
+@import "../../../../styles/variables";
+
+.title-box {
+  &:hover {
+    .title-box-header {
+      background-color: darken($orange, 12);
+    }
+    .title-box-content-wrapper{
+      background-color: darken($orange, 9);
+    }
+  }
+  line-height: inherit;
+  display: block;
+  position: relative;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 20px;
+  -webkit-transition: all .1s ease-in-out;
+  transition: all .1s ease-in-out;
+  border-radius: 0.25rem;
+  background-color: $cyan;
+  .title-box-header {
+    background-color: rgba($teal, 0.20);
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    padding: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    border: 0;
+  }
+  .title-box-content-wrapper {
+    text-align: center;
+    padding: 30px;
+    i {
+      font-size: 7em;
+    }
+  }
+}

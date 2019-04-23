@@ -1,0 +1,15 @@
+<div class="card-header flexible justify-content-around">
+  <h1>ТЦМК</h1>
+</div>
+<div class="card-body">
+  <div class="row">
+    <div class="col-lg-4 col-xl-3" *ngFor="let item of items">
+      <a class="title-box btn-primary" href="#" [routerLink]=item.routerLink>
+        <div class="title-box-header">{{item.label}}</div>
+        <div class="title-box-content-wrapper">
+          <i [class]=item.iconClass></i>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
