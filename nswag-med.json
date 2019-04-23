@@ -1,0 +1,50 @@
+{
+  "runtime": "Default",
+  "swaggerGenerator": {
+    "fromSwagger": {
+      "json": "./nswg.json",
+      "url": "http://172.16.6.206:8080/med/v2/api-docs",
+      "output": null
+    }
+  },
+  "codeGenerators": {
+    "swaggerToTypeScriptClient": {
+      "className": "{controller}MedApi",
+      "moduleName": "",
+      "namespace": "",
+      "typeScriptVersion": 3.2,
+      "template": "Angular",
+      "promiseType": "Promise",
+      "useSingletonProvider": false,
+      "httpClass": "HttpClient",
+      "injectionTokenType": "InjectionToken",
+      "dateTimeType": "Date",
+      "rxJsVersion": 6.3,
+      "nullValue": "Null",
+      "generateClientClasses": true,
+      "generateClientInterfaces": false,
+      "generateOptionalParameters": true,
+      "wrapDtoExceptions": false,
+      "wrapResponses": false,
+      "generateResponseClasses": true,
+      "responseClass": "SwaggerResponse",
+      "useTransformOptionsMethod": false,
+      "useTransformResultMethod": false,
+      "generateDtoTypes": true,
+      "operationGenerationMode": "SingleClientFromPathSegments",
+      "markOptionalProperties": true,
+      "generateCloneMethod": false,
+      "typeStyle": "Class",
+      "generateDefaultValues": true,
+      "excludedTypeNames": [],
+      "handleReferences": false,
+      "generateConstructorInterface": true,
+      "convertConstructorInterfaceData": false,
+      "importRequiredTypes": true,
+      "useGetBaseUrlMethod": false,
+      "baseUrlTokenName": "API_BASE_URL",
+      "queryNullValue": "",
+      "output": "swagger/med-api.service.ts"
+    }
+  }
+}
