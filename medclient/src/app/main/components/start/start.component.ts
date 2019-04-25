@@ -21,11 +21,6 @@ export class StartComponent implements OnInit {
     {
       label: 'Справочники',
       routerLink: '/dictionaries',
-      iconClass: 'fas fa-book-medical'
-    },
-    {
-      label: 'Справочники',
-      routerLink: '/dictionaries',
       iconClass: 'fas fa-book'
     },
     {

@@ -25,7 +25,10 @@ const routes: Routes = [
       },
       {
         path: 'schedule',
-        loadChildren: '../schedule/schedule.module#ScheduleModule'
+        loadChildren: '../schedule/schedule.module#ScheduleModule',
+        data: {
+          title: 'Графики работы',
+        },
       },
       {
         path: 'dictionaries',

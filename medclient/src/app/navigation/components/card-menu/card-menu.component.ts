@@ -13,6 +13,8 @@ export class ICardMenuItem {
 })
 export class CardMenuComponent implements OnInit {
   @Input() items: ICardMenuItem[];
+  @Input() headerLabel: string;
+
   constructor() { }
 
   ngOnInit() {

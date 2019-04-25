@@ -5,12 +5,15 @@ import {DictionariesComponent} from './components/dictionaries/dictionaries.comp
 const routes: Routes = [
   {
     path: '',
+    data: {
+      title: '',
+    },
     children: [
       {
         path: '',
         component: DictionariesComponent,
         data: {
-          title: 'НСИ',
+          title: 'Справочники',
         },
       },
     ]

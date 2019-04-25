@@ -5,6 +5,9 @@ import {CallsComponent} from './components/calls/calls.component';
 const routes: Routes = [
   {
     path: '',
+    data: {
+      title: '',
+    },
     children: [
       {
         path: '',

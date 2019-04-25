@@ -5,6 +5,9 @@ import {ReportsComponent} from './components/reports/reports.component';
 const routes: Routes = [
   {
     path: '',
+    data: {
+      title: '',
+    },
     children: [
       {
         path: '',

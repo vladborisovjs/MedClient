@@ -1,12 +1,12 @@
 @import "../../../../styles/variables";
 
 .title-box {
-  &:hover {
+  &:hover,  &:focus {
     .title-box-header {
-      background-color: darken($orange, 12);
+      background-color: darken($info-alt, 12);
     }
     .title-box-content-wrapper{
-      background-color: darken($orange, 9);
+      background-color: darken($info-alt, 9);
     }
   }
   line-height: inherit;
@@ -18,9 +18,9 @@
   -webkit-transition: all .1s ease-in-out;
   transition: all .1s ease-in-out;
   border-radius: 0.25rem;
-  background-color: $cyan;
+  background-color: $info;
   .title-box-header {
-    background-color: rgba($teal, 0.20);
+    background-color: rgba($info, 0.20);
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     padding: 10px;

@@ -11,8 +11,8 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   imports: [
     CommonModule,
     MainRoutingModule,
+    NgbModule,
     NavigationModule,
-    NgbModule
   ]
 })
 export class MainModule {

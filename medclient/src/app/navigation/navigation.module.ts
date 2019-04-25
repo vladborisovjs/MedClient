@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NavBarComponent} from './components/nav-bar/nav-bar.component';
 import {RouterModule} from '@angular/router';
@@ -20,4 +20,9 @@ import { CardMenuComponent } from './components/card-menu/card-menu.component';
   ]
 })
 export class NavigationModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: NavigationModule,
+    };
+  }
 }

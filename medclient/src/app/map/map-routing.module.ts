@@ -5,6 +5,9 @@ import {MapComponent} from './components/map/map.component';
 const routes: Routes = [
   {
     path: '',
+    data: {
+      title: '',
+    },
     children: [
       {
         path: '',

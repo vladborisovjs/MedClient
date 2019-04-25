@@ -1,3 +1,51 @@
-<p>
-  calls works!
-</p>
+<mat-accordion [multi]="true">
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h5>Вызовы</h5>
+      </mat-panel-title>
+      <mat-panel-description>
+        Новых: 5 В обработке: 2
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
+    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
+    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
+    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
+    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
+    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
+  </mat-expansion-panel>
+  <mat-expansion-panel (opened)="panelOpenState = true"
+                       (closed)="panelOpenState = false"
+                       [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h5>Карта райнона</h5>
+      </mat-panel-title>
+      <mat-panel-description>
+        Currently I am {{panelOpenState ? 'open' : 'closed'}}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    [Карта райнона] [Карта райнона] [Карта райнона]<br>
+    [Карта райнона] [Карта райнона] [Карта райнона]<br>
+    [Карта райнона] [Карта райнона] [Карта райнона]<br>
+    [Карта райнона] [Карта райнона] [Карта райнона]<br>
+    [Карта райнона] [Карта райнона] [Карта райнона]<br>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h5>Бригады</h5>
+      </mat-panel-title>
+      <mat-panel-description>
+        Свободных: 5 На вызовах: 2
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
+    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
+    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
+    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
+    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
+    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
+  </mat-expansion-panel>
+</mat-accordion>
