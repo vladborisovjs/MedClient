@@ -1,0 +1,9 @@
+<ag-grid-angular
+  class="ag-theme-bootstrap"
+  [rowData]="_listSource"
+  [columnDefs]="_columnDefs"
+  enableColResize
+  [localeText]="localeText"
+  (firstDataRendered)="onFirstDataRendered($event)"
+>
+</ag-grid-angular>

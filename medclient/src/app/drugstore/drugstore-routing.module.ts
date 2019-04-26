@@ -9,14 +9,14 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: '',
+      title: 'Аптека',
     },
     children: [
       {
         path: '',
         component: DrugstoreComponent,
         data: {
-          title: 'Аптека',
+          title: '',
         },
       },
       {

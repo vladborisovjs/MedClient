@@ -1,51 +1,20 @@
-<mat-accordion [multi]="true">
-  <mat-expansion-panel [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <h5>Вызовы</h5>
-      </mat-panel-title>
-      <mat-panel-description>
-        Новых: 5 В обработке: 2
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
-    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
-    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
-    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
-    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
-    [Таблица вызовов] [Таблица вызовов] [Таблица вызовов]<br>
-  </mat-expansion-panel>
-  <mat-expansion-panel (opened)="panelOpenState = true"
-                       (closed)="panelOpenState = false"
-                       [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <h5>Карта райнона</h5>
-      </mat-panel-title>
-      <mat-panel-description>
-        Currently I am {{panelOpenState ? 'open' : 'closed'}}
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    [Карта райнона] [Карта райнона] [Карта райнона]<br>
-    [Карта райнона] [Карта райнона] [Карта райнона]<br>
-    [Карта райнона] [Карта райнона] [Карта райнона]<br>
-    [Карта райнона] [Карта райнона] [Карта райнона]<br>
-    [Карта райнона] [Карта райнона] [Карта райнона]<br>
-  </mat-expansion-panel>
-  <mat-expansion-panel [expanded]="false">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <h5>Бригады</h5>
-      </mat-panel-title>
-      <mat-panel-description>
-        Свободных: 5 На вызовах: 2
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
-    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
-    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
-    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
-    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
-    [Таблица бригад] [Таблица бригад] [Таблица бригад]<br>
-  </mat-expansion-panel>
-</mat-accordion>
+<p-accordion [multiple]="true">
+  <p-accordionTab header="Вызовы" [selected]="true">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="card-title">Таблица вызовов</div>
+      </div>
+      <div class="card-body full-height null-padding">
+        <app-grid-table
+          [listSource]="listSource"
+          [columnDefs]="colDefs"></app-grid-table>
+      </div>
+    </div>
+  </p-accordionTab>
+  <p-accordionTab header="Бригады">
+    Content 2
+  </p-accordionTab>
+  <p-accordionTab header="Карта">
+    Content 3
+  </p-accordionTab>
+</p-accordion>

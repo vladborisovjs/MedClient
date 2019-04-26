@@ -13,7 +13,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     MainRoutingModule,
     NgbModule,
     NavigationModule,
-  ]
+  ],
 })
 export class MainModule {
 }

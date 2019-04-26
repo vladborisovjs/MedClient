@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
 const routes: Routes = [
   {
@@ -13,17 +14,27 @@ const routes: Routes = [
     //   user: UserResolverService
     // }
   },
-  // {
-  //   path: 'auth',
-  //   loadChildren: './auth/auth.module#AuthModule',
-  //   data: {
-  //     title: 'Аутентификация'
-  //   },
-  // }
+  {
+    path: 'auth',
+    loadChildren: './auth/auth.module#AuthModule',
+    data: {
+      title: 'Аутентификация'
+    },
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes, {
+      enableTracing: false,
+      onSameUrlNavigation: 'reload'
+    }
+  )],
+  exports: [RouterModule],
+  providers: [
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
+  ]
 })
 export class AppRoutingModule { }

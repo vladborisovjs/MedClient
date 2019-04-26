@@ -1,0 +1,28 @@
+<div class="login-component">
+  <!--<div class="text-center">-->
+    <!--<img src="assets/img/logo-img-lenobl.svg" class="rounded logo-img" alt="...">-->
+  <!--</div>-->
+
+  <div class="card">
+    <div class="card-header text-center">
+      <h5>ТЦМК</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" class="form-horizontal" (ngSubmit)="onSubmit($event)">
+        <div class="form-group">
+          <input formControlName="username" type="text" class="form-control" placeholder="Логин">
+        </div>
+        <div class="form-group">
+          <input formControlName="password" type="password" class="form-control" placeholder="Пароль">
+        </div>
+        <div *ngIf="error" class="alert alert-danger" role="alert">
+          {{error}}
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" [disabled]="loading">
+          Вход <i *ngIf="loading" class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+

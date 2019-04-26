@@ -3,10 +3,27 @@
 .title-box {
   &:hover,  &:focus {
     .title-box-header {
-      background-color: darken($info-alt, 12);
+      background-color: darken($danger, 10);
+
     }
     .title-box-content-wrapper{
-      background-color: darken($info-alt, 9);
+      background-color: darken($warning, 10);
+      animation-name: stretch;
+      animation-duration: 0.2s;
+    }
+    @keyframes stretch {
+      0% {
+        transform: scale(.9);
+        background-color: #darken($warning, 1);
+        border-radius: 100%;
+      }
+      50% {
+        background-color: #darken($warning, 5);
+      }
+      100% {
+        transform: scale(1);
+        background-color: #darken($warning, 10);
+      }
     }
   }
   line-height: inherit;
@@ -18,7 +35,7 @@
   -webkit-transition: all .1s ease-in-out;
   transition: all .1s ease-in-out;
   border-radius: 0.25rem;
-  background-color: $info;
+  background-color: $success;
   .title-box-header {
     background-color: rgba($info, 0.20);
     border-top-left-radius: 0.25rem;
@@ -27,6 +44,7 @@
     text-align: center;
     text-transform: uppercase;
     border: 0;
+    background-color: darken($success,20);
   }
   .title-box-content-wrapper {
     text-align: center;

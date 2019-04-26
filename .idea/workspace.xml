@@ -2,38 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0f6a6e0e-daef-4fa2-89f2-c596a5cef57d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/medclient/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/nswg.json" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/nswg.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/admin/admin-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/admin/admin-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/calls/calls-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/calls/calls-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/calls/calls.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/calls/calls.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/calls/components/calls/calls.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/calls/components/calls/calls.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/calls/components/calls/calls.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/calls/components/calls/calls.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/dictionaries/dictionaries-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/dictionaries/dictionaries-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/drugstore/components/drugstore/drugstore.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/drugstore/components/drugstore/drugstore.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/drugstore/components/drugstore/drugstore.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/drugstore/components/drugstore/drugstore.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/drugstore/drugstore-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/drugstore/drugstore-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/drugstore/drugstore.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/drugstore/drugstore.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/main/components/start/start.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/main/components/start/start.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/main/components/start/start.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/main/components/start/start.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/main/main-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/main/main-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/main/main.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/main/main.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/map/map-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/map/map-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/navigation/components/card-menu/card-menu.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/navigation/components/card-menu/card-menu.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/navigation/components/card-menu/card-menu.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/navigation/components/card-menu/card-menu.component.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/navigation/components/card-menu/card-menu.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/navigation/components/card-menu/card-menu.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/navigation/navigation.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/navigation/navigation.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/reports/reports-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/reports/reports-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/schedule/components/schedule/schedule.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/schedule/components/schedule/schedule.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/schedule/components/schedule/schedule.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/schedule/components/schedule/schedule.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/schedule/schedule-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/schedule/schedule-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/app/schedule/schedule.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/app/schedule/schedule.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/styles/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/styles/styles.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medclient/src/styles/variables.scss" beforeDir="false" afterPath="$PROJECT_DIR$/medclient/src/styles/variables.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/MedClient.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/angular-settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -165,25 +139,24 @@
       <workItem from="1556030639107" duration="476000" />
       <workItem from="1556087197428" duration="36000" />
       <workItem from="1556087255638" duration="33000" />
-      <workItem from="1556174073307" duration="526000" />
+      <workItem from="1556174073307" duration="903000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1421000" />
+    <option name="totallyTimeSpent" value="1798000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1288" y="-8" width="1296" height="1040" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32937366" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32937366" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32937366" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32937366" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="TypeScript" order="7" weight="0.32937366" />
