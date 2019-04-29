@@ -17,7 +17,7 @@
 }
 .ui-accordion .ui-accordion-content {
   padding: 0;
-  height: 200px;
+  height: 300px;
 }
 html, body, main {
   display: flex;
@@ -30,7 +30,6 @@ body {
 }
 
 header {
-  background-color: $gray-200;
   border-right: 1px solid $secondary;
   border-left: 1px solid $secondary;
   flex: 0 0 auto;
@@ -76,10 +75,8 @@ main {
 }
 
 .card {
-  background-color: $gray-200;
   .card-header {
     flex: 0 0 auto;
-    background-color: $gray-200;
   }
   .card-footer {
     flex: 0 0 auto;
@@ -123,25 +120,7 @@ main {
 
 
   .ag-root {
-    border-color: $green;
+    border-color: $blue;
   }
 }
-
-.login-component {
-  max-width: 400px;
-  margin: 150px auto;
-}
-
-.form-control {
-  transition: background-color 0.25s ease;
-  &.ng-invalid {
-    &.ng-touched {
-      background-color: rgba($red, 0.4);
-      &:focus {
-        border-color: $red;
-      }
-    }
-  }
-}
-
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-// import {MedApi} from '../../../../../swagger/med-api.service';
+import {MedApi} from '../../../../../swagger/med-api.service';
 
 
 @Component({

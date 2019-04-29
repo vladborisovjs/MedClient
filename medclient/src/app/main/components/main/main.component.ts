@@ -11,13 +11,13 @@ export class MainComponent implements OnInit {
   constructor() { }
   menuItems: IMenuItem[] = [
     {
-      label: 'ТЦМК',
-      routerLink: '/start',
-    },
-    {
       label: 'Вызовы',
       routerLink: '/calls',
     },
+    // {
+    //   label: 'Главная',
+    //   routerLink: '/start',
+    // },
     {
       label: 'Графики работы',
       routerLink: '/schedule',
