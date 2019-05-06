@@ -1,6 +1,6 @@
 <header>
   <!--<p-progressBar [hidden]="!lState" mode="indeterminate" class="customProgress"></p-progressBar>-->
-  <app-nav-bar [items]="menuItems"></app-nav-bar>
+  <app-nav-bar [items]="menuItems" (onExit)="logOut()"></app-nav-bar>
   <app-breadcrumbs></app-breadcrumbs>
 </header>
 <main>

@@ -1,9 +1,60 @@
-<ag-grid-angular
-  class="ag-theme-bootstrap"
-  [rowData]="_listSource"
-  [columnDefs]="_columnDefs"
-  enableColResize
-  [localeText]="localeText"
-  (firstDataRendered)="onFirstDataRendered($event)"
->
+<ag-grid-angular *ngIf="!_listSource && _dataSource"
+                 class="ag-theme-bootstrap"
+                 [columnDefs]="_columnDefs"
+                 [pagination]="true"
+                 [gridOptions]="gridOptions"
+                 [frameworkComponents]="_frameworkComponents"
+                 [context]="context"
+                 [paginationPageSize]="pageSize"
+                 rowModelType="infinite"
+
+                 enableColResize
+                 [localeText]="localeText"
+                 enableSorting
+                 [enableFilter]="enableFilter"
+                 groupHeaders
+                 (firstDataRendered)="onFirstDataRendered($event)"
+                 rowHeight="24"
+                 [rowSelection]="multiSelect ? 'multiple' : 'single'"
+                 rowDeselection="true"
+                 (paginationChanged)="page($event)"
+                 (sortChanged)="sortChange($event)"
+                 (filterChanged)="filterChange($event)"
+                 (gridColumnsChanged)="sortChange($event)"
+                 (gridReady)="gridReady($event)"
+                 (rowDoubleClicked)="rowDoubleClicked($event)"
+                 (rowClicked)="roweClicked($event)"
+                 (rowSelected)="rowSelected($event)">
+</ag-grid-angular>
+<ag-grid-angular *ngIf="_listSource && !_dataSource"
+                 class="ag-theme-bootstrap"
+                 enableColResize
+                 [enableSorting]="draggable ? false : sorting"
+                 groupHeaders
+
+
+
+                 [enableFilter]="enableFilter"
+                 rowHeight="24"
+                 [pagination]="draggable ? false : pagination"
+                 [localeText]="localeText"
+                 [rowSelection]="multiSelect ? 'multiple' : 'single'"
+                 rowDeselection="true"
+                 [rowDragManaged]="draggable"
+                 [animateRows]="animated"
+
+                 [rowData]="listSource"
+                 [paginationPageSize]="pageSize"
+
+                 [gridOptions]="gridOptions"
+                 [columnDefs]="_columnDefs"
+                 (sortChanged)="sortChange($event)"
+                 (filterChanged)="filterChange($event)"
+                 (gridColumnsChanged)="sortChange($event)"
+                 (gridReady)="gridReady($event)"
+                 (rowDragLeave)="rowDragHasEnd($event)"
+                 (rowDragEnd)="rowDragHasEnd($event)"
+                 (rowDoubleClicked)="rowDoubleClicked($event)"
+                 (rowClicked)="roweClicked($event)"
+                 (rowSelected)="rowSelected($event)">
 </ag-grid-angular>

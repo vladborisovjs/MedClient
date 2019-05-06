@@ -1,3 +1,21 @@
+@import "../../../../styles/variables";
+
 .logo-img{
   padding: 20px;
+}
+.login-component {
+  max-width: 400px;
+  margin: 150px auto;
+}
+
+.form-control {
+  transition: background-color 0.25s ease;
+  &.ng-invalid {
+    &.ng-touched {
+      background-color: rgba($red, 0.4);
+      &:focus {
+        border-color: $red;
+      }
+    }
+  }
 }

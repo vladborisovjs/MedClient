@@ -1,0 +1,12 @@
+<div class="card full-height">
+  <div class="card-header">
+    <div class="card-title">Таблица вызовов</div>
+  </div>
+  <div class="card-body full-height null-padding">
+    <app-grid-table
+      [listSource]="listSource"
+      [columnDefs]="colDefs"
+      (onRowDblClick)="goToCall($event)">
+    </app-grid-table>
+  </div>
+</div>

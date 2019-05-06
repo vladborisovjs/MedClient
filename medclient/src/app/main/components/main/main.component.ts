@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {IMenuItem} from '../../../navigation/components/nav-bar/nav-bar.component';
+import {UserService} from '../../../services/user.service';
 
 @Component({
   selector: 'app-main',
@@ -8,7 +9,7 @@ import {IMenuItem} from '../../../navigation/components/nav-bar/nav-bar.componen
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  constructor(private user: UserService) { }
   menuItems: IMenuItem[] = [
     {
       label: 'Вызовы',
@@ -45,6 +46,10 @@ export class MainComponent implements OnInit {
   ];
 
   ngOnInit() {
+  }
+
+  logOut(){
+    this.user.logout()
   }
 
 }

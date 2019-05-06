@@ -1,5 +1,9 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {UserResolverService} from './services/resolvers/user-resolver.service';
+import {AuthGuard} from './services/auth.guard';
+
 
 const routes: Routes = [
   {
@@ -8,22 +12,34 @@ const routes: Routes = [
     data: {
       title: 'Главная'
     },
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     // resolve: {
     //   user: UserResolverService
     // }
   },
-  // {
-  //   path: 'auth',
-  //   loadChildren: './auth/auth.module#AuthModule',
-  //   data: {
-  //     title: 'Аутентификация'
-  //   },
-  // }
+   {
+    path: 'auth',
+    loadChildren: './auth/auth.module#AuthModule',
+    data: {
+      title: 'Аутентификация'
+    },
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes, {
+      enableTracing: false,
+      onSameUrlNavigation: 'reload'
+    }),
+  ],
+  exports: [RouterModule],
+  providers: [
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
+  ]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
