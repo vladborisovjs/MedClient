@@ -1,21 +1,113 @@
-<div class="row">
-  <div class="col-7">
-    <div class="card">
+<div class="row null-margin full-height">
+  <div class="col-7 null-padding full-height ">
+    <div class="card full-height">
       <div class="card-header">
         <div class="card-title">
-          Данные о вызове
+          Вызов №{{callItem.general.call_number}}
         </div>
       </div>
-      <div class="card-body">
-        Общие
-        <app-simple-view
-        [descriptions]="getBlockDescriptions('general')"
-        [item]="callItem.general"
-        ></app-simple-view>
+      <div class="card-body call-body">
+        <div class="toolbar justify-content-between">
+          <div class="toolbar-left"></div>
+          <div class="card-subtitle">Данные о вызове</div>
+          <div class="toolbar-right">
+            <button class="btn btn-info btn-wide" (click)="editGeneral()"><i class="fas fa-pen"></i></button>
+          </div>
+        </div>
+        <app-info-plate
+          [item]="callItem.general"
+          [properties]="getPlateDescriptions('general')"></app-info-plate>
+        <div class="toolbar justify-content-between">
+          <div class="toolbar-left"></div>
+          <div class="card-subtitle">Пациенты</div>
+          <div class="toolbar-right">
+            <button class="btn btn-info btn-wide" (click)="editPatients()"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+        <div *ngIf="!callItem.patients.length">Пациенты не указаны</div>
+        <div *ngFor="let patient of callItem.patients" class="patients-row">
+          <div class="flexible" >
+            <div class="patients-block">
+              <span class="patients-title">ФИО:</span>
+              <span class="patients-value">{{patient.patient_secondname}} {{patient.patient_firstname}} {{patient.patient_patronymic}}</span>
+            </div>
+            <div class="patients-block">
+              <span class="patients-title ">Возраст:</span>
+              <span class="patients-value">
+              {{patient.patient_age_years ? patient.patient_age_years + ' лет': ''}}
+              {{patient.patient_age_months ? patient.patient_age_months + ' месяцев': ''}}
+              {{patient.patient_age_days ? patient.patient_age_days + ' дней': ''}}
+            </span>
+            </div>
+            <div class="patients-block">
+              <span class="patients-title">Пол:</span>
+              <span class="patients-value">{{patient.patient_sex_name}}</span>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-outline-info btn-tiny" (click)="showChronology(patient)">Хронология выездов <i class="fas  fa-history"></i></button>
+            <button class="btn btn-outline-info btn-tiny" (click)="editPatients(patient)">Редактировать <i class="fas  fa-pen"></i></button>
+            <button class="btn btn-outline-danger btn-tiny" (click)="deletePatient(patient)">Удалить <i class="fas fa-times"></i></button>
+          </div>
+        </div>
+
+        <div class="toolbar justify-content-between">
+          <div class="toolbar-left"></div>
+          <div class="card-subtitle">Адрес вызова</div>
+          <div class="toolbar-right">
+            <button class="btn btn-info btn-wide" (click)="editAddress()"><i class="fas fa-pen"></i></button>
+          </div>
+        </div>
+        <app-info-plate
+          [item]="callItem.address"
+          [properties]="getPlateDescriptions('address')"></app-info-plate>
+        <!--<app-simple-view-->
+        <!--[descriptions]="getBlockDescriptions('address')"-->
+        <!--[item]="callItem.address"-->
+        <!--&gt;</app-simple-view>-->
+        <div class="toolbar justify-content-between">
+          <div class="toolbar-left"></div>
+          <div class="card-subtitle">Заявитель</div>
+          <div class="toolbar-right">
+            <button class="btn btn-info btn-wide" (click)="editDeclarant()"><i class="fas fa-pen"></i></button>
+          </div>
+        </div>
+        <app-info-plate
+          [item]="callItem.declarant"
+          [properties]="getPlateDescriptions('declarant')"></app-info-plate>
+        <!--<app-simple-view-->
+        <!--[descriptions]="getBlockDescriptions('declarant')"-->
+        <!--[item]="callItem.address"-->
+        <!--&gt;</app-simple-view>-->
       </div>
     </div>
   </div>
-  <div class="col-5">
-
+  <div class="col-5 null-padding full-height">
+    <div class="card brigades-block">
+      <div class="card-header toolbar justify-content-between">
+        <div class="toolbar-left"><button class="btn btn-primary"> Назначить бригаду</button></div>
+        <div class="card-subtitle">Назначенные бригады</div>
+        <div class="toolbar-right"></div>
+      </div>
+      <div class="card-body null-padding">
+        <app-grid-table
+          [columnDefs]="briCallDefs"
+          [sizeColumnsToFit]="true"
+          [pagination]="false"
+          (onGridReady)="fitCol($event)"
+          [listSource]="briListSource">
+        </app-grid-table>
+      </div>
+    </div>
+    <div class="card map-block">
+      <div class="card-header">
+        <div class="card-title">
+          Карта
+        </div>
+      </div>
+      <div class="card-body">
+        \Карта\
+      </div>
+    </div>
   </div>
 </div>

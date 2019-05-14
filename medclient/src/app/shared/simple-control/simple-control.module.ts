@@ -7,6 +7,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SimpleFormsToolsService} from './services/simple-forms-tools.service';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {SimpleDescriptionService} from './services/simple-description.service';
+import {DictionaryModule} from '../dictionary/dictionary.module';
 
 @NgModule({
   declarations: [ SimpleControlComponent, SimpleViewComponent],
@@ -14,7 +15,7 @@ import {SimpleDescriptionService} from './services/simple-description.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    // DictionaryModule,
+    DictionaryModule,
     CalendarModule,
     NgSelectModule
   ],

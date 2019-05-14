@@ -10,6 +10,7 @@ import {environment} from '../environments/environment';
 import {APP_BASE_HREF} from '@angular/common';
 import {AuthInceptor} from './services/auth-inceptor';
 import {UserService} from './services/user.service';
+import {SimpleNotificationsModule} from 'angular2-notifications';
 
 const LOCATION_REF = new InjectionToken('LOCATION_REF');
 
@@ -22,6 +23,7 @@ const LOCATION_REF = new InjectionToken('LOCATION_REF');
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
+    SimpleNotificationsModule.forRoot(),
 
   ],
   providers: [
@@ -39,7 +41,6 @@ const LOCATION_REF = new InjectionToken('LOCATION_REF');
         const path = `${locationRef.protocol}//${locationRef.host}${locationRef.pathname}${environment.apiUrl}`;
         console.log('path', path);
         return path.slice(0, -1); // удаляем последний слэш
-        // return 'http://172.16.6.166:8080/tcmk'; // todo: костыль, надо возвращать автоматически
       },
       deps: [LOCATION_REF]
     },

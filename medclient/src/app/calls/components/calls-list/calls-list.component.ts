@@ -4,6 +4,7 @@ import {CallGridDto, MedApi} from '../../../../../swagger/med-api.service';
 import {DatePipe} from '@angular/common';
 import {CallsService} from '../../services/calls.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-calls-list',
@@ -82,7 +83,8 @@ export class CallsListComponent implements OnInit {
   dateFormatter(params) {
     return params.value ? this.datePipe.transform(params.value, 'dd.MM.yyyy') : '-';
   }
-  constructor(private api: MedApi, private calls: CallsService, private router: Router, private route: ActivatedRoute,) { }
+  constructor(private api: MedApi, private calls: CallsService, private router: Router, private route: ActivatedRoute,
+              private modal: NgbModal) { }
 
   ngOnInit() {
     this.calls.getCallsList().subscribe(el => this.listSource = el);
@@ -92,5 +94,6 @@ export class CallsListComponent implements OnInit {
     console.log(call.data);
     this.router.navigate([call.data.id], {relativeTo: this.route});
   }
+
 
 }

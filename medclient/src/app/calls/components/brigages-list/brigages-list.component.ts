@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {interval} from 'rxjs';
+import {ColDef} from 'ag-grid-community';
 import {MedApi} from '../../../../../swagger/med-api.service';
 import {HttpClient} from '@angular/common/http';
 
@@ -10,7 +11,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class BrigagesListComponent implements OnInit {
 listSource = [];
-colDefs = [
+colDefs: ColDef[] = [
     {
       headerName: 'Бригада',
       field: 'full_name',

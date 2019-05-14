@@ -13,6 +13,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() type: string;
   @Input() label: string;
+  @Input() labelKey: string;
   @Input() formControlName: string;
   @Input() errorText: string;
   @Input() isError: boolean = false;
@@ -91,7 +92,6 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   ngOnInit() {
     this.hostClass = `sc ${this.styleClass}`;
     this.dropdownPosition = this.dropdownPosition ? this.dropdownPosition : 'auto';
-    if (this.selectList) {console.log('=', this.selectList, this.value, this._value); }
   }
 
   onDictSelect(e){

@@ -1,0 +1,21 @@
+<div class="card">
+  <div class="card-title">
+    <div class="card-header">
+      {{title}}
+    </div>
+  </div>
+  <div class="card-body">
+    {{content}}
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-left">
+
+    </div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-info" (click)="submit()">{{confirmText}}</button>
+        <button class="btn btn-secondary" (click)="back()">{{dismissText}}</button>
+      </div>
+    </div>
+  </div>
+</div>

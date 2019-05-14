@@ -23,13 +23,10 @@ export class UserService {
   login(loginPair) {
     this.api.loginUsingPOST(loginPair).subscribe(
       login => {
-        console.log('Logged', login);
         this.initUser(login);
         this.router.navigate(['/']);
       }
     );
-
-    // return this.http.request('POST', 'http://localhost:4200' + '/login', {body: {login: 'TOSNO', password: '1'}});
   }
 
   initUser(user) {
@@ -44,7 +41,6 @@ export class UserService {
       },
       err => {
         this.router.navigate(['/auth']);
-        console.log('err check', err);
       },
     );
     return this.authSub;
@@ -53,7 +49,6 @@ export class UserService {
   logout(){
     this.api.logoutUsingGET().subscribe(
       (res) => {
-        console.log('res', res);
         this.authSub.next(false);
         this.router.navigate(['/auth']);
       }

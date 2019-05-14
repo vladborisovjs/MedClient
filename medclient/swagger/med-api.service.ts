@@ -532,7 +532,7 @@ export class MedApi {
      * @param permissions permissions
      * @return OK
      */
-    createPermissionsUsingPUT(id: number, permissions: string[]): Observable<ListDtoOfString> {
+    createPermissionsUsingPUT(id: number, permissions: string[]): Observable<ListDtoOfstring> {
         let url_ = this.baseUrl + "/api/admin/roles/{id}/permissions";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -558,14 +558,14 @@ export class MedApi {
                 try {
                     return this.processCreatePermissionsUsingPUT(<any>response_);
                 } catch (e) {
-                    return <Observable<ListDtoOfString>><any>_observableThrow(e);
+                    return <Observable<ListDtoOfstring>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<ListDtoOfString>><any>_observableThrow(response_);
+                return <Observable<ListDtoOfstring>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreatePermissionsUsingPUT(response: HttpResponseBase): Observable<ListDtoOfString> {
+    protected processCreatePermissionsUsingPUT(response: HttpResponseBase): Observable<ListDtoOfstring> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -576,7 +576,7 @@ export class MedApi {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? ListDtoOfString.fromJS(resultData200) : new ListDtoOfString();
+            result200 = resultData200 ? ListDtoOfstring.fromJS(resultData200) : new ListDtoOfstring();
             return _observableOf(result200);
             }));
         } else if (status === 201) {
@@ -600,7 +600,7 @@ export class MedApi {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ListDtoOfString>(<any>null);
+        return _observableOf<ListDtoOfstring>(<any>null);
     }
 
     /**
@@ -28462,6 +28462,8 @@ export class MedApi {
     /**
      * [READ] возвращает список вызовов по заданным параметрам поиска
      * @param subdivisionId (optional) 
+     * @param dateFrom (optional) 
+     * @param dateTo (optional) 
      * @param number (optional) 
      * @param declarantName (optional) 
      * @param declarantPhone (optional) 
@@ -28480,10 +28482,14 @@ export class MedApi {
      * @param reasonTypeId (optional) 
      * @return OK
      */
-    readAllUsingPOST(subdivisionId?: number | null | undefined, number?: string | null | undefined, declarantName?: string | null | undefined, declarantPhone?: string | null | undefined, patientName?: string | null | undefined, patientSex?: number | null | undefined, patientAgeYears?: number | null | undefined, patientAgeMonths?: number | null | undefined, patientAgeDays?: number | null | undefined, aoName?: string | null | undefined, districtId?: number | null | undefined, performer?: string | null | undefined, callTypeId?: number | null | undefined, declarantTypeId?: number | null | undefined, phone?: string | null | undefined, callPlaceTypeId?: number | null | undefined, reasonTypeId?: number | null | undefined): Observable<CallGridDto[]> {
+    readAllUsingPOST(subdivisionId?: number | null | undefined, dateFrom?: Date | null | undefined, dateTo?: Date | null | undefined, number?: string | null | undefined, declarantName?: string | null | undefined, declarantPhone?: string | null | undefined, patientName?: string | null | undefined, patientSex?: number | null | undefined, patientAgeYears?: number | null | undefined, patientAgeMonths?: number | null | undefined, patientAgeDays?: number | null | undefined, aoName?: string | null | undefined, districtId?: number | null | undefined, performer?: string | null | undefined, callTypeId?: number | null | undefined, declarantTypeId?: number | null | undefined, phone?: string | null | undefined, callPlaceTypeId?: number | null | undefined, reasonTypeId?: number | null | undefined): Observable<CallGridDto[]> {
         let url_ = this.baseUrl + "/api/subdivisions/{subId}/calls/request?";
         if (subdivisionId !== undefined)
             url_ += "subdivisionId=" + encodeURIComponent("" + subdivisionId) + "&"; 
+        if (dateFrom !== undefined)
+            url_ += "dateFrom=" + encodeURIComponent(dateFrom ? "" + dateFrom.toJSON() : "") + "&"; 
+        if (dateTo !== undefined)
+            url_ += "dateTo=" + encodeURIComponent(dateTo ? "" + dateTo.toJSON() : "") + "&"; 
         if (number !== undefined)
             url_ += "number=" + encodeURIComponent("" + number) + "&"; 
         if (declarantName !== undefined)
@@ -33909,7 +33915,7 @@ export class CallGeneralPartDto implements ICallGeneralPartDto {
     call_status?: string | null;
     call_type_id?: number | null;
     call_type_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     is_unfounded?: boolean | null;
     performer_accept_id?: number | null;
     performer_accept_name?: string | null;
@@ -33947,7 +33953,7 @@ export class CallGeneralPartDto implements ICallGeneralPartDto {
             this.call_status = data["call_status"] !== undefined ? data["call_status"] : <any>null;
             this.call_type_id = data["call_type_id"] !== undefined ? data["call_type_id"] : <any>null;
             this.call_type_name = data["call_type_name"] !== undefined ? data["call_type_name"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.is_unfounded = data["is_unfounded"] !== undefined ? data["is_unfounded"] : <any>null;
             this.performer_accept_id = data["performer_accept_id"] !== undefined ? data["performer_accept_id"] : <any>null;
             this.performer_accept_name = data["performer_accept_name"] !== undefined ? data["performer_accept_name"] : <any>null;
@@ -33985,7 +33991,7 @@ export class CallGeneralPartDto implements ICallGeneralPartDto {
         data["call_status"] = this.call_status !== undefined ? this.call_status : <any>null;
         data["call_type_id"] = this.call_type_id !== undefined ? this.call_type_id : <any>null;
         data["call_type_name"] = this.call_type_name !== undefined ? this.call_type_name : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["is_unfounded"] = this.is_unfounded !== undefined ? this.is_unfounded : <any>null;
         data["performer_accept_id"] = this.performer_accept_id !== undefined ? this.performer_accept_id : <any>null;
         data["performer_accept_name"] = this.performer_accept_name !== undefined ? this.performer_accept_name : <any>null;
@@ -34016,7 +34022,7 @@ export interface ICallGeneralPartDto {
     call_status?: string | null;
     call_type_id?: number | null;
     call_type_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     is_unfounded?: boolean | null;
     performer_accept_id?: number | null;
     performer_accept_name?: string | null;
@@ -34172,7 +34178,7 @@ export interface IBrigadeScheduleUpdateDto {
 export class Document implements IDocument {
     accepted?: boolean | null;
     archived?: boolean | null;
-    date_doc?: LocalDateTime | null;
+    date_doc?: Date | null;
     id?: number | null;
     nomenclatures?: DocumentNomenclature[] | null;
     number_doc?: string | null;
@@ -34195,7 +34201,7 @@ export class Document implements IDocument {
         if (data) {
             this.accepted = data["accepted"] !== undefined ? data["accepted"] : <any>null;
             this.archived = data["archived"] !== undefined ? data["archived"] : <any>null;
-            this.date_doc = data["date_doc"] ? LocalDateTime.fromJS(data["date_doc"]) : <any>null;
+            this.date_doc = data["date_doc"] ? new Date(data["date_doc"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             if (data["nomenclatures"] && data["nomenclatures"].constructor === Array) {
                 this.nomenclatures = [];
@@ -34222,7 +34228,7 @@ export class Document implements IDocument {
         data = typeof data === 'object' ? data : {};
         data["accepted"] = this.accepted !== undefined ? this.accepted : <any>null;
         data["archived"] = this.archived !== undefined ? this.archived : <any>null;
-        data["date_doc"] = this.date_doc ? this.date_doc.toJSON() : <any>null;
+        data["date_doc"] = this.date_doc ? this.date_doc.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         if (this.nomenclatures && this.nomenclatures.constructor === Array) {
             data["nomenclatures"] = [];
@@ -34242,7 +34248,7 @@ export class Document implements IDocument {
 export interface IDocument {
     accepted?: boolean | null;
     archived?: boolean | null;
-    date_doc?: LocalDateTime | null;
+    date_doc?: Date | null;
     id?: number | null;
     nomenclatures?: DocumentNomenclature[] | null;
     number_doc?: string | null;
@@ -34253,74 +34259,6 @@ export interface IDocument {
     type?: number | null;
 }
 
-export class LocalDate implements ILocalDate {
-    chronology?: IsoChronology | null;
-    dayOfMonth?: number | null;
-    dayOfWeek?: LocalDateDayOfWeek | null;
-    dayOfYear?: number | null;
-    era?: Era | null;
-    leapYear?: boolean | null;
-    month?: LocalDateMonth | null;
-    monthValue?: number | null;
-    year?: number | null;
-
-    constructor(data?: ILocalDate) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.chronology = data["chronology"] ? IsoChronology.fromJS(data["chronology"]) : <any>null;
-            this.dayOfMonth = data["dayOfMonth"] !== undefined ? data["dayOfMonth"] : <any>null;
-            this.dayOfWeek = data["dayOfWeek"] !== undefined ? data["dayOfWeek"] : <any>null;
-            this.dayOfYear = data["dayOfYear"] !== undefined ? data["dayOfYear"] : <any>null;
-            this.era = data["era"] ? Era.fromJS(data["era"]) : <any>null;
-            this.leapYear = data["leapYear"] !== undefined ? data["leapYear"] : <any>null;
-            this.month = data["month"] !== undefined ? data["month"] : <any>null;
-            this.monthValue = data["monthValue"] !== undefined ? data["monthValue"] : <any>null;
-            this.year = data["year"] !== undefined ? data["year"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): LocalDate {
-        data = typeof data === 'object' ? data : {};
-        let result = new LocalDate();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["chronology"] = this.chronology ? this.chronology.toJSON() : <any>null;
-        data["dayOfMonth"] = this.dayOfMonth !== undefined ? this.dayOfMonth : <any>null;
-        data["dayOfWeek"] = this.dayOfWeek !== undefined ? this.dayOfWeek : <any>null;
-        data["dayOfYear"] = this.dayOfYear !== undefined ? this.dayOfYear : <any>null;
-        data["era"] = this.era ? this.era.toJSON() : <any>null;
-        data["leapYear"] = this.leapYear !== undefined ? this.leapYear : <any>null;
-        data["month"] = this.month !== undefined ? this.month : <any>null;
-        data["monthValue"] = this.monthValue !== undefined ? this.monthValue : <any>null;
-        data["year"] = this.year !== undefined ? this.year : <any>null;
-        return data; 
-    }
-}
-
-export interface ILocalDate {
-    chronology?: IsoChronology | null;
-    dayOfMonth?: number | null;
-    dayOfWeek?: LocalDateDayOfWeek | null;
-    dayOfYear?: number | null;
-    era?: Era | null;
-    leapYear?: boolean | null;
-    month?: LocalDateMonth | null;
-    monthValue?: number | null;
-    year?: number | null;
-}
-
 export class BrigadeCallDto implements IBrigadeCallDto {
     call_id?: number | null;
     call_number?: string | null;
@@ -34329,7 +34267,7 @@ export class BrigadeCallDto implements IBrigadeCallDto {
     reason_extra?: boolean | null;
     reason_name?: string | null;
     state?: string | null;
-    state_date?: LocalDateTime | null;
+    state_date?: Date | null;
 
     constructor(data?: IBrigadeCallDto) {
         if (data) {
@@ -34349,7 +34287,7 @@ export class BrigadeCallDto implements IBrigadeCallDto {
             this.reason_extra = data["reason_extra"] !== undefined ? data["reason_extra"] : <any>null;
             this.reason_name = data["reason_name"] !== undefined ? data["reason_name"] : <any>null;
             this.state = data["state"] !== undefined ? data["state"] : <any>null;
-            this.state_date = data["state_date"] ? LocalDateTime.fromJS(data["state_date"]) : <any>null;
+            this.state_date = data["state_date"] ? new Date(data["state_date"].toString()) : <any>null;
         }
     }
 
@@ -34369,7 +34307,7 @@ export class BrigadeCallDto implements IBrigadeCallDto {
         data["reason_extra"] = this.reason_extra !== undefined ? this.reason_extra : <any>null;
         data["reason_name"] = this.reason_name !== undefined ? this.reason_name : <any>null;
         data["state"] = this.state !== undefined ? this.state : <any>null;
-        data["state_date"] = this.state_date ? this.state_date.toJSON() : <any>null;
+        data["state_date"] = this.state_date ? this.state_date.toISOString() : <any>null;
         return data; 
     }
 }
@@ -34382,13 +34320,13 @@ export interface IBrigadeCallDto {
     reason_extra?: boolean | null;
     reason_name?: string | null;
     state?: string | null;
-    state_date?: LocalDateTime | null;
+    state_date?: Date | null;
 }
 
 export class PerformerScheduller implements IPerformerScheduller {
     basic?: boolean | null;
-    dateFrom?: LocalDate | null;
-    dateTo?: LocalDate | null;
+    dateFrom?: Date | null;
+    dateTo?: Date | null;
     id?: number | null;
 
     constructor(data?: IPerformerScheduller) {
@@ -34403,8 +34341,8 @@ export class PerformerScheduller implements IPerformerScheduller {
     init(data?: any) {
         if (data) {
             this.basic = data["basic"] !== undefined ? data["basic"] : <any>null;
-            this.dateFrom = data["dateFrom"] ? LocalDate.fromJS(data["dateFrom"]) : <any>null;
-            this.dateTo = data["dateTo"] ? LocalDate.fromJS(data["dateTo"]) : <any>null;
+            this.dateFrom = data["dateFrom"] ? new Date(data["dateFrom"].toString()) : <any>null;
+            this.dateTo = data["dateTo"] ? new Date(data["dateTo"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
         }
     }
@@ -34419,8 +34357,8 @@ export class PerformerScheduller implements IPerformerScheduller {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["basic"] = this.basic !== undefined ? this.basic : <any>null;
-        data["dateFrom"] = this.dateFrom ? this.dateFrom.toJSON() : <any>null;
-        data["dateTo"] = this.dateTo ? this.dateTo.toJSON() : <any>null;
+        data["dateFrom"] = this.dateFrom ? this.dateFrom.toISOString() : <any>null;
+        data["dateTo"] = this.dateTo ? this.dateTo.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         return data; 
     }
@@ -34428,8 +34366,8 @@ export class PerformerScheduller implements IPerformerScheduller {
 
 export interface IPerformerScheduller {
     basic?: boolean | null;
-    dateFrom?: LocalDate | null;
-    dateTo?: LocalDate | null;
+    dateFrom?: Date | null;
+    dateTo?: Date | null;
     id?: number | null;
 }
 
@@ -34758,7 +34696,7 @@ export class DocumentNomenclature implements IDocumentNomenclature {
     adminConfig?: string | null;
     archived?: boolean | null;
     code?: string | null;
-    date_doc?: LocalDateTime | null;
+    date_doc?: Date | null;
     deleted?: boolean | null;
     description?: string | null;
     document?: Document | null;
@@ -34814,7 +34752,7 @@ export class DocumentNomenclature implements IDocumentNomenclature {
             this.adminConfig = data["adminConfig"] !== undefined ? data["adminConfig"] : <any>null;
             this.archived = data["archived"] !== undefined ? data["archived"] : <any>null;
             this.code = data["code"] !== undefined ? data["code"] : <any>null;
-            this.date_doc = data["date_doc"] ? LocalDateTime.fromJS(data["date_doc"]) : <any>null;
+            this.date_doc = data["date_doc"] ? new Date(data["date_doc"].toString()) : <any>null;
             this.deleted = data["deleted"] !== undefined ? data["deleted"] : <any>null;
             this.description = data["description"] !== undefined ? data["description"] : <any>null;
             this.document = data["document"] ? Document.fromJS(data["document"]) : <any>null;
@@ -34882,7 +34820,7 @@ export class DocumentNomenclature implements IDocumentNomenclature {
         data["adminConfig"] = this.adminConfig !== undefined ? this.adminConfig : <any>null;
         data["archived"] = this.archived !== undefined ? this.archived : <any>null;
         data["code"] = this.code !== undefined ? this.code : <any>null;
-        data["date_doc"] = this.date_doc ? this.date_doc.toJSON() : <any>null;
+        data["date_doc"] = this.date_doc ? this.date_doc.toISOString() : <any>null;
         data["deleted"] = this.deleted !== undefined ? this.deleted : <any>null;
         data["description"] = this.description !== undefined ? this.description : <any>null;
         data["document"] = this.document ? this.document.toJSON() : <any>null;
@@ -34943,7 +34881,7 @@ export interface IDocumentNomenclature {
     adminConfig?: string | null;
     archived?: boolean | null;
     code?: string | null;
-    date_doc?: LocalDateTime | null;
+    date_doc?: Date | null;
     deleted?: boolean | null;
     description?: string | null;
     document?: Document | null;
@@ -35034,8 +34972,8 @@ export interface IProductType {
 }
 
 export class CarPathParams implements ICarPathParams {
-    date_from?: LocalDateTime | null;
-    date_to?: LocalDateTime | null;
+    date_from?: Date | null;
+    date_to?: Date | null;
     maxRow?: number | null;
     polygon?: MonPoint[] | null;
     statemark?: string | null;
@@ -35051,8 +34989,8 @@ export class CarPathParams implements ICarPathParams {
 
     init(data?: any) {
         if (data) {
-            this.date_from = data["date_from"] ? LocalDateTime.fromJS(data["date_from"]) : <any>null;
-            this.date_to = data["date_to"] ? LocalDateTime.fromJS(data["date_to"]) : <any>null;
+            this.date_from = data["date_from"] ? new Date(data["date_from"].toString()) : <any>null;
+            this.date_to = data["date_to"] ? new Date(data["date_to"].toString()) : <any>null;
             this.maxRow = data["maxRow"] !== undefined ? data["maxRow"] : <any>null;
             if (data["polygon"] && data["polygon"].constructor === Array) {
                 this.polygon = [];
@@ -35072,8 +35010,8 @@ export class CarPathParams implements ICarPathParams {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date_from"] = this.date_from ? this.date_from.toJSON() : <any>null;
-        data["date_to"] = this.date_to ? this.date_to.toJSON() : <any>null;
+        data["date_from"] = this.date_from ? this.date_from.toISOString() : <any>null;
+        data["date_to"] = this.date_to ? this.date_to.toISOString() : <any>null;
         data["maxRow"] = this.maxRow !== undefined ? this.maxRow : <any>null;
         if (this.polygon && this.polygon.constructor === Array) {
             data["polygon"] = [];
@@ -35086,8 +35024,8 @@ export class CarPathParams implements ICarPathParams {
 }
 
 export interface ICarPathParams {
-    date_from?: LocalDateTime | null;
-    date_to?: LocalDateTime | null;
+    date_from?: Date | null;
+    date_to?: Date | null;
     maxRow?: number | null;
     polygon?: MonPoint[] | null;
     statemark?: string | null;
@@ -35498,7 +35436,7 @@ export class Inventory implements IInventory {
     count?: number | null;
     count_current?: number | null;
     count_min?: number | null;
-    date_inventory?: LocalDateTime | null;
+    date_inventory?: Date | null;
     deleted?: boolean | null;
     description?: string | null;
     id?: number | null;
@@ -35529,7 +35467,7 @@ export class Inventory implements IInventory {
             this.count = data["count"] !== undefined ? data["count"] : <any>null;
             this.count_current = data["count_current"] !== undefined ? data["count_current"] : <any>null;
             this.count_min = data["count_min"] !== undefined ? data["count_min"] : <any>null;
-            this.date_inventory = data["date_inventory"] ? LocalDateTime.fromJS(data["date_inventory"]) : <any>null;
+            this.date_inventory = data["date_inventory"] ? new Date(data["date_inventory"].toString()) : <any>null;
             this.deleted = data["deleted"] !== undefined ? data["deleted"] : <any>null;
             this.description = data["description"] !== undefined ? data["description"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
@@ -35564,7 +35502,7 @@ export class Inventory implements IInventory {
         data["count"] = this.count !== undefined ? this.count : <any>null;
         data["count_current"] = this.count_current !== undefined ? this.count_current : <any>null;
         data["count_min"] = this.count_min !== undefined ? this.count_min : <any>null;
-        data["date_inventory"] = this.date_inventory ? this.date_inventory.toJSON() : <any>null;
+        data["date_inventory"] = this.date_inventory ? this.date_inventory.toISOString() : <any>null;
         data["deleted"] = this.deleted !== undefined ? this.deleted : <any>null;
         data["description"] = this.description !== undefined ? this.description : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
@@ -35592,7 +35530,7 @@ export interface IInventory {
     count?: number | null;
     count_current?: number | null;
     count_min?: number | null;
-    date_inventory?: LocalDateTime | null;
+    date_inventory?: Date | null;
     deleted?: boolean | null;
     description?: string | null;
     id?: number | null;
@@ -36277,6 +36215,58 @@ export interface IMobileCardResult {
     unlaw_actions?: string | null;
 }
 
+export class ListDtoOfLogDto implements IListDtoOfLogDto {
+    list?: LogDto[] | null;
+    size?: number | null;
+    total?: number | null;
+
+    constructor(data?: IListDtoOfLogDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["list"] && data["list"].constructor === Array) {
+                this.list = [];
+                for (let item of data["list"])
+                    this.list.push(LogDto.fromJS(item));
+            }
+            this.size = data["size"] !== undefined ? data["size"] : <any>null;
+            this.total = data["total"] !== undefined ? data["total"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): ListDtoOfLogDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListDtoOfLogDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.list && this.list.constructor === Array) {
+            data["list"] = [];
+            for (let item of this.list)
+                data["list"].push(item.toJSON());
+        }
+        data["size"] = this.size !== undefined ? this.size : <any>null;
+        data["total"] = this.total !== undefined ? this.total : <any>null;
+        return data; 
+    }
+}
+
+export interface IListDtoOfLogDto {
+    list?: LogDto[] | null;
+    size?: number | null;
+    total?: number | null;
+}
+
 export class CardObjectiveHeartPartDto implements ICardObjectiveHeartPartDto {
     heart_noise_id?: number | null;
     heart_noise_name?: string | null;
@@ -36755,7 +36745,7 @@ export interface IPerformerTypeDto {
 
 export class CardResultTransferPatientDto implements ICardResultTransferPatientDto {
     brigade_number?: string | null;
-    time?: LocalDateTime | null;
+    time?: Date | null;
 
     constructor(data?: ICardResultTransferPatientDto) {
         if (data) {
@@ -36769,7 +36759,7 @@ export class CardResultTransferPatientDto implements ICardResultTransferPatientD
     init(data?: any) {
         if (data) {
             this.brigade_number = data["brigade_number"] !== undefined ? data["brigade_number"] : <any>null;
-            this.time = data["time"] ? LocalDateTime.fromJS(data["time"]) : <any>null;
+            this.time = data["time"] ? new Date(data["time"].toString()) : <any>null;
         }
     }
 
@@ -36783,14 +36773,14 @@ export class CardResultTransferPatientDto implements ICardResultTransferPatientD
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["brigade_number"] = this.brigade_number !== undefined ? this.brigade_number : <any>null;
-        data["time"] = this.time ? this.time.toJSON() : <any>null;
+        data["time"] = this.time ? this.time.toISOString() : <any>null;
         return data; 
     }
 }
 
 export interface ICardResultTransferPatientDto {
     brigade_number?: string | null;
-    time?: LocalDateTime | null;
+    time?: Date | null;
 }
 
 export class CardObjectiveDyspepticPartDto implements ICardObjectiveDyspepticPartDto {
@@ -37245,58 +37235,6 @@ export interface IMobileCardPatient {
     type_id?: number | null;
 }
 
-export class ListDtoOfString implements IListDtoOfString {
-    list?: string[] | null;
-    size?: number | null;
-    total?: number | null;
-
-    constructor(data?: IListDtoOfString) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            if (data["list"] && data["list"].constructor === Array) {
-                this.list = [];
-                for (let item of data["list"])
-                    this.list.push(item);
-            }
-            this.size = data["size"] !== undefined ? data["size"] : <any>null;
-            this.total = data["total"] !== undefined ? data["total"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): ListDtoOfString {
-        data = typeof data === 'object' ? data : {};
-        let result = new ListDtoOfString();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.list && this.list.constructor === Array) {
-            data["list"] = [];
-            for (let item of this.list)
-                data["list"].push(item);
-        }
-        data["size"] = this.size !== undefined ? this.size : <any>null;
-        data["total"] = this.total !== undefined ? this.total : <any>null;
-        return data; 
-    }
-}
-
-export interface IListDtoOfString {
-    list?: string[] | null;
-    size?: number | null;
-    total?: number | null;
-}
-
 export class InquirerInCallDto implements IInquirerInCallDto {
     basic_reason_id?: number | null;
     brigade_types?: BrigadeTypeDto[] | null;
@@ -37693,7 +37631,7 @@ export class BrigadeDto implements IBrigadeDto {
     on_duty_comment?: string | null;
     performers?: PerformerDto[] | null;
     picture?: string | null;
-    status_time?: LocalDateTime | null;
+    status_time?: Date | null;
     sub_code?: string | null;
     sub_id?: number | null;
     transport_id?: number | null;
@@ -37735,7 +37673,7 @@ export class BrigadeDto implements IBrigadeDto {
                     this.performers.push(PerformerDto.fromJS(item));
             }
             this.picture = data["picture"] !== undefined ? data["picture"] : <any>null;
-            this.status_time = data["status_time"] ? LocalDateTime.fromJS(data["status_time"]) : <any>null;
+            this.status_time = data["status_time"] ? new Date(data["status_time"].toString()) : <any>null;
             this.sub_code = data["sub_code"] !== undefined ? data["sub_code"] : <any>null;
             this.sub_id = data["sub_id"] !== undefined ? data["sub_id"] : <any>null;
             this.transport_id = data["transport_id"] !== undefined ? data["transport_id"] : <any>null;
@@ -37777,7 +37715,7 @@ export class BrigadeDto implements IBrigadeDto {
                 data["performers"].push(item.toJSON());
         }
         data["picture"] = this.picture !== undefined ? this.picture : <any>null;
-        data["status_time"] = this.status_time ? this.status_time.toJSON() : <any>null;
+        data["status_time"] = this.status_time ? this.status_time.toISOString() : <any>null;
         data["sub_code"] = this.sub_code !== undefined ? this.sub_code : <any>null;
         data["sub_id"] = this.sub_id !== undefined ? this.sub_id : <any>null;
         data["transport_id"] = this.transport_id !== undefined ? this.transport_id : <any>null;
@@ -37808,7 +37746,7 @@ export interface IBrigadeDto {
     on_duty_comment?: string | null;
     performers?: PerformerDto[] | null;
     picture?: string | null;
-    status_time?: LocalDateTime | null;
+    status_time?: Date | null;
     sub_code?: string | null;
     sub_id?: number | null;
     transport_id?: number | null;
@@ -38326,11 +38264,11 @@ export interface IContainer {
 }
 
 export class PeriodDetails implements IPeriodDetails {
-    date_from?: LocalDateTime | null;
-    date_to?: LocalDateTime | null;
+    date_from?: Date | null;
+    date_to?: Date | null;
     duty_comment?: string | null;
-    duty_end_date?: LocalDateTime | null;
-    duty_start_date?: LocalDateTime | null;
+    duty_end_date?: Date | null;
+    duty_start_date?: Date | null;
 
     constructor(data?: IPeriodDetails) {
         if (data) {
@@ -38343,11 +38281,11 @@ export class PeriodDetails implements IPeriodDetails {
 
     init(data?: any) {
         if (data) {
-            this.date_from = data["date_from"] ? LocalDateTime.fromJS(data["date_from"]) : <any>null;
-            this.date_to = data["date_to"] ? LocalDateTime.fromJS(data["date_to"]) : <any>null;
+            this.date_from = data["date_from"] ? new Date(data["date_from"].toString()) : <any>null;
+            this.date_to = data["date_to"] ? new Date(data["date_to"].toString()) : <any>null;
             this.duty_comment = data["duty_comment"] !== undefined ? data["duty_comment"] : <any>null;
-            this.duty_end_date = data["duty_end_date"] ? LocalDateTime.fromJS(data["duty_end_date"]) : <any>null;
-            this.duty_start_date = data["duty_start_date"] ? LocalDateTime.fromJS(data["duty_start_date"]) : <any>null;
+            this.duty_end_date = data["duty_end_date"] ? new Date(data["duty_end_date"].toString()) : <any>null;
+            this.duty_start_date = data["duty_start_date"] ? new Date(data["duty_start_date"].toString()) : <any>null;
         }
     }
 
@@ -38360,21 +38298,21 @@ export class PeriodDetails implements IPeriodDetails {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date_from"] = this.date_from ? this.date_from.toJSON() : <any>null;
-        data["date_to"] = this.date_to ? this.date_to.toJSON() : <any>null;
+        data["date_from"] = this.date_from ? this.date_from.toISOString() : <any>null;
+        data["date_to"] = this.date_to ? this.date_to.toISOString() : <any>null;
         data["duty_comment"] = this.duty_comment !== undefined ? this.duty_comment : <any>null;
-        data["duty_end_date"] = this.duty_end_date ? this.duty_end_date.toJSON() : <any>null;
-        data["duty_start_date"] = this.duty_start_date ? this.duty_start_date.toJSON() : <any>null;
+        data["duty_end_date"] = this.duty_end_date ? this.duty_end_date.toISOString() : <any>null;
+        data["duty_start_date"] = this.duty_start_date ? this.duty_start_date.toISOString() : <any>null;
         return data; 
     }
 }
 
 export interface IPeriodDetails {
-    date_from?: LocalDateTime | null;
-    date_to?: LocalDateTime | null;
+    date_from?: Date | null;
+    date_to?: Date | null;
     duty_comment?: string | null;
-    duty_end_date?: LocalDateTime | null;
-    duty_start_date?: LocalDateTime | null;
+    duty_end_date?: Date | null;
+    duty_start_date?: Date | null;
 }
 
 export class CardObjectiveWheezingPartDto implements ICardObjectiveWheezingPartDto {
@@ -38733,8 +38671,8 @@ export class ReportRequestDto implements IReportRequestDto {
     am?: string | null;
     apu?: string | null;
     code?: string | null;
-    dateFromAsLocalDateTime?: LocalDateTime | null;
-    dateToAsLocalDateTime?: LocalDateTime | null;
+    dateFromAsLocalDateTime?: Date | null;
+    dateToAsLocalDateTime?: Date | null;
     date_from?: string | null;
     date_to?: string | null;
     equip_id?: number | null;
@@ -38758,8 +38696,8 @@ export class ReportRequestDto implements IReportRequestDto {
             this.am = data["am"] !== undefined ? data["am"] : <any>null;
             this.apu = data["apu"] !== undefined ? data["apu"] : <any>null;
             this.code = data["code"] !== undefined ? data["code"] : <any>null;
-            this.dateFromAsLocalDateTime = data["dateFromAsLocalDateTime"] ? LocalDateTime.fromJS(data["dateFromAsLocalDateTime"]) : <any>null;
-            this.dateToAsLocalDateTime = data["dateToAsLocalDateTime"] ? LocalDateTime.fromJS(data["dateToAsLocalDateTime"]) : <any>null;
+            this.dateFromAsLocalDateTime = data["dateFromAsLocalDateTime"] ? new Date(data["dateFromAsLocalDateTime"].toString()) : <any>null;
+            this.dateToAsLocalDateTime = data["dateToAsLocalDateTime"] ? new Date(data["dateToAsLocalDateTime"].toString()) : <any>null;
             this.date_from = data["date_from"] !== undefined ? data["date_from"] : <any>null;
             this.date_to = data["date_to"] !== undefined ? data["date_to"] : <any>null;
             this.equip_id = data["equip_id"] !== undefined ? data["equip_id"] : <any>null;
@@ -38787,8 +38725,8 @@ export class ReportRequestDto implements IReportRequestDto {
         data["am"] = this.am !== undefined ? this.am : <any>null;
         data["apu"] = this.apu !== undefined ? this.apu : <any>null;
         data["code"] = this.code !== undefined ? this.code : <any>null;
-        data["dateFromAsLocalDateTime"] = this.dateFromAsLocalDateTime ? this.dateFromAsLocalDateTime.toJSON() : <any>null;
-        data["dateToAsLocalDateTime"] = this.dateToAsLocalDateTime ? this.dateToAsLocalDateTime.toJSON() : <any>null;
+        data["dateFromAsLocalDateTime"] = this.dateFromAsLocalDateTime ? this.dateFromAsLocalDateTime.toISOString() : <any>null;
+        data["dateToAsLocalDateTime"] = this.dateToAsLocalDateTime ? this.dateToAsLocalDateTime.toISOString() : <any>null;
         data["date_from"] = this.date_from !== undefined ? this.date_from : <any>null;
         data["date_to"] = this.date_to !== undefined ? this.date_to : <any>null;
         data["equip_id"] = this.equip_id !== undefined ? this.equip_id : <any>null;
@@ -38809,8 +38747,8 @@ export interface IReportRequestDto {
     am?: string | null;
     apu?: string | null;
     code?: string | null;
-    dateFromAsLocalDateTime?: LocalDateTime | null;
-    dateToAsLocalDateTime?: LocalDateTime | null;
+    dateFromAsLocalDateTime?: Date | null;
+    dateToAsLocalDateTime?: Date | null;
     date_from?: string | null;
     date_to?: string | null;
     equip_id?: number | null;
@@ -38824,7 +38762,7 @@ export interface IReportRequestDto {
 export class ChatMessage implements IChatMessage {
     blob?: string[] | null;
     chat_id?: number | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     sender_id?: number | null;
     sender_name?: string | null;
@@ -38851,7 +38789,7 @@ export class ChatMessage implements IChatMessage {
                     this.blob.push(item);
             }
             this.chat_id = data["chat_id"] !== undefined ? data["chat_id"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.sender_id = data["sender_id"] !== undefined ? data["sender_id"] : <any>null;
             this.sender_name = data["sender_name"] !== undefined ? data["sender_name"] : <any>null;
@@ -38878,7 +38816,7 @@ export class ChatMessage implements IChatMessage {
                 data["blob"].push(item);
         }
         data["chat_id"] = this.chat_id !== undefined ? this.chat_id : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["sender_id"] = this.sender_id !== undefined ? this.sender_id : <any>null;
         data["sender_name"] = this.sender_name !== undefined ? this.sender_name : <any>null;
@@ -38894,7 +38832,7 @@ export class ChatMessage implements IChatMessage {
 export interface IChatMessage {
     blob?: string[] | null;
     chat_id?: number | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     sender_id?: number | null;
     sender_name?: string | null;
@@ -39082,7 +39020,7 @@ export interface IInquirer {
 }
 
 export class CardResultActiveVisitDto implements ICardResultActiveVisitDto {
-    active_visit_date?: LocalDateTime | null;
+    active_visit_date?: Date | null;
     active_visit_hours?: number | null;
     active_visit_type_code?: string | null;
     active_visit_type_id?: number | null;
@@ -39099,7 +39037,7 @@ export class CardResultActiveVisitDto implements ICardResultActiveVisitDto {
 
     init(data?: any) {
         if (data) {
-            this.active_visit_date = data["active_visit_date"] ? LocalDateTime.fromJS(data["active_visit_date"]) : <any>null;
+            this.active_visit_date = data["active_visit_date"] ? new Date(data["active_visit_date"].toString()) : <any>null;
             this.active_visit_hours = data["active_visit_hours"] !== undefined ? data["active_visit_hours"] : <any>null;
             this.active_visit_type_code = data["active_visit_type_code"] !== undefined ? data["active_visit_type_code"] : <any>null;
             this.active_visit_type_id = data["active_visit_type_id"] !== undefined ? data["active_visit_type_id"] : <any>null;
@@ -39116,7 +39054,7 @@ export class CardResultActiveVisitDto implements ICardResultActiveVisitDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["active_visit_date"] = this.active_visit_date ? this.active_visit_date.toJSON() : <any>null;
+        data["active_visit_date"] = this.active_visit_date ? this.active_visit_date.toISOString() : <any>null;
         data["active_visit_hours"] = this.active_visit_hours !== undefined ? this.active_visit_hours : <any>null;
         data["active_visit_type_code"] = this.active_visit_type_code !== undefined ? this.active_visit_type_code : <any>null;
         data["active_visit_type_id"] = this.active_visit_type_id !== undefined ? this.active_visit_type_id : <any>null;
@@ -39126,7 +39064,7 @@ export class CardResultActiveVisitDto implements ICardResultActiveVisitDto {
 }
 
 export interface ICardResultActiveVisitDto {
-    active_visit_date?: LocalDateTime | null;
+    active_visit_date?: Date | null;
     active_visit_hours?: number | null;
     active_visit_type_code?: string | null;
     active_visit_type_id?: number | null;
@@ -39255,7 +39193,7 @@ export class CardResultReasonDto implements ICardResultReasonDto {
     accident_type_name?: string | null;
     death_condition_id?: number | null;
     death_condition_name?: string | null;
-    death_time?: LocalDateTime | null;
+    death_time?: Date | null;
     intoxication_type_id?: number | null;
     intoxication_type_name?: string | null;
     reason_type_code?: string | null;
@@ -39278,7 +39216,7 @@ export class CardResultReasonDto implements ICardResultReasonDto {
             this.accident_type_name = data["accident_type_name"] !== undefined ? data["accident_type_name"] : <any>null;
             this.death_condition_id = data["death_condition_id"] !== undefined ? data["death_condition_id"] : <any>null;
             this.death_condition_name = data["death_condition_name"] !== undefined ? data["death_condition_name"] : <any>null;
-            this.death_time = data["death_time"] ? LocalDateTime.fromJS(data["death_time"]) : <any>null;
+            this.death_time = data["death_time"] ? new Date(data["death_time"].toString()) : <any>null;
             this.intoxication_type_id = data["intoxication_type_id"] !== undefined ? data["intoxication_type_id"] : <any>null;
             this.intoxication_type_name = data["intoxication_type_name"] !== undefined ? data["intoxication_type_name"] : <any>null;
             this.reason_type_code = data["reason_type_code"] !== undefined ? data["reason_type_code"] : <any>null;
@@ -39301,7 +39239,7 @@ export class CardResultReasonDto implements ICardResultReasonDto {
         data["accident_type_name"] = this.accident_type_name !== undefined ? this.accident_type_name : <any>null;
         data["death_condition_id"] = this.death_condition_id !== undefined ? this.death_condition_id : <any>null;
         data["death_condition_name"] = this.death_condition_name !== undefined ? this.death_condition_name : <any>null;
-        data["death_time"] = this.death_time ? this.death_time.toJSON() : <any>null;
+        data["death_time"] = this.death_time ? this.death_time.toISOString() : <any>null;
         data["intoxication_type_id"] = this.intoxication_type_id !== undefined ? this.intoxication_type_id : <any>null;
         data["intoxication_type_name"] = this.intoxication_type_name !== undefined ? this.intoxication_type_name : <any>null;
         data["reason_type_code"] = this.reason_type_code !== undefined ? this.reason_type_code : <any>null;
@@ -39317,7 +39255,7 @@ export interface ICardResultReasonDto {
     accident_type_name?: string | null;
     death_condition_id?: number | null;
     death_condition_name?: string | null;
-    death_time?: LocalDateTime | null;
+    death_time?: Date | null;
     intoxication_type_id?: number | null;
     intoxication_type_name?: string | null;
     reason_type_code?: string | null;
@@ -39481,6 +39419,58 @@ export interface ICardDto {
     similars?: string[] | null;
 }
 
+export class ListDtoOfPermission implements IListDtoOfPermission {
+    list?: Permission[] | null;
+    size?: number | null;
+    total?: number | null;
+
+    constructor(data?: IListDtoOfPermission) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["list"] && data["list"].constructor === Array) {
+                this.list = [];
+                for (let item of data["list"])
+                    this.list.push(Permission.fromJS(item));
+            }
+            this.size = data["size"] !== undefined ? data["size"] : <any>null;
+            this.total = data["total"] !== undefined ? data["total"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): ListDtoOfPermission {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListDtoOfPermission();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.list && this.list.constructor === Array) {
+            data["list"] = [];
+            for (let item of this.list)
+                data["list"].push(item.toJSON());
+        }
+        data["size"] = this.size !== undefined ? this.size : <any>null;
+        data["total"] = this.total !== undefined ? this.total : <any>null;
+        return data; 
+    }
+}
+
+export interface IListDtoOfPermission {
+    list?: Permission[] | null;
+    size?: number | null;
+    total?: number | null;
+}
+
 export class TransferAddresseeDto implements ITransferAddresseeDto {
     reconended_brigade_id?: number | null;
     subdivision_id?: number | null;
@@ -39528,7 +39518,7 @@ export class PharmacyDto implements IPharmacyDto {
     document_id?: number | null;
     document_name?: string | null;
     drug_id?: number | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     inner_amount?: number | null;
@@ -39561,7 +39551,7 @@ export class PharmacyDto implements IPharmacyDto {
             this.document_id = data["document_id"] !== undefined ? data["document_id"] : <any>null;
             this.document_name = data["document_name"] !== undefined ? data["document_name"] : <any>null;
             this.drug_id = data["drug_id"] !== undefined ? data["drug_id"] : <any>null;
-            this.expiry_date = data["expiry_date"] ? LocalDateTime.fromJS(data["expiry_date"]) : <any>null;
+            this.expiry_date = data["expiry_date"] ? new Date(data["expiry_date"].toString()) : <any>null;
             this.full_name = data["full_name"] !== undefined ? data["full_name"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.inner_amount = data["inner_amount"] !== undefined ? data["inner_amount"] : <any>null;
@@ -39598,7 +39588,7 @@ export class PharmacyDto implements IPharmacyDto {
         data["document_id"] = this.document_id !== undefined ? this.document_id : <any>null;
         data["document_name"] = this.document_name !== undefined ? this.document_name : <any>null;
         data["drug_id"] = this.drug_id !== undefined ? this.drug_id : <any>null;
-        data["expiry_date"] = this.expiry_date ? this.expiry_date.toJSON() : <any>null;
+        data["expiry_date"] = this.expiry_date ? this.expiry_date.toISOString() : <any>null;
         data["full_name"] = this.full_name !== undefined ? this.full_name : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["inner_amount"] = this.inner_amount !== undefined ? this.inner_amount : <any>null;
@@ -39628,7 +39618,7 @@ export interface IPharmacyDto {
     document_id?: number | null;
     document_name?: string | null;
     drug_id?: number | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     inner_amount?: number | null;
@@ -39775,82 +39765,6 @@ export interface IDistrict {
     osmGid?: number | null;
     osmId?: number | null;
     zone?: string | null;
-}
-
-export class LocalDateTime implements ILocalDateTime {
-    chronology?: Chronology | null;
-    dayOfMonth?: number | null;
-    dayOfWeek?: LocalDateTimeDayOfWeek | null;
-    dayOfYear?: number | null;
-    hour?: number | null;
-    minute?: number | null;
-    month?: LocalDateTimeMonth | null;
-    monthValue?: number | null;
-    nano?: number | null;
-    second?: number | null;
-    year?: number | null;
-
-    constructor(data?: ILocalDateTime) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.chronology = data["chronology"] ? Chronology.fromJS(data["chronology"]) : <any>null;
-            this.dayOfMonth = data["dayOfMonth"] !== undefined ? data["dayOfMonth"] : <any>null;
-            this.dayOfWeek = data["dayOfWeek"] !== undefined ? data["dayOfWeek"] : <any>null;
-            this.dayOfYear = data["dayOfYear"] !== undefined ? data["dayOfYear"] : <any>null;
-            this.hour = data["hour"] !== undefined ? data["hour"] : <any>null;
-            this.minute = data["minute"] !== undefined ? data["minute"] : <any>null;
-            this.month = data["month"] !== undefined ? data["month"] : <any>null;
-            this.monthValue = data["monthValue"] !== undefined ? data["monthValue"] : <any>null;
-            this.nano = data["nano"] !== undefined ? data["nano"] : <any>null;
-            this.second = data["second"] !== undefined ? data["second"] : <any>null;
-            this.year = data["year"] !== undefined ? data["year"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): LocalDateTime {
-        data = typeof data === 'object' ? data : {};
-        let result = new LocalDateTime();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["chronology"] = this.chronology ? this.chronology.toJSON() : <any>null;
-        data["dayOfMonth"] = this.dayOfMonth !== undefined ? this.dayOfMonth : <any>null;
-        data["dayOfWeek"] = this.dayOfWeek !== undefined ? this.dayOfWeek : <any>null;
-        data["dayOfYear"] = this.dayOfYear !== undefined ? this.dayOfYear : <any>null;
-        data["hour"] = this.hour !== undefined ? this.hour : <any>null;
-        data["minute"] = this.minute !== undefined ? this.minute : <any>null;
-        data["month"] = this.month !== undefined ? this.month : <any>null;
-        data["monthValue"] = this.monthValue !== undefined ? this.monthValue : <any>null;
-        data["nano"] = this.nano !== undefined ? this.nano : <any>null;
-        data["second"] = this.second !== undefined ? this.second : <any>null;
-        data["year"] = this.year !== undefined ? this.year : <any>null;
-        return data; 
-    }
-}
-
-export interface ILocalDateTime {
-    chronology?: Chronology | null;
-    dayOfMonth?: number | null;
-    dayOfWeek?: LocalDateTimeDayOfWeek | null;
-    dayOfYear?: number | null;
-    hour?: number | null;
-    minute?: number | null;
-    month?: LocalDateTimeMonth | null;
-    monthValue?: number | null;
-    nano?: number | null;
-    second?: number | null;
-    year?: number | null;
 }
 
 export class BagMatrixItemDto implements IBagMatrixItemDto {
@@ -40242,7 +40156,7 @@ export interface IMonPoint {
 }
 
 export class NotificationObject implements INotificationObject {
-    current_time?: LocalDateTime | null;
+    current_time?: Date | null;
     incomings?: number | null;
 
     constructor(data?: INotificationObject) {
@@ -40256,7 +40170,7 @@ export class NotificationObject implements INotificationObject {
 
     init(data?: any) {
         if (data) {
-            this.current_time = data["current_time"] ? LocalDateTime.fromJS(data["current_time"]) : <any>null;
+            this.current_time = data["current_time"] ? new Date(data["current_time"].toString()) : <any>null;
             this.incomings = data["incomings"] !== undefined ? data["incomings"] : <any>null;
         }
     }
@@ -40270,14 +40184,14 @@ export class NotificationObject implements INotificationObject {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["current_time"] = this.current_time ? this.current_time.toJSON() : <any>null;
+        data["current_time"] = this.current_time ? this.current_time.toISOString() : <any>null;
         data["incomings"] = this.incomings !== undefined ? this.incomings : <any>null;
         return data; 
     }
 }
 
 export interface INotificationObject {
-    current_time?: LocalDateTime | null;
+    current_time?: Date | null;
     incomings?: number | null;
 }
 
@@ -40497,7 +40411,7 @@ export class Report implements IReport {
     group_code?: string | null;
     group_name?: string | null;
     id?: number | null;
-    lastUpdate?: LocalDateTime | null;
+    lastUpdate?: Date | null;
     name?: string | null;
     nn?: number | null;
     performer?: string | null;
@@ -40525,7 +40439,7 @@ export class Report implements IReport {
             this.group_code = data["group_code"] !== undefined ? data["group_code"] : <any>null;
             this.group_name = data["group_name"] !== undefined ? data["group_name"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
-            this.lastUpdate = data["lastUpdate"] ? LocalDateTime.fromJS(data["lastUpdate"]) : <any>null;
+            this.lastUpdate = data["lastUpdate"] ? new Date(data["lastUpdate"].toString()) : <any>null;
             this.name = data["name"] !== undefined ? data["name"] : <any>null;
             this.nn = data["nn"] !== undefined ? data["nn"] : <any>null;
             this.performer = data["performer"] !== undefined ? data["performer"] : <any>null;
@@ -40557,7 +40471,7 @@ export class Report implements IReport {
         data["group_code"] = this.group_code !== undefined ? this.group_code : <any>null;
         data["group_name"] = this.group_name !== undefined ? this.group_name : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
-        data["lastUpdate"] = this.lastUpdate ? this.lastUpdate.toJSON() : <any>null;
+        data["lastUpdate"] = this.lastUpdate ? this.lastUpdate.toISOString() : <any>null;
         data["name"] = this.name !== undefined ? this.name : <any>null;
         data["nn"] = this.nn !== undefined ? this.nn : <any>null;
         data["performer"] = this.performer !== undefined ? this.performer : <any>null;
@@ -40582,7 +40496,7 @@ export interface IReport {
     group_code?: string | null;
     group_name?: string | null;
     id?: number | null;
-    lastUpdate?: LocalDateTime | null;
+    lastUpdate?: Date | null;
     name?: string | null;
     nn?: number | null;
     performer?: string | null;
@@ -40597,7 +40511,7 @@ export class PharmacyNomenclatureDto implements IPharmacyNomenclatureDto {
     amount?: number | null;
     company?: string | null;
     drug_id?: number | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     matrix_id?: number | null;
@@ -40619,7 +40533,7 @@ export class PharmacyNomenclatureDto implements IPharmacyNomenclatureDto {
             this.amount = data["amount"] !== undefined ? data["amount"] : <any>null;
             this.company = data["company"] !== undefined ? data["company"] : <any>null;
             this.drug_id = data["drug_id"] !== undefined ? data["drug_id"] : <any>null;
-            this.expiry_date = data["expiry_date"] ? LocalDateTime.fromJS(data["expiry_date"]) : <any>null;
+            this.expiry_date = data["expiry_date"] ? new Date(data["expiry_date"].toString()) : <any>null;
             this.full_name = data["full_name"] !== undefined ? data["full_name"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.matrix_id = data["matrix_id"] !== undefined ? data["matrix_id"] : <any>null;
@@ -40641,7 +40555,7 @@ export class PharmacyNomenclatureDto implements IPharmacyNomenclatureDto {
         data["amount"] = this.amount !== undefined ? this.amount : <any>null;
         data["company"] = this.company !== undefined ? this.company : <any>null;
         data["drug_id"] = this.drug_id !== undefined ? this.drug_id : <any>null;
-        data["expiry_date"] = this.expiry_date ? this.expiry_date.toJSON() : <any>null;
+        data["expiry_date"] = this.expiry_date ? this.expiry_date.toISOString() : <any>null;
         data["full_name"] = this.full_name !== undefined ? this.full_name : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["matrix_id"] = this.matrix_id !== undefined ? this.matrix_id : <any>null;
@@ -40656,7 +40570,7 @@ export interface IPharmacyNomenclatureDto {
     amount?: number | null;
     company?: string | null;
     drug_id?: number | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     matrix_id?: number | null;
@@ -40665,62 +40579,10 @@ export interface IPharmacyNomenclatureDto {
     type?: number | null;
 }
 
-export class ListDtoOfPermission implements IListDtoOfPermission {
-    list?: Permission[] | null;
-    size?: number | null;
-    total?: number | null;
-
-    constructor(data?: IListDtoOfPermission) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            if (data["list"] && data["list"].constructor === Array) {
-                this.list = [];
-                for (let item of data["list"])
-                    this.list.push(Permission.fromJS(item));
-            }
-            this.size = data["size"] !== undefined ? data["size"] : <any>null;
-            this.total = data["total"] !== undefined ? data["total"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): ListDtoOfPermission {
-        data = typeof data === 'object' ? data : {};
-        let result = new ListDtoOfPermission();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.list && this.list.constructor === Array) {
-            data["list"] = [];
-            for (let item of this.list)
-                data["list"].push(item.toJSON());
-        }
-        data["size"] = this.size !== undefined ? this.size : <any>null;
-        data["total"] = this.total !== undefined ? this.total : <any>null;
-        return data; 
-    }
-}
-
-export interface IListDtoOfPermission {
-    list?: Permission[] | null;
-    size?: number | null;
-    total?: number | null;
-}
-
 export class CardSubdivisionHeadDoctorPartDto implements ICardSubdivisionHeadDoctorPartDto {
     subdivision_head_doctor_checked?: boolean | null;
     subdivision_head_doctor_comment?: string | null;
-    subdivision_head_doctor_date?: LocalDateTime | null;
+    subdivision_head_doctor_date?: Date | null;
     subdivision_head_doctor_id?: number | null;
     subdivision_head_doctor_name?: string | null;
 
@@ -40737,7 +40599,7 @@ export class CardSubdivisionHeadDoctorPartDto implements ICardSubdivisionHeadDoc
         if (data) {
             this.subdivision_head_doctor_checked = data["subdivision_head_doctor_checked"] !== undefined ? data["subdivision_head_doctor_checked"] : <any>null;
             this.subdivision_head_doctor_comment = data["subdivision_head_doctor_comment"] !== undefined ? data["subdivision_head_doctor_comment"] : <any>null;
-            this.subdivision_head_doctor_date = data["subdivision_head_doctor_date"] ? LocalDateTime.fromJS(data["subdivision_head_doctor_date"]) : <any>null;
+            this.subdivision_head_doctor_date = data["subdivision_head_doctor_date"] ? new Date(data["subdivision_head_doctor_date"].toString()) : <any>null;
             this.subdivision_head_doctor_id = data["subdivision_head_doctor_id"] !== undefined ? data["subdivision_head_doctor_id"] : <any>null;
             this.subdivision_head_doctor_name = data["subdivision_head_doctor_name"] !== undefined ? data["subdivision_head_doctor_name"] : <any>null;
         }
@@ -40754,7 +40616,7 @@ export class CardSubdivisionHeadDoctorPartDto implements ICardSubdivisionHeadDoc
         data = typeof data === 'object' ? data : {};
         data["subdivision_head_doctor_checked"] = this.subdivision_head_doctor_checked !== undefined ? this.subdivision_head_doctor_checked : <any>null;
         data["subdivision_head_doctor_comment"] = this.subdivision_head_doctor_comment !== undefined ? this.subdivision_head_doctor_comment : <any>null;
-        data["subdivision_head_doctor_date"] = this.subdivision_head_doctor_date ? this.subdivision_head_doctor_date.toJSON() : <any>null;
+        data["subdivision_head_doctor_date"] = this.subdivision_head_doctor_date ? this.subdivision_head_doctor_date.toISOString() : <any>null;
         data["subdivision_head_doctor_id"] = this.subdivision_head_doctor_id !== undefined ? this.subdivision_head_doctor_id : <any>null;
         data["subdivision_head_doctor_name"] = this.subdivision_head_doctor_name !== undefined ? this.subdivision_head_doctor_name : <any>null;
         return data; 
@@ -40764,7 +40626,7 @@ export class CardSubdivisionHeadDoctorPartDto implements ICardSubdivisionHeadDoc
 export interface ICardSubdivisionHeadDoctorPartDto {
     subdivision_head_doctor_checked?: boolean | null;
     subdivision_head_doctor_comment?: string | null;
-    subdivision_head_doctor_date?: LocalDateTime | null;
+    subdivision_head_doctor_date?: Date | null;
     subdivision_head_doctor_id?: number | null;
     subdivision_head_doctor_name?: string | null;
 }
@@ -40866,7 +40728,7 @@ export interface IReportGroup {
 }
 
 export class BagDto implements IBagDto {
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     items?: BagItemDto[] | null;
     matrix_code?: string | null;
@@ -40891,7 +40753,7 @@ export class BagDto implements IBagDto {
 
     init(data?: any) {
         if (data) {
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             if (data["items"] && data["items"].constructor === Array) {
                 this.items = [];
@@ -40920,7 +40782,7 @@ export class BagDto implements IBagDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         if (this.items && this.items.constructor === Array) {
             data["items"] = [];
@@ -40942,7 +40804,7 @@ export class BagDto implements IBagDto {
 }
 
 export interface IBagDto {
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     items?: BagItemDto[] | null;
     matrix_code?: string | null;
@@ -41126,7 +40988,7 @@ export interface ICardObjectiveSkinPartDto {
 }
 
 export class TherapyDto implements ITherapyDto {
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     is_local?: boolean | null;
     items?: TherapyItemDto[] | null;
@@ -41145,7 +41007,7 @@ export class TherapyDto implements ITherapyDto {
 
     init(data?: any) {
         if (data) {
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.is_local = data["is_local"] !== undefined ? data["is_local"] : <any>null;
             if (data["items"] && data["items"].constructor === Array) {
@@ -41168,7 +41030,7 @@ export class TherapyDto implements ITherapyDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["is_local"] = this.is_local !== undefined ? this.is_local : <any>null;
         if (this.items && this.items.constructor === Array) {
@@ -41184,7 +41046,7 @@ export class TherapyDto implements ITherapyDto {
 }
 
 export interface ITherapyDto {
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     is_local?: boolean | null;
     items?: TherapyItemDto[] | null;
@@ -41197,7 +41059,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
     accident_type?: number | null;
     accident_type_id?: number | null;
     accident_type_name?: string | null;
-    active_visit_date?: LocalDateTime | null;
+    active_visit_date?: Date | null;
     active_visit_hours?: number | null;
     active_visit_type?: number | null;
     active_visit_type_id?: number | null;
@@ -41211,7 +41073,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
     death_condition?: number | null;
     death_condition_id?: number | null;
     death_condition_name?: string | null;
-    death_time?: LocalDateTime | null;
+    death_time?: Date | null;
     ekg_ch_s_s?: number | null;
     ekg_ch_s_s_after?: number | null;
     ekg_comments?: string | null;
@@ -41250,7 +41112,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
     reason_type_name?: string | null;
     syringes?: number | null;
     transfer_patient_brigade?: string | null;
-    transfer_patient_time?: LocalDateTime | null;
+    transfer_patient_time?: Date | null;
     transfusion_systems?: number | null;
     transport_CHD?: string | null;
     transport_CHSS?: string | null;
@@ -41262,7 +41124,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
     transport_therapies?: TherapyDto[] | null;
     transport_therapy?: string | null;
     transport_work_ad?: string | null;
-    transporting_date?: LocalDateTime | null;
+    transporting_date?: Date | null;
     transporting_type?: number | null;
     transporting_type_id?: number | null;
     transporting_type_name?: string | null;
@@ -41285,7 +41147,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
             this.accident_type = data["accident_type"] !== undefined ? data["accident_type"] : <any>null;
             this.accident_type_id = data["accident_type_id"] !== undefined ? data["accident_type_id"] : <any>null;
             this.accident_type_name = data["accident_type_name"] !== undefined ? data["accident_type_name"] : <any>null;
-            this.active_visit_date = data["active_visit_date"] ? LocalDateTime.fromJS(data["active_visit_date"]) : <any>null;
+            this.active_visit_date = data["active_visit_date"] ? new Date(data["active_visit_date"].toString()) : <any>null;
             this.active_visit_hours = data["active_visit_hours"] !== undefined ? data["active_visit_hours"] : <any>null;
             this.active_visit_type = data["active_visit_type"] !== undefined ? data["active_visit_type"] : <any>null;
             this.active_visit_type_id = data["active_visit_type_id"] !== undefined ? data["active_visit_type_id"] : <any>null;
@@ -41299,7 +41161,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
             this.death_condition = data["death_condition"] !== undefined ? data["death_condition"] : <any>null;
             this.death_condition_id = data["death_condition_id"] !== undefined ? data["death_condition_id"] : <any>null;
             this.death_condition_name = data["death_condition_name"] !== undefined ? data["death_condition_name"] : <any>null;
-            this.death_time = data["death_time"] ? LocalDateTime.fromJS(data["death_time"]) : <any>null;
+            this.death_time = data["death_time"] ? new Date(data["death_time"].toString()) : <any>null;
             this.ekg_ch_s_s = data["ekg_ch_s_s"] !== undefined ? data["ekg_ch_s_s"] : <any>null;
             this.ekg_ch_s_s_after = data["ekg_ch_s_s_after"] !== undefined ? data["ekg_ch_s_s_after"] : <any>null;
             this.ekg_comments = data["ekg_comments"] !== undefined ? data["ekg_comments"] : <any>null;
@@ -41342,7 +41204,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
             this.reason_type_name = data["reason_type_name"] !== undefined ? data["reason_type_name"] : <any>null;
             this.syringes = data["syringes"] !== undefined ? data["syringes"] : <any>null;
             this.transfer_patient_brigade = data["transfer_patient_brigade"] !== undefined ? data["transfer_patient_brigade"] : <any>null;
-            this.transfer_patient_time = data["transfer_patient_time"] ? LocalDateTime.fromJS(data["transfer_patient_time"]) : <any>null;
+            this.transfer_patient_time = data["transfer_patient_time"] ? new Date(data["transfer_patient_time"].toString()) : <any>null;
             this.transfusion_systems = data["transfusion_systems"] !== undefined ? data["transfusion_systems"] : <any>null;
             this.transport_CHD = data["transport_CHD"] !== undefined ? data["transport_CHD"] : <any>null;
             this.transport_CHSS = data["transport_CHSS"] !== undefined ? data["transport_CHSS"] : <any>null;
@@ -41358,7 +41220,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
             }
             this.transport_therapy = data["transport_therapy"] !== undefined ? data["transport_therapy"] : <any>null;
             this.transport_work_ad = data["transport_work_ad"] !== undefined ? data["transport_work_ad"] : <any>null;
-            this.transporting_date = data["transporting_date"] ? LocalDateTime.fromJS(data["transporting_date"]) : <any>null;
+            this.transporting_date = data["transporting_date"] ? new Date(data["transporting_date"].toString()) : <any>null;
             this.transporting_type = data["transporting_type"] !== undefined ? data["transporting_type"] : <any>null;
             this.transporting_type_id = data["transporting_type_id"] !== undefined ? data["transporting_type_id"] : <any>null;
             this.transporting_type_name = data["transporting_type_name"] !== undefined ? data["transporting_type_name"] : <any>null;
@@ -41381,7 +41243,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
         data["accident_type"] = this.accident_type !== undefined ? this.accident_type : <any>null;
         data["accident_type_id"] = this.accident_type_id !== undefined ? this.accident_type_id : <any>null;
         data["accident_type_name"] = this.accident_type_name !== undefined ? this.accident_type_name : <any>null;
-        data["active_visit_date"] = this.active_visit_date ? this.active_visit_date.toJSON() : <any>null;
+        data["active_visit_date"] = this.active_visit_date ? this.active_visit_date.toISOString() : <any>null;
         data["active_visit_hours"] = this.active_visit_hours !== undefined ? this.active_visit_hours : <any>null;
         data["active_visit_type"] = this.active_visit_type !== undefined ? this.active_visit_type : <any>null;
         data["active_visit_type_id"] = this.active_visit_type_id !== undefined ? this.active_visit_type_id : <any>null;
@@ -41395,7 +41257,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
         data["death_condition"] = this.death_condition !== undefined ? this.death_condition : <any>null;
         data["death_condition_id"] = this.death_condition_id !== undefined ? this.death_condition_id : <any>null;
         data["death_condition_name"] = this.death_condition_name !== undefined ? this.death_condition_name : <any>null;
-        data["death_time"] = this.death_time ? this.death_time.toJSON() : <any>null;
+        data["death_time"] = this.death_time ? this.death_time.toISOString() : <any>null;
         data["ekg_ch_s_s"] = this.ekg_ch_s_s !== undefined ? this.ekg_ch_s_s : <any>null;
         data["ekg_ch_s_s_after"] = this.ekg_ch_s_s_after !== undefined ? this.ekg_ch_s_s_after : <any>null;
         data["ekg_comments"] = this.ekg_comments !== undefined ? this.ekg_comments : <any>null;
@@ -41438,7 +41300,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
         data["reason_type_name"] = this.reason_type_name !== undefined ? this.reason_type_name : <any>null;
         data["syringes"] = this.syringes !== undefined ? this.syringes : <any>null;
         data["transfer_patient_brigade"] = this.transfer_patient_brigade !== undefined ? this.transfer_patient_brigade : <any>null;
-        data["transfer_patient_time"] = this.transfer_patient_time ? this.transfer_patient_time.toJSON() : <any>null;
+        data["transfer_patient_time"] = this.transfer_patient_time ? this.transfer_patient_time.toISOString() : <any>null;
         data["transfusion_systems"] = this.transfusion_systems !== undefined ? this.transfusion_systems : <any>null;
         data["transport_CHD"] = this.transport_CHD !== undefined ? this.transport_CHD : <any>null;
         data["transport_CHSS"] = this.transport_CHSS !== undefined ? this.transport_CHSS : <any>null;
@@ -41454,7 +41316,7 @@ export class CardResultDtoFLAT implements ICardResultDtoFLAT {
         }
         data["transport_therapy"] = this.transport_therapy !== undefined ? this.transport_therapy : <any>null;
         data["transport_work_ad"] = this.transport_work_ad !== undefined ? this.transport_work_ad : <any>null;
-        data["transporting_date"] = this.transporting_date ? this.transporting_date.toJSON() : <any>null;
+        data["transporting_date"] = this.transporting_date ? this.transporting_date.toISOString() : <any>null;
         data["transporting_type"] = this.transporting_type !== undefined ? this.transporting_type : <any>null;
         data["transporting_type_id"] = this.transporting_type_id !== undefined ? this.transporting_type_id : <any>null;
         data["transporting_type_name"] = this.transporting_type_name !== undefined ? this.transporting_type_name : <any>null;
@@ -41470,7 +41332,7 @@ export interface ICardResultDtoFLAT {
     accident_type?: number | null;
     accident_type_id?: number | null;
     accident_type_name?: string | null;
-    active_visit_date?: LocalDateTime | null;
+    active_visit_date?: Date | null;
     active_visit_hours?: number | null;
     active_visit_type?: number | null;
     active_visit_type_id?: number | null;
@@ -41484,7 +41346,7 @@ export interface ICardResultDtoFLAT {
     death_condition?: number | null;
     death_condition_id?: number | null;
     death_condition_name?: string | null;
-    death_time?: LocalDateTime | null;
+    death_time?: Date | null;
     ekg_ch_s_s?: number | null;
     ekg_ch_s_s_after?: number | null;
     ekg_comments?: string | null;
@@ -41523,7 +41385,7 @@ export interface ICardResultDtoFLAT {
     reason_type_name?: string | null;
     syringes?: number | null;
     transfer_patient_brigade?: string | null;
-    transfer_patient_time?: LocalDateTime | null;
+    transfer_patient_time?: Date | null;
     transfusion_systems?: number | null;
     transport_CHD?: string | null;
     transport_CHSS?: string | null;
@@ -41535,7 +41397,7 @@ export interface ICardResultDtoFLAT {
     transport_therapies?: TherapyDto[] | null;
     transport_therapy?: string | null;
     transport_work_ad?: string | null;
-    transporting_date?: LocalDateTime | null;
+    transporting_date?: Date | null;
     transporting_type?: number | null;
     transporting_type_id?: number | null;
     transporting_type_name?: string | null;
@@ -41725,70 +41587,18 @@ export interface IPerformerBrigScheduleUpdateDto {
     period_details?: PeriodDetails | null;
 }
 
-export class ListDtoOfPerformer implements IListDtoOfPerformer {
-    list?: Performer[] | null;
-    size?: number | null;
-    total?: number | null;
-
-    constructor(data?: IListDtoOfPerformer) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            if (data["list"] && data["list"].constructor === Array) {
-                this.list = [];
-                for (let item of data["list"])
-                    this.list.push(Performer.fromJS(item));
-            }
-            this.size = data["size"] !== undefined ? data["size"] : <any>null;
-            this.total = data["total"] !== undefined ? data["total"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): ListDtoOfPerformer {
-        data = typeof data === 'object' ? data : {};
-        let result = new ListDtoOfPerformer();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.list && this.list.constructor === Array) {
-            data["list"] = [];
-            for (let item of this.list)
-                data["list"].push(item.toJSON());
-        }
-        data["size"] = this.size !== undefined ? this.size : <any>null;
-        data["total"] = this.total !== undefined ? this.total : <any>null;
-        return data; 
-    }
-}
-
-export interface IListDtoOfPerformer {
-    list?: Performer[] | null;
-    size?: number | null;
-    total?: number | null;
-}
-
 export class CardBasicDatesPartDto implements ICardBasicDatesPartDto {
     arrive_time_exceed?: boolean | null;
-    brigade_arrive_date?: LocalDateTime | null;
-    brigade_complete_date?: LocalDateTime | null;
-    brigade_departure_date?: LocalDateTime | null;
-    brigade_receiving_date?: LocalDateTime | null;
-    brigade_return_date?: LocalDateTime | null;
-    brigade_transport_begin_date?: LocalDateTime | null;
-    brigade_transport_end_date?: LocalDateTime | null;
-    call_create_date?: LocalDateTime | null;
-    call_date?: LocalDateTime | null;
-    card_date?: LocalDateTime | null;
+    brigade_arrive_date?: Date | null;
+    brigade_complete_date?: Date | null;
+    brigade_departure_date?: Date | null;
+    brigade_receiving_date?: Date | null;
+    brigade_return_date?: Date | null;
+    brigade_transport_begin_date?: Date | null;
+    brigade_transport_end_date?: Date | null;
+    call_create_date?: Date | null;
+    call_date?: Date | null;
+    card_date?: Date | null;
     full_time_interval?: string | null;
     receiving_time_exceed?: boolean | null;
 
@@ -41804,16 +41614,16 @@ export class CardBasicDatesPartDto implements ICardBasicDatesPartDto {
     init(data?: any) {
         if (data) {
             this.arrive_time_exceed = data["arrive_time_exceed"] !== undefined ? data["arrive_time_exceed"] : <any>null;
-            this.brigade_arrive_date = data["brigade_arrive_date"] ? LocalDateTime.fromJS(data["brigade_arrive_date"]) : <any>null;
-            this.brigade_complete_date = data["brigade_complete_date"] ? LocalDateTime.fromJS(data["brigade_complete_date"]) : <any>null;
-            this.brigade_departure_date = data["brigade_departure_date"] ? LocalDateTime.fromJS(data["brigade_departure_date"]) : <any>null;
-            this.brigade_receiving_date = data["brigade_receiving_date"] ? LocalDateTime.fromJS(data["brigade_receiving_date"]) : <any>null;
-            this.brigade_return_date = data["brigade_return_date"] ? LocalDateTime.fromJS(data["brigade_return_date"]) : <any>null;
-            this.brigade_transport_begin_date = data["brigade_transport_begin_date"] ? LocalDateTime.fromJS(data["brigade_transport_begin_date"]) : <any>null;
-            this.brigade_transport_end_date = data["brigade_transport_end_date"] ? LocalDateTime.fromJS(data["brigade_transport_end_date"]) : <any>null;
-            this.call_create_date = data["call_create_date"] ? LocalDateTime.fromJS(data["call_create_date"]) : <any>null;
-            this.call_date = data["call_date"] ? LocalDateTime.fromJS(data["call_date"]) : <any>null;
-            this.card_date = data["card_date"] ? LocalDateTime.fromJS(data["card_date"]) : <any>null;
+            this.brigade_arrive_date = data["brigade_arrive_date"] ? new Date(data["brigade_arrive_date"].toString()) : <any>null;
+            this.brigade_complete_date = data["brigade_complete_date"] ? new Date(data["brigade_complete_date"].toString()) : <any>null;
+            this.brigade_departure_date = data["brigade_departure_date"] ? new Date(data["brigade_departure_date"].toString()) : <any>null;
+            this.brigade_receiving_date = data["brigade_receiving_date"] ? new Date(data["brigade_receiving_date"].toString()) : <any>null;
+            this.brigade_return_date = data["brigade_return_date"] ? new Date(data["brigade_return_date"].toString()) : <any>null;
+            this.brigade_transport_begin_date = data["brigade_transport_begin_date"] ? new Date(data["brigade_transport_begin_date"].toString()) : <any>null;
+            this.brigade_transport_end_date = data["brigade_transport_end_date"] ? new Date(data["brigade_transport_end_date"].toString()) : <any>null;
+            this.call_create_date = data["call_create_date"] ? new Date(data["call_create_date"].toString()) : <any>null;
+            this.call_date = data["call_date"] ? new Date(data["call_date"].toString()) : <any>null;
+            this.card_date = data["card_date"] ? new Date(data["card_date"].toString()) : <any>null;
             this.full_time_interval = data["full_time_interval"] !== undefined ? data["full_time_interval"] : <any>null;
             this.receiving_time_exceed = data["receiving_time_exceed"] !== undefined ? data["receiving_time_exceed"] : <any>null;
         }
@@ -41829,16 +41639,16 @@ export class CardBasicDatesPartDto implements ICardBasicDatesPartDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["arrive_time_exceed"] = this.arrive_time_exceed !== undefined ? this.arrive_time_exceed : <any>null;
-        data["brigade_arrive_date"] = this.brigade_arrive_date ? this.brigade_arrive_date.toJSON() : <any>null;
-        data["brigade_complete_date"] = this.brigade_complete_date ? this.brigade_complete_date.toJSON() : <any>null;
-        data["brigade_departure_date"] = this.brigade_departure_date ? this.brigade_departure_date.toJSON() : <any>null;
-        data["brigade_receiving_date"] = this.brigade_receiving_date ? this.brigade_receiving_date.toJSON() : <any>null;
-        data["brigade_return_date"] = this.brigade_return_date ? this.brigade_return_date.toJSON() : <any>null;
-        data["brigade_transport_begin_date"] = this.brigade_transport_begin_date ? this.brigade_transport_begin_date.toJSON() : <any>null;
-        data["brigade_transport_end_date"] = this.brigade_transport_end_date ? this.brigade_transport_end_date.toJSON() : <any>null;
-        data["call_create_date"] = this.call_create_date ? this.call_create_date.toJSON() : <any>null;
-        data["call_date"] = this.call_date ? this.call_date.toJSON() : <any>null;
-        data["card_date"] = this.card_date ? this.card_date.toJSON() : <any>null;
+        data["brigade_arrive_date"] = this.brigade_arrive_date ? this.brigade_arrive_date.toISOString() : <any>null;
+        data["brigade_complete_date"] = this.brigade_complete_date ? this.brigade_complete_date.toISOString() : <any>null;
+        data["brigade_departure_date"] = this.brigade_departure_date ? this.brigade_departure_date.toISOString() : <any>null;
+        data["brigade_receiving_date"] = this.brigade_receiving_date ? this.brigade_receiving_date.toISOString() : <any>null;
+        data["brigade_return_date"] = this.brigade_return_date ? this.brigade_return_date.toISOString() : <any>null;
+        data["brigade_transport_begin_date"] = this.brigade_transport_begin_date ? this.brigade_transport_begin_date.toISOString() : <any>null;
+        data["brigade_transport_end_date"] = this.brigade_transport_end_date ? this.brigade_transport_end_date.toISOString() : <any>null;
+        data["call_create_date"] = this.call_create_date ? this.call_create_date.toISOString() : <any>null;
+        data["call_date"] = this.call_date ? this.call_date.toISOString() : <any>null;
+        data["card_date"] = this.card_date ? this.card_date.toISOString() : <any>null;
         data["full_time_interval"] = this.full_time_interval !== undefined ? this.full_time_interval : <any>null;
         data["receiving_time_exceed"] = this.receiving_time_exceed !== undefined ? this.receiving_time_exceed : <any>null;
         return data; 
@@ -41847,16 +41657,16 @@ export class CardBasicDatesPartDto implements ICardBasicDatesPartDto {
 
 export interface ICardBasicDatesPartDto {
     arrive_time_exceed?: boolean | null;
-    brigade_arrive_date?: LocalDateTime | null;
-    brigade_complete_date?: LocalDateTime | null;
-    brigade_departure_date?: LocalDateTime | null;
-    brigade_receiving_date?: LocalDateTime | null;
-    brigade_return_date?: LocalDateTime | null;
-    brigade_transport_begin_date?: LocalDateTime | null;
-    brigade_transport_end_date?: LocalDateTime | null;
-    call_create_date?: LocalDateTime | null;
-    call_date?: LocalDateTime | null;
-    card_date?: LocalDateTime | null;
+    brigade_arrive_date?: Date | null;
+    brigade_complete_date?: Date | null;
+    brigade_departure_date?: Date | null;
+    brigade_receiving_date?: Date | null;
+    brigade_return_date?: Date | null;
+    brigade_transport_begin_date?: Date | null;
+    brigade_transport_end_date?: Date | null;
+    call_create_date?: Date | null;
+    call_date?: Date | null;
+    card_date?: Date | null;
     full_time_interval?: string | null;
     receiving_time_exceed?: boolean | null;
 }
@@ -42023,7 +41833,7 @@ export interface ICardObjectiveComplicationsPartDto {
 
 export class MobileMessage implements IMobileMessage {
     code?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     guid?: string | null;
     on_off?: boolean | null;
 
@@ -42039,7 +41849,7 @@ export class MobileMessage implements IMobileMessage {
     init(data?: any) {
         if (data) {
             this.code = data["code"] !== undefined ? data["code"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.guid = data["guid"] !== undefined ? data["guid"] : <any>null;
             this.on_off = data["on_off"] !== undefined ? data["on_off"] : <any>null;
         }
@@ -42055,7 +41865,7 @@ export class MobileMessage implements IMobileMessage {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["code"] = this.code !== undefined ? this.code : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["guid"] = this.guid !== undefined ? this.guid : <any>null;
         data["on_off"] = this.on_off !== undefined ? this.on_off : <any>null;
         return data; 
@@ -42064,7 +41874,7 @@ export class MobileMessage implements IMobileMessage {
 
 export interface IMobileMessage {
     code?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     guid?: string | null;
     on_off?: boolean | null;
 }
@@ -42075,7 +41885,7 @@ export class BagItemDto implements IBagItemDto {
     bag_nomenclature_id?: number | null;
     bag_series_number?: number | null;
     company?: string | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     is_reusable?: boolean | null;
@@ -42101,7 +41911,7 @@ export class BagItemDto implements IBagItemDto {
             this.bag_nomenclature_id = data["bag_nomenclature_id"] !== undefined ? data["bag_nomenclature_id"] : <any>null;
             this.bag_series_number = data["bag_series_number"] !== undefined ? data["bag_series_number"] : <any>null;
             this.company = data["company"] !== undefined ? data["company"] : <any>null;
-            this.expiry_date = data["expiry_date"] ? LocalDateTime.fromJS(data["expiry_date"]) : <any>null;
+            this.expiry_date = data["expiry_date"] ? new Date(data["expiry_date"].toString()) : <any>null;
             this.full_name = data["full_name"] !== undefined ? data["full_name"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.is_reusable = data["is_reusable"] !== undefined ? data["is_reusable"] : <any>null;
@@ -42127,7 +41937,7 @@ export class BagItemDto implements IBagItemDto {
         data["bag_nomenclature_id"] = this.bag_nomenclature_id !== undefined ? this.bag_nomenclature_id : <any>null;
         data["bag_series_number"] = this.bag_series_number !== undefined ? this.bag_series_number : <any>null;
         data["company"] = this.company !== undefined ? this.company : <any>null;
-        data["expiry_date"] = this.expiry_date ? this.expiry_date.toJSON() : <any>null;
+        data["expiry_date"] = this.expiry_date ? this.expiry_date.toISOString() : <any>null;
         data["full_name"] = this.full_name !== undefined ? this.full_name : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["is_reusable"] = this.is_reusable !== undefined ? this.is_reusable : <any>null;
@@ -42146,7 +41956,7 @@ export interface IBagItemDto {
     bag_nomenclature_id?: number | null;
     bag_series_number?: number | null;
     company?: string | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     is_reusable?: boolean | null;
@@ -42211,58 +42021,6 @@ export interface ICardObjectiveAlcoPartDto {
     alco_romberg_pose?: boolean | null;
     alco_shaky_walk?: boolean | null;
     alco_speach_behavior?: boolean | null;
-}
-
-export class ListDtoOfLogDto implements IListDtoOfLogDto {
-    list?: LogDto[] | null;
-    size?: number | null;
-    total?: number | null;
-
-    constructor(data?: IListDtoOfLogDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            if (data["list"] && data["list"].constructor === Array) {
-                this.list = [];
-                for (let item of data["list"])
-                    this.list.push(LogDto.fromJS(item));
-            }
-            this.size = data["size"] !== undefined ? data["size"] : <any>null;
-            this.total = data["total"] !== undefined ? data["total"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): ListDtoOfLogDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ListDtoOfLogDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.list && this.list.constructor === Array) {
-            data["list"] = [];
-            for (let item of this.list)
-                data["list"].push(item.toJSON());
-        }
-        data["size"] = this.size !== undefined ? this.size : <any>null;
-        data["total"] = this.total !== undefined ? this.total : <any>null;
-        return data; 
-    }
-}
-
-export interface IListDtoOfLogDto {
-    list?: LogDto[] | null;
-    size?: number | null;
-    total?: number | null;
 }
 
 export class GroupBagItemDto implements IGroupBagItemDto {
@@ -42335,21 +42093,21 @@ export interface IGroupBagItemDto {
 
 export class CardGridDto implements ICardGridDto {
     address?: string | null;
-    brigade_arrive_date?: LocalDateTime | null;
-    brigade_departure_date?: LocalDateTime | null;
-    brigade_help_date?: LocalDateTime | null;
+    brigade_arrive_date?: Date | null;
+    brigade_departure_date?: Date | null;
+    brigade_help_date?: Date | null;
     brigade_id?: number | null;
     brigade_name?: string | null;
-    brigade_receiving_date?: LocalDateTime | null;
-    brigade_return_date?: LocalDateTime | null;
+    brigade_receiving_date?: Date | null;
+    brigade_return_date?: Date | null;
     call_id?: number | null;
     card_id?: number | null;
     card_status?: number | null;
     card_status_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     declarant_name?: string | null;
     deleted?: boolean | null;
-    deleted_date?: LocalDateTime | null;
+    deleted_date?: Date | null;
     deleted_message?: string | null;
     deleted_performer_id?: number | null;
     deleted_performer_name?: string | null;
@@ -42382,21 +42140,21 @@ export class CardGridDto implements ICardGridDto {
     init(data?: any) {
         if (data) {
             this.address = data["address"] !== undefined ? data["address"] : <any>null;
-            this.brigade_arrive_date = data["brigade_arrive_date"] ? LocalDateTime.fromJS(data["brigade_arrive_date"]) : <any>null;
-            this.brigade_departure_date = data["brigade_departure_date"] ? LocalDateTime.fromJS(data["brigade_departure_date"]) : <any>null;
-            this.brigade_help_date = data["brigade_help_date"] ? LocalDateTime.fromJS(data["brigade_help_date"]) : <any>null;
+            this.brigade_arrive_date = data["brigade_arrive_date"] ? new Date(data["brigade_arrive_date"].toString()) : <any>null;
+            this.brigade_departure_date = data["brigade_departure_date"] ? new Date(data["brigade_departure_date"].toString()) : <any>null;
+            this.brigade_help_date = data["brigade_help_date"] ? new Date(data["brigade_help_date"].toString()) : <any>null;
             this.brigade_id = data["brigade_id"] !== undefined ? data["brigade_id"] : <any>null;
             this.brigade_name = data["brigade_name"] !== undefined ? data["brigade_name"] : <any>null;
-            this.brigade_receiving_date = data["brigade_receiving_date"] ? LocalDateTime.fromJS(data["brigade_receiving_date"]) : <any>null;
-            this.brigade_return_date = data["brigade_return_date"] ? LocalDateTime.fromJS(data["brigade_return_date"]) : <any>null;
+            this.brigade_receiving_date = data["brigade_receiving_date"] ? new Date(data["brigade_receiving_date"].toString()) : <any>null;
+            this.brigade_return_date = data["brigade_return_date"] ? new Date(data["brigade_return_date"].toString()) : <any>null;
             this.call_id = data["call_id"] !== undefined ? data["call_id"] : <any>null;
             this.card_id = data["card_id"] !== undefined ? data["card_id"] : <any>null;
             this.card_status = data["card_status"] !== undefined ? data["card_status"] : <any>null;
             this.card_status_name = data["card_status_name"] !== undefined ? data["card_status_name"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.declarant_name = data["declarant_name"] !== undefined ? data["declarant_name"] : <any>null;
             this.deleted = data["deleted"] !== undefined ? data["deleted"] : <any>null;
-            this.deleted_date = data["deleted_date"] ? LocalDateTime.fromJS(data["deleted_date"]) : <any>null;
+            this.deleted_date = data["deleted_date"] ? new Date(data["deleted_date"].toString()) : <any>null;
             this.deleted_message = data["deleted_message"] !== undefined ? data["deleted_message"] : <any>null;
             this.deleted_performer_id = data["deleted_performer_id"] !== undefined ? data["deleted_performer_id"] : <any>null;
             this.deleted_performer_name = data["deleted_performer_name"] !== undefined ? data["deleted_performer_name"] : <any>null;
@@ -42429,21 +42187,21 @@ export class CardGridDto implements ICardGridDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["address"] = this.address !== undefined ? this.address : <any>null;
-        data["brigade_arrive_date"] = this.brigade_arrive_date ? this.brigade_arrive_date.toJSON() : <any>null;
-        data["brigade_departure_date"] = this.brigade_departure_date ? this.brigade_departure_date.toJSON() : <any>null;
-        data["brigade_help_date"] = this.brigade_help_date ? this.brigade_help_date.toJSON() : <any>null;
+        data["brigade_arrive_date"] = this.brigade_arrive_date ? this.brigade_arrive_date.toISOString() : <any>null;
+        data["brigade_departure_date"] = this.brigade_departure_date ? this.brigade_departure_date.toISOString() : <any>null;
+        data["brigade_help_date"] = this.brigade_help_date ? this.brigade_help_date.toISOString() : <any>null;
         data["brigade_id"] = this.brigade_id !== undefined ? this.brigade_id : <any>null;
         data["brigade_name"] = this.brigade_name !== undefined ? this.brigade_name : <any>null;
-        data["brigade_receiving_date"] = this.brigade_receiving_date ? this.brigade_receiving_date.toJSON() : <any>null;
-        data["brigade_return_date"] = this.brigade_return_date ? this.brigade_return_date.toJSON() : <any>null;
+        data["brigade_receiving_date"] = this.brigade_receiving_date ? this.brigade_receiving_date.toISOString() : <any>null;
+        data["brigade_return_date"] = this.brigade_return_date ? this.brigade_return_date.toISOString() : <any>null;
         data["call_id"] = this.call_id !== undefined ? this.call_id : <any>null;
         data["card_id"] = this.card_id !== undefined ? this.card_id : <any>null;
         data["card_status"] = this.card_status !== undefined ? this.card_status : <any>null;
         data["card_status_name"] = this.card_status_name !== undefined ? this.card_status_name : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["declarant_name"] = this.declarant_name !== undefined ? this.declarant_name : <any>null;
         data["deleted"] = this.deleted !== undefined ? this.deleted : <any>null;
-        data["deleted_date"] = this.deleted_date ? this.deleted_date.toJSON() : <any>null;
+        data["deleted_date"] = this.deleted_date ? this.deleted_date.toISOString() : <any>null;
         data["deleted_message"] = this.deleted_message !== undefined ? this.deleted_message : <any>null;
         data["deleted_performer_id"] = this.deleted_performer_id !== undefined ? this.deleted_performer_id : <any>null;
         data["deleted_performer_name"] = this.deleted_performer_name !== undefined ? this.deleted_performer_name : <any>null;
@@ -42469,21 +42227,21 @@ export class CardGridDto implements ICardGridDto {
 
 export interface ICardGridDto {
     address?: string | null;
-    brigade_arrive_date?: LocalDateTime | null;
-    brigade_departure_date?: LocalDateTime | null;
-    brigade_help_date?: LocalDateTime | null;
+    brigade_arrive_date?: Date | null;
+    brigade_departure_date?: Date | null;
+    brigade_help_date?: Date | null;
     brigade_id?: number | null;
     brigade_name?: string | null;
-    brigade_receiving_date?: LocalDateTime | null;
-    brigade_return_date?: LocalDateTime | null;
+    brigade_receiving_date?: Date | null;
+    brigade_return_date?: Date | null;
     call_id?: number | null;
     card_id?: number | null;
     card_status?: number | null;
     card_status_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     declarant_name?: string | null;
     deleted?: boolean | null;
-    deleted_date?: LocalDateTime | null;
+    deleted_date?: Date | null;
     deleted_message?: string | null;
     deleted_performer_id?: number | null;
     deleted_performer_name?: string | null;
@@ -42595,8 +42353,8 @@ export interface ICardAnamnesisComplaintsPartDto {
 
 export class MessageEventDto implements IMessageEventDto {
     code?: string | null;
-    date?: LocalDateTime | null;
-    date_filled?: LocalDateTime | null;
+    date?: Date | null;
+    date_filled?: Date | null;
     id?: number | null;
     message_id?: number | null;
     name?: string | null;
@@ -42618,8 +42376,8 @@ export class MessageEventDto implements IMessageEventDto {
     init(data?: any) {
         if (data) {
             this.code = data["code"] !== undefined ? data["code"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
-            this.date_filled = data["date_filled"] ? LocalDateTime.fromJS(data["date_filled"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
+            this.date_filled = data["date_filled"] ? new Date(data["date_filled"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.message_id = data["message_id"] !== undefined ? data["message_id"] : <any>null;
             this.name = data["name"] !== undefined ? data["name"] : <any>null;
@@ -42641,8 +42399,8 @@ export class MessageEventDto implements IMessageEventDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["code"] = this.code !== undefined ? this.code : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
-        data["date_filled"] = this.date_filled ? this.date_filled.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
+        data["date_filled"] = this.date_filled ? this.date_filled.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["message_id"] = this.message_id !== undefined ? this.message_id : <any>null;
         data["name"] = this.name !== undefined ? this.name : <any>null;
@@ -42657,8 +42415,8 @@ export class MessageEventDto implements IMessageEventDto {
 
 export interface IMessageEventDto {
     code?: string | null;
-    date?: LocalDateTime | null;
-    date_filled?: LocalDateTime | null;
+    date?: Date | null;
+    date_filled?: Date | null;
     id?: number | null;
     message_id?: number | null;
     name?: string | null;
@@ -42929,42 +42687,6 @@ export interface ICardResultDto {
     type?: CardResultTypeDto | null;
 }
 
-export class Era implements IEra {
-    value?: number | null;
-
-    constructor(data?: IEra) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.value = data["value"] !== undefined ? data["value"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): Era {
-        data = typeof data === 'object' ? data : {};
-        let result = new Era();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["value"] = this.value !== undefined ? this.value : <any>null;
-        return data; 
-    }
-}
-
-export interface IEra {
-    value?: number | null;
-}
-
 export class LoginPair implements ILoginPair {
     name?: string | null;
     password?: string | null;
@@ -43068,7 +42790,7 @@ export interface IPharmacyGroupReferenceDto {
 export class CardShiftSeniorDoctorPartDto implements ICardShiftSeniorDoctorPartDto {
     shift_senior_doctor_checked?: boolean | null;
     shift_senior_doctor_comment?: string | null;
-    shift_senior_doctor_date?: LocalDateTime | null;
+    shift_senior_doctor_date?: Date | null;
     shift_senior_doctor_id?: number | null;
     shift_senior_doctor_name?: string | null;
 
@@ -43085,7 +42807,7 @@ export class CardShiftSeniorDoctorPartDto implements ICardShiftSeniorDoctorPartD
         if (data) {
             this.shift_senior_doctor_checked = data["shift_senior_doctor_checked"] !== undefined ? data["shift_senior_doctor_checked"] : <any>null;
             this.shift_senior_doctor_comment = data["shift_senior_doctor_comment"] !== undefined ? data["shift_senior_doctor_comment"] : <any>null;
-            this.shift_senior_doctor_date = data["shift_senior_doctor_date"] ? LocalDateTime.fromJS(data["shift_senior_doctor_date"]) : <any>null;
+            this.shift_senior_doctor_date = data["shift_senior_doctor_date"] ? new Date(data["shift_senior_doctor_date"].toString()) : <any>null;
             this.shift_senior_doctor_id = data["shift_senior_doctor_id"] !== undefined ? data["shift_senior_doctor_id"] : <any>null;
             this.shift_senior_doctor_name = data["shift_senior_doctor_name"] !== undefined ? data["shift_senior_doctor_name"] : <any>null;
         }
@@ -43102,7 +42824,7 @@ export class CardShiftSeniorDoctorPartDto implements ICardShiftSeniorDoctorPartD
         data = typeof data === 'object' ? data : {};
         data["shift_senior_doctor_checked"] = this.shift_senior_doctor_checked !== undefined ? this.shift_senior_doctor_checked : <any>null;
         data["shift_senior_doctor_comment"] = this.shift_senior_doctor_comment !== undefined ? this.shift_senior_doctor_comment : <any>null;
-        data["shift_senior_doctor_date"] = this.shift_senior_doctor_date ? this.shift_senior_doctor_date.toJSON() : <any>null;
+        data["shift_senior_doctor_date"] = this.shift_senior_doctor_date ? this.shift_senior_doctor_date.toISOString() : <any>null;
         data["shift_senior_doctor_id"] = this.shift_senior_doctor_id !== undefined ? this.shift_senior_doctor_id : <any>null;
         data["shift_senior_doctor_name"] = this.shift_senior_doctor_name !== undefined ? this.shift_senior_doctor_name : <any>null;
         return data; 
@@ -43112,7 +42834,7 @@ export class CardShiftSeniorDoctorPartDto implements ICardShiftSeniorDoctorPartD
 export interface ICardShiftSeniorDoctorPartDto {
     shift_senior_doctor_checked?: boolean | null;
     shift_senior_doctor_comment?: string | null;
-    shift_senior_doctor_date?: LocalDateTime | null;
+    shift_senior_doctor_date?: Date | null;
     shift_senior_doctor_id?: number | null;
     shift_senior_doctor_name?: string | null;
 }
@@ -43165,7 +42887,7 @@ export class ProductMove implements IProductMove {
     count?: number | null;
     count_consumption?: number | null;
     count_receiving?: number | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     description?: string | null;
     document_id?: number | null;
 
@@ -43183,7 +42905,7 @@ export class ProductMove implements IProductMove {
             this.count = data["count"] !== undefined ? data["count"] : <any>null;
             this.count_consumption = data["count_consumption"] !== undefined ? data["count_consumption"] : <any>null;
             this.count_receiving = data["count_receiving"] !== undefined ? data["count_receiving"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.description = data["description"] !== undefined ? data["description"] : <any>null;
             this.document_id = data["document_id"] !== undefined ? data["document_id"] : <any>null;
         }
@@ -43201,7 +42923,7 @@ export class ProductMove implements IProductMove {
         data["count"] = this.count !== undefined ? this.count : <any>null;
         data["count_consumption"] = this.count_consumption !== undefined ? this.count_consumption : <any>null;
         data["count_receiving"] = this.count_receiving !== undefined ? this.count_receiving : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["description"] = this.description !== undefined ? this.description : <any>null;
         data["document_id"] = this.document_id !== undefined ? this.document_id : <any>null;
         return data; 
@@ -43212,13 +42934,65 @@ export interface IProductMove {
     count?: number | null;
     count_consumption?: number | null;
     count_receiving?: number | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     description?: string | null;
     document_id?: number | null;
 }
 
+export class ListDtoOfstring implements IListDtoOfstring {
+    list?: string[] | null;
+    size?: number | null;
+    total?: number | null;
+
+    constructor(data?: IListDtoOfstring) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["list"] && data["list"].constructor === Array) {
+                this.list = [];
+                for (let item of data["list"])
+                    this.list.push(item);
+            }
+            this.size = data["size"] !== undefined ? data["size"] : <any>null;
+            this.total = data["total"] !== undefined ? data["total"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): ListDtoOfstring {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListDtoOfstring();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.list && this.list.constructor === Array) {
+            data["list"] = [];
+            for (let item of this.list)
+                data["list"].push(item);
+        }
+        data["size"] = this.size !== undefined ? this.size : <any>null;
+        data["total"] = this.total !== undefined ? this.total : <any>null;
+        return data; 
+    }
+}
+
+export interface IListDtoOfstring {
+    list?: string[] | null;
+    size?: number | null;
+    total?: number | null;
+}
+
 export class CardBrigadeDoctorPartDto implements ICardBrigadeDoctorPartDto {
-    brigade_doctor_date?: LocalDateTime | null;
+    brigade_doctor_date?: Date | null;
     brigade_doctor_id?: number | null;
     brigade_doctor_name?: string | null;
     brigade_doctor_signed?: boolean | null;
@@ -43234,7 +43008,7 @@ export class CardBrigadeDoctorPartDto implements ICardBrigadeDoctorPartDto {
 
     init(data?: any) {
         if (data) {
-            this.brigade_doctor_date = data["brigade_doctor_date"] ? LocalDateTime.fromJS(data["brigade_doctor_date"]) : <any>null;
+            this.brigade_doctor_date = data["brigade_doctor_date"] ? new Date(data["brigade_doctor_date"].toString()) : <any>null;
             this.brigade_doctor_id = data["brigade_doctor_id"] !== undefined ? data["brigade_doctor_id"] : <any>null;
             this.brigade_doctor_name = data["brigade_doctor_name"] !== undefined ? data["brigade_doctor_name"] : <any>null;
             this.brigade_doctor_signed = data["brigade_doctor_signed"] !== undefined ? data["brigade_doctor_signed"] : <any>null;
@@ -43250,7 +43024,7 @@ export class CardBrigadeDoctorPartDto implements ICardBrigadeDoctorPartDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["brigade_doctor_date"] = this.brigade_doctor_date ? this.brigade_doctor_date.toJSON() : <any>null;
+        data["brigade_doctor_date"] = this.brigade_doctor_date ? this.brigade_doctor_date.toISOString() : <any>null;
         data["brigade_doctor_id"] = this.brigade_doctor_id !== undefined ? this.brigade_doctor_id : <any>null;
         data["brigade_doctor_name"] = this.brigade_doctor_name !== undefined ? this.brigade_doctor_name : <any>null;
         data["brigade_doctor_signed"] = this.brigade_doctor_signed !== undefined ? this.brigade_doctor_signed : <any>null;
@@ -43259,7 +43033,7 @@ export class CardBrigadeDoctorPartDto implements ICardBrigadeDoctorPartDto {
 }
 
 export interface ICardBrigadeDoctorPartDto {
-    brigade_doctor_date?: LocalDateTime | null;
+    brigade_doctor_date?: Date | null;
     brigade_doctor_id?: number | null;
     brigade_doctor_name?: string | null;
     brigade_doctor_signed?: boolean | null;
@@ -44149,7 +43923,7 @@ export class Chat implements IChat {
     archive?: boolean | null;
     chatMessage?: ChatMessage | null;
     creator?: ChatUser | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     name?: string | null;
     online?: boolean | null;
@@ -44173,7 +43947,7 @@ export class Chat implements IChat {
             this.archive = data["archive"] !== undefined ? data["archive"] : <any>null;
             this.chatMessage = data["chatMessage"] ? ChatMessage.fromJS(data["chatMessage"]) : <any>null;
             this.creator = data["creator"] ? ChatUser.fromJS(data["creator"]) : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.name = data["name"] !== undefined ? data["name"] : <any>null;
             this.online = data["online"] !== undefined ? data["online"] : <any>null;
@@ -44201,7 +43975,7 @@ export class Chat implements IChat {
         data["archive"] = this.archive !== undefined ? this.archive : <any>null;
         data["chatMessage"] = this.chatMessage ? this.chatMessage.toJSON() : <any>null;
         data["creator"] = this.creator ? this.creator.toJSON() : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["name"] = this.name !== undefined ? this.name : <any>null;
         data["online"] = this.online !== undefined ? this.online : <any>null;
@@ -44222,7 +43996,7 @@ export interface IChat {
     archive?: boolean | null;
     chatMessage?: ChatMessage | null;
     creator?: ChatUser | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     id?: number | null;
     name?: string | null;
     online?: boolean | null;
@@ -44234,7 +44008,7 @@ export interface IChat {
 }
 
 export class CardResultDeathDto implements ICardResultDeathDto {
-    time?: LocalDateTime | null;
+    time?: Date | null;
 
     constructor(data?: ICardResultDeathDto) {
         if (data) {
@@ -44247,7 +44021,7 @@ export class CardResultDeathDto implements ICardResultDeathDto {
 
     init(data?: any) {
         if (data) {
-            this.time = data["time"] ? LocalDateTime.fromJS(data["time"]) : <any>null;
+            this.time = data["time"] ? new Date(data["time"].toString()) : <any>null;
         }
     }
 
@@ -44260,13 +44034,65 @@ export class CardResultDeathDto implements ICardResultDeathDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["time"] = this.time ? this.time.toJSON() : <any>null;
+        data["time"] = this.time ? this.time.toISOString() : <any>null;
         return data; 
     }
 }
 
 export interface ICardResultDeathDto {
-    time?: LocalDateTime | null;
+    time?: Date | null;
+}
+
+export class ListDtoOfPerformerDto implements IListDtoOfPerformerDto {
+    list?: PerformerDto[] | null;
+    size?: number | null;
+    total?: number | null;
+
+    constructor(data?: IListDtoOfPerformerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["list"] && data["list"].constructor === Array) {
+                this.list = [];
+                for (let item of data["list"])
+                    this.list.push(PerformerDto.fromJS(item));
+            }
+            this.size = data["size"] !== undefined ? data["size"] : <any>null;
+            this.total = data["total"] !== undefined ? data["total"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): ListDtoOfPerformerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListDtoOfPerformerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.list && this.list.constructor === Array) {
+            data["list"] = [];
+            for (let item of this.list)
+                data["list"].push(item.toJSON());
+        }
+        data["size"] = this.size !== undefined ? this.size : <any>null;
+        data["total"] = this.total !== undefined ? this.total : <any>null;
+        return data; 
+    }
+}
+
+export interface IListDtoOfPerformerDto {
+    list?: PerformerDto[] | null;
+    size?: number | null;
+    total?: number | null;
 }
 
 export class ReferenceDto implements IReferenceDto {
@@ -44324,7 +44150,7 @@ export class DocumentItemDto implements IDocumentItemDto {
     document_id?: number | null;
     document_name?: string | null;
     drug_id?: number | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     inner_amount?: number | null;
@@ -44355,7 +44181,7 @@ export class DocumentItemDto implements IDocumentItemDto {
             this.document_id = data["document_id"] !== undefined ? data["document_id"] : <any>null;
             this.document_name = data["document_name"] !== undefined ? data["document_name"] : <any>null;
             this.drug_id = data["drug_id"] !== undefined ? data["drug_id"] : <any>null;
-            this.expiry_date = data["expiry_date"] ? LocalDateTime.fromJS(data["expiry_date"]) : <any>null;
+            this.expiry_date = data["expiry_date"] ? new Date(data["expiry_date"].toString()) : <any>null;
             this.full_name = data["full_name"] !== undefined ? data["full_name"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.inner_amount = data["inner_amount"] !== undefined ? data["inner_amount"] : <any>null;
@@ -44386,7 +44212,7 @@ export class DocumentItemDto implements IDocumentItemDto {
         data["document_id"] = this.document_id !== undefined ? this.document_id : <any>null;
         data["document_name"] = this.document_name !== undefined ? this.document_name : <any>null;
         data["drug_id"] = this.drug_id !== undefined ? this.drug_id : <any>null;
-        data["expiry_date"] = this.expiry_date ? this.expiry_date.toJSON() : <any>null;
+        data["expiry_date"] = this.expiry_date ? this.expiry_date.toISOString() : <any>null;
         data["full_name"] = this.full_name !== undefined ? this.full_name : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["inner_amount"] = this.inner_amount !== undefined ? this.inner_amount : <any>null;
@@ -44410,7 +44236,7 @@ export interface IDocumentItemDto {
     document_id?: number | null;
     document_name?: string | null;
     drug_id?: number | null;
-    expiry_date?: LocalDateTime | null;
+    expiry_date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     inner_amount?: number | null;
@@ -44529,46 +44355,6 @@ export interface ILoginInfo {
     subdivisionName?: string | null;
 }
 
-export class IsoChronology implements IIsoChronology {
-    calendarType?: string | null;
-    id?: string | null;
-
-    constructor(data?: IIsoChronology) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.calendarType = data["calendarType"] !== undefined ? data["calendarType"] : <any>null;
-            this.id = data["id"] !== undefined ? data["id"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): IsoChronology {
-        data = typeof data === 'object' ? data : {};
-        let result = new IsoChronology();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["calendarType"] = this.calendarType !== undefined ? this.calendarType : <any>null;
-        data["id"] = this.id !== undefined ? this.id : <any>null;
-        return data; 
-    }
-}
-
-export interface IIsoChronology {
-    calendarType?: string | null;
-    id?: string | null;
-}
-
 export class CallDto implements ICallDto {
     address?: CallFiasAddressDto | null;
     declarant?: CallDeclarantPartDto | null;
@@ -44644,7 +44430,7 @@ export class CardResultTransportingDto implements ICardResultTransportingDto {
     hosp_to_name?: string | null;
     hosp_transportation_id?: number | null;
     hosp_transportation_name?: string | null;
-    transporting_date?: LocalDateTime | null;
+    transporting_date?: Date | null;
     transporting_type_code?: string | null;
     transporting_type_id?: number | null;
     transporting_type_name?: string | null;
@@ -44666,7 +44452,7 @@ export class CardResultTransportingDto implements ICardResultTransportingDto {
             this.hosp_to_name = data["hosp_to_name"] !== undefined ? data["hosp_to_name"] : <any>null;
             this.hosp_transportation_id = data["hosp_transportation_id"] !== undefined ? data["hosp_transportation_id"] : <any>null;
             this.hosp_transportation_name = data["hosp_transportation_name"] !== undefined ? data["hosp_transportation_name"] : <any>null;
-            this.transporting_date = data["transporting_date"] ? LocalDateTime.fromJS(data["transporting_date"]) : <any>null;
+            this.transporting_date = data["transporting_date"] ? new Date(data["transporting_date"].toString()) : <any>null;
             this.transporting_type_code = data["transporting_type_code"] !== undefined ? data["transporting_type_code"] : <any>null;
             this.transporting_type_id = data["transporting_type_id"] !== undefined ? data["transporting_type_id"] : <any>null;
             this.transporting_type_name = data["transporting_type_name"] !== undefined ? data["transporting_type_name"] : <any>null;
@@ -44688,7 +44474,7 @@ export class CardResultTransportingDto implements ICardResultTransportingDto {
         data["hosp_to_name"] = this.hosp_to_name !== undefined ? this.hosp_to_name : <any>null;
         data["hosp_transportation_id"] = this.hosp_transportation_id !== undefined ? this.hosp_transportation_id : <any>null;
         data["hosp_transportation_name"] = this.hosp_transportation_name !== undefined ? this.hosp_transportation_name : <any>null;
-        data["transporting_date"] = this.transporting_date ? this.transporting_date.toJSON() : <any>null;
+        data["transporting_date"] = this.transporting_date ? this.transporting_date.toISOString() : <any>null;
         data["transporting_type_code"] = this.transporting_type_code !== undefined ? this.transporting_type_code : <any>null;
         data["transporting_type_id"] = this.transporting_type_id !== undefined ? this.transporting_type_id : <any>null;
         data["transporting_type_name"] = this.transporting_type_name !== undefined ? this.transporting_type_name : <any>null;
@@ -44703,7 +44489,7 @@ export interface ICardResultTransportingDto {
     hosp_to_name?: string | null;
     hosp_transportation_id?: number | null;
     hosp_transportation_name?: string | null;
-    transporting_date?: LocalDateTime | null;
+    transporting_date?: Date | null;
     transporting_type_code?: string | null;
     transporting_type_id?: number | null;
     transporting_type_name?: string | null;
@@ -44970,7 +44756,7 @@ export class PharmacyDocumentDto implements IPharmacyDocumentDto {
     card_number?: string | null;
     counterparty_id?: number | null;
     counterparty_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     is_has_changes?: boolean | null;
@@ -44980,7 +44766,7 @@ export class PharmacyDocumentDto implements IPharmacyDocumentDto {
     number?: string | null;
     owner_id?: number | null;
     owner_name?: string | null;
-    process_date?: LocalDateTime | null;
+    process_date?: Date | null;
     reason_id?: number | null;
     reason_text?: string | null;
     reason_type?: number | null;
@@ -45002,7 +44788,7 @@ export class PharmacyDocumentDto implements IPharmacyDocumentDto {
             this.card_number = data["card_number"] !== undefined ? data["card_number"] : <any>null;
             this.counterparty_id = data["counterparty_id"] !== undefined ? data["counterparty_id"] : <any>null;
             this.counterparty_name = data["counterparty_name"] !== undefined ? data["counterparty_name"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.full_name = data["full_name"] !== undefined ? data["full_name"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.is_has_changes = data["is_has_changes"] !== undefined ? data["is_has_changes"] : <any>null;
@@ -45016,7 +44802,7 @@ export class PharmacyDocumentDto implements IPharmacyDocumentDto {
             this.number = data["number"] !== undefined ? data["number"] : <any>null;
             this.owner_id = data["owner_id"] !== undefined ? data["owner_id"] : <any>null;
             this.owner_name = data["owner_name"] !== undefined ? data["owner_name"] : <any>null;
-            this.process_date = data["process_date"] ? LocalDateTime.fromJS(data["process_date"]) : <any>null;
+            this.process_date = data["process_date"] ? new Date(data["process_date"].toString()) : <any>null;
             this.reason_id = data["reason_id"] !== undefined ? data["reason_id"] : <any>null;
             this.reason_text = data["reason_text"] !== undefined ? data["reason_text"] : <any>null;
             this.reason_type = data["reason_type"] !== undefined ? data["reason_type"] : <any>null;
@@ -45038,7 +44824,7 @@ export class PharmacyDocumentDto implements IPharmacyDocumentDto {
         data["card_number"] = this.card_number !== undefined ? this.card_number : <any>null;
         data["counterparty_id"] = this.counterparty_id !== undefined ? this.counterparty_id : <any>null;
         data["counterparty_name"] = this.counterparty_name !== undefined ? this.counterparty_name : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["full_name"] = this.full_name !== undefined ? this.full_name : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["is_has_changes"] = this.is_has_changes !== undefined ? this.is_has_changes : <any>null;
@@ -45052,7 +44838,7 @@ export class PharmacyDocumentDto implements IPharmacyDocumentDto {
         data["number"] = this.number !== undefined ? this.number : <any>null;
         data["owner_id"] = this.owner_id !== undefined ? this.owner_id : <any>null;
         data["owner_name"] = this.owner_name !== undefined ? this.owner_name : <any>null;
-        data["process_date"] = this.process_date ? this.process_date.toJSON() : <any>null;
+        data["process_date"] = this.process_date ? this.process_date.toISOString() : <any>null;
         data["reason_id"] = this.reason_id !== undefined ? this.reason_id : <any>null;
         data["reason_text"] = this.reason_text !== undefined ? this.reason_text : <any>null;
         data["reason_type"] = this.reason_type !== undefined ? this.reason_type : <any>null;
@@ -45067,7 +44853,7 @@ export interface IPharmacyDocumentDto {
     card_number?: string | null;
     counterparty_id?: number | null;
     counterparty_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     full_name?: string | null;
     id?: number | null;
     is_has_changes?: boolean | null;
@@ -45077,7 +44863,7 @@ export interface IPharmacyDocumentDto {
     number?: string | null;
     owner_id?: number | null;
     owner_name?: string | null;
-    process_date?: LocalDateTime | null;
+    process_date?: Date | null;
     reason_id?: number | null;
     reason_text?: string | null;
     reason_type?: number | null;
@@ -45253,6 +45039,58 @@ export interface IScheduleType {
     time_working?: string | null;
 }
 
+export class ListDtoOfPerformer implements IListDtoOfPerformer {
+    list?: Performer[] | null;
+    size?: number | null;
+    total?: number | null;
+
+    constructor(data?: IListDtoOfPerformer) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["list"] && data["list"].constructor === Array) {
+                this.list = [];
+                for (let item of data["list"])
+                    this.list.push(Performer.fromJS(item));
+            }
+            this.size = data["size"] !== undefined ? data["size"] : <any>null;
+            this.total = data["total"] !== undefined ? data["total"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): ListDtoOfPerformer {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListDtoOfPerformer();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.list && this.list.constructor === Array) {
+            data["list"] = [];
+            for (let item of this.list)
+                data["list"].push(item.toJSON());
+        }
+        data["size"] = this.size !== undefined ? this.size : <any>null;
+        data["total"] = this.total !== undefined ? this.total : <any>null;
+        return data; 
+    }
+}
+
+export interface IListDtoOfPerformer {
+    list?: Performer[] | null;
+    size?: number | null;
+    total?: number | null;
+}
+
 export class CardObjectiveBreathPartDto implements ICardObjectiveBreathPartDto {
     breath_absent?: boolean | null;
     breath_bronch?: boolean | null;
@@ -45323,58 +45161,6 @@ export interface ICardObjectiveBreathPartDto {
     breath_weak?: boolean | null;
     dyspnea_id?: number | null;
     dyspnea_name?: string | null;
-}
-
-export class ListDtoOfPerformerDto implements IListDtoOfPerformerDto {
-    list?: PerformerDto[] | null;
-    size?: number | null;
-    total?: number | null;
-
-    constructor(data?: IListDtoOfPerformerDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            if (data["list"] && data["list"].constructor === Array) {
-                this.list = [];
-                for (let item of data["list"])
-                    this.list.push(PerformerDto.fromJS(item));
-            }
-            this.size = data["size"] !== undefined ? data["size"] : <any>null;
-            this.total = data["total"] !== undefined ? data["total"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): ListDtoOfPerformerDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ListDtoOfPerformerDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.list && this.list.constructor === Array) {
-            data["list"] = [];
-            for (let item of this.list)
-                data["list"].push(item.toJSON());
-        }
-        data["size"] = this.size !== undefined ? this.size : <any>null;
-        data["total"] = this.total !== undefined ? this.total : <any>null;
-        return data; 
-    }
-}
-
-export interface IListDtoOfPerformerDto {
-    list?: PerformerDto[] | null;
-    size?: number | null;
-    total?: number | null;
 }
 
 export class Unit implements IUnit {
@@ -45468,7 +45254,7 @@ export class CallDtoFLAT implements ICallDtoFLAT {
     call_priority_name?: string | null;
     call_type_id?: number | null;
     call_type_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     declarant_name?: string | null;
     declarant_phone?: string | null;
     declarant_type_id?: number | null;
@@ -45512,7 +45298,7 @@ export class CallDtoFLAT implements ICallDtoFLAT {
             this.call_priority_name = data["call_priority_name"] !== undefined ? data["call_priority_name"] : <any>null;
             this.call_type_id = data["call_type_id"] !== undefined ? data["call_type_id"] : <any>null;
             this.call_type_name = data["call_type_name"] !== undefined ? data["call_type_name"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.declarant_name = data["declarant_name"] !== undefined ? data["declarant_name"] : <any>null;
             this.declarant_phone = data["declarant_phone"] !== undefined ? data["declarant_phone"] : <any>null;
             this.declarant_type_id = data["declarant_type_id"] !== undefined ? data["declarant_type_id"] : <any>null;
@@ -45564,7 +45350,7 @@ export class CallDtoFLAT implements ICallDtoFLAT {
         data["call_priority_name"] = this.call_priority_name !== undefined ? this.call_priority_name : <any>null;
         data["call_type_id"] = this.call_type_id !== undefined ? this.call_type_id : <any>null;
         data["call_type_name"] = this.call_type_name !== undefined ? this.call_type_name : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["declarant_name"] = this.declarant_name !== undefined ? this.declarant_name : <any>null;
         data["declarant_phone"] = this.declarant_phone !== undefined ? this.declarant_phone : <any>null;
         data["declarant_type_id"] = this.declarant_type_id !== undefined ? this.declarant_type_id : <any>null;
@@ -45605,7 +45391,7 @@ export interface ICallDtoFLAT {
     call_priority_name?: string | null;
     call_type_id?: number | null;
     call_type_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     declarant_name?: string | null;
     declarant_phone?: string | null;
     declarant_type_id?: number | null;
@@ -45714,7 +45500,7 @@ export class CallBrigadePartDto implements ICallBrigadePartDto {
     receiving_type_id?: number | null;
     receiving_type_name?: string | null;
     state?: string | null;
-    state_date?: LocalDateTime | null;
+    state_date?: Date | null;
     transport_brand?: string | null;
     transport_class_name?: string | null;
     transport_id?: number | null;
@@ -45760,7 +45546,7 @@ export class CallBrigadePartDto implements ICallBrigadePartDto {
             this.receiving_type_id = data["receiving_type_id"] !== undefined ? data["receiving_type_id"] : <any>null;
             this.receiving_type_name = data["receiving_type_name"] !== undefined ? data["receiving_type_name"] : <any>null;
             this.state = data["state"] !== undefined ? data["state"] : <any>null;
-            this.state_date = data["state_date"] ? LocalDateTime.fromJS(data["state_date"]) : <any>null;
+            this.state_date = data["state_date"] ? new Date(data["state_date"].toString()) : <any>null;
             this.transport_brand = data["transport_brand"] !== undefined ? data["transport_brand"] : <any>null;
             this.transport_class_name = data["transport_class_name"] !== undefined ? data["transport_class_name"] : <any>null;
             this.transport_id = data["transport_id"] !== undefined ? data["transport_id"] : <any>null;
@@ -45806,7 +45592,7 @@ export class CallBrigadePartDto implements ICallBrigadePartDto {
         data["receiving_type_id"] = this.receiving_type_id !== undefined ? this.receiving_type_id : <any>null;
         data["receiving_type_name"] = this.receiving_type_name !== undefined ? this.receiving_type_name : <any>null;
         data["state"] = this.state !== undefined ? this.state : <any>null;
-        data["state_date"] = this.state_date ? this.state_date.toJSON() : <any>null;
+        data["state_date"] = this.state_date ? this.state_date.toISOString() : <any>null;
         data["transport_brand"] = this.transport_brand !== undefined ? this.transport_brand : <any>null;
         data["transport_class_name"] = this.transport_class_name !== undefined ? this.transport_class_name : <any>null;
         data["transport_id"] = this.transport_id !== undefined ? this.transport_id : <any>null;
@@ -45837,7 +45623,7 @@ export interface ICallBrigadePartDto {
     receiving_type_id?: number | null;
     receiving_type_name?: string | null;
     state?: string | null;
-    state_date?: LocalDateTime | null;
+    state_date?: Date | null;
     transport_brand?: string | null;
     transport_class_name?: string | null;
     transport_id?: number | null;
@@ -45905,42 +45691,6 @@ export interface IAddressObject {
     name?: string | null;
 }
 
-export class LongDto implements ILongDto {
-    call_id?: number | null;
-
-    constructor(data?: ILongDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.call_id = data["call_id"] !== undefined ? data["call_id"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): LongDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new LongDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["call_id"] = this.call_id !== undefined ? this.call_id : <any>null;
-        return data; 
-    }
-}
-
-export interface ILongDto {
-    call_id?: number | null;
-}
-
 export class FiasAddressHouseDto implements IFiasAddressHouseDto {
     building?: string | null;
     code?: string | null;
@@ -45991,6 +45741,42 @@ export interface IFiasAddressHouseDto {
     full_name?: string | null;
     number?: string | null;
     structure?: string | null;
+}
+
+export class LongDto implements ILongDto {
+    call_id?: number | null;
+
+    constructor(data?: ILongDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.call_id = data["call_id"] !== undefined ? data["call_id"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): LongDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LongDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["call_id"] = this.call_id !== undefined ? this.call_id : <any>null;
+        return data; 
+    }
+}
+
+export interface ILongDto {
+    call_id?: number | null;
 }
 
 export class PharmacyOwner implements IPharmacyOwner {
@@ -46063,8 +45849,8 @@ export interface IPharmacyOwner {
 
 export class CardPatientPartDto implements ICardPatientPartDto {
     alien_birthplace?: string | null;
-    birthday?: LocalDateTime | null;
-    document_date?: LocalDateTime | null;
+    birthday?: Date | null;
+    document_date?: Date | null;
     document_name?: string | null;
     document_number?: string | null;
     document_serial?: string | null;
@@ -46110,8 +45896,8 @@ export class CardPatientPartDto implements ICardPatientPartDto {
     init(data?: any) {
         if (data) {
             this.alien_birthplace = data["alien_birthplace"] !== undefined ? data["alien_birthplace"] : <any>null;
-            this.birthday = data["birthday"] ? LocalDateTime.fromJS(data["birthday"]) : <any>null;
-            this.document_date = data["document_date"] ? LocalDateTime.fromJS(data["document_date"]) : <any>null;
+            this.birthday = data["birthday"] ? new Date(data["birthday"].toString()) : <any>null;
+            this.document_date = data["document_date"] ? new Date(data["document_date"].toString()) : <any>null;
             this.document_name = data["document_name"] !== undefined ? data["document_name"] : <any>null;
             this.document_number = data["document_number"] !== undefined ? data["document_number"] : <any>null;
             this.document_serial = data["document_serial"] !== undefined ? data["document_serial"] : <any>null;
@@ -46157,8 +45943,8 @@ export class CardPatientPartDto implements ICardPatientPartDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["alien_birthplace"] = this.alien_birthplace !== undefined ? this.alien_birthplace : <any>null;
-        data["birthday"] = this.birthday ? this.birthday.toJSON() : <any>null;
-        data["document_date"] = this.document_date ? this.document_date.toJSON() : <any>null;
+        data["birthday"] = this.birthday ? this.birthday.toISOString() : <any>null;
+        data["document_date"] = this.document_date ? this.document_date.toISOString() : <any>null;
         data["document_name"] = this.document_name !== undefined ? this.document_name : <any>null;
         data["document_number"] = this.document_number !== undefined ? this.document_number : <any>null;
         data["document_serial"] = this.document_serial !== undefined ? this.document_serial : <any>null;
@@ -46197,8 +45983,8 @@ export class CardPatientPartDto implements ICardPatientPartDto {
 
 export interface ICardPatientPartDto {
     alien_birthplace?: string | null;
-    birthday?: LocalDateTime | null;
-    document_date?: LocalDateTime | null;
+    birthday?: Date | null;
+    document_date?: Date | null;
     document_name?: string | null;
     document_number?: string | null;
     document_serial?: string | null;
@@ -46458,8 +46244,8 @@ export interface IResource {
 }
 
 export class Period implements IPeriod {
-    date_from?: LocalDateTime | null;
-    date_to?: LocalDateTime | null;
+    date_from?: Date | null;
+    date_to?: Date | null;
     id?: number | null;
 
     constructor(data?: IPeriod) {
@@ -46473,8 +46259,8 @@ export class Period implements IPeriod {
 
     init(data?: any) {
         if (data) {
-            this.date_from = data["date_from"] ? LocalDateTime.fromJS(data["date_from"]) : <any>null;
-            this.date_to = data["date_to"] ? LocalDateTime.fromJS(data["date_to"]) : <any>null;
+            this.date_from = data["date_from"] ? new Date(data["date_from"].toString()) : <any>null;
+            this.date_to = data["date_to"] ? new Date(data["date_to"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
         }
     }
@@ -46488,16 +46274,16 @@ export class Period implements IPeriod {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date_from"] = this.date_from ? this.date_from.toJSON() : <any>null;
-        data["date_to"] = this.date_to ? this.date_to.toJSON() : <any>null;
+        data["date_from"] = this.date_from ? this.date_from.toISOString() : <any>null;
+        data["date_to"] = this.date_to ? this.date_to.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         return data; 
     }
 }
 
 export interface IPeriod {
-    date_from?: LocalDateTime | null;
-    date_to?: LocalDateTime | null;
+    date_from?: Date | null;
+    date_to?: Date | null;
     id?: number | null;
 }
 
@@ -46758,7 +46544,7 @@ export interface ICardResultTypeDto {
 }
 
 export class NomenclatureItem implements INomenclatureItem {
-    expiryDate?: LocalDateTime | null;
+    expiryDate?: Date | null;
     id?: number | null;
     owner?: PharmacyOwner | null;
     referenceItem?: PharmacyReferenceItem | null;
@@ -46777,7 +46563,7 @@ export class NomenclatureItem implements INomenclatureItem {
 
     init(data?: any) {
         if (data) {
-            this.expiryDate = data["expiryDate"] ? LocalDateTime.fromJS(data["expiryDate"]) : <any>null;
+            this.expiryDate = data["expiryDate"] ? new Date(data["expiryDate"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.owner = data["owner"] ? PharmacyOwner.fromJS(data["owner"]) : <any>null;
             this.referenceItem = data["referenceItem"] ? PharmacyReferenceItem.fromJS(data["referenceItem"]) : <any>null;
@@ -46796,7 +46582,7 @@ export class NomenclatureItem implements INomenclatureItem {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["expiryDate"] = this.expiryDate ? this.expiryDate.toJSON() : <any>null;
+        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>null;
         data["referenceItem"] = this.referenceItem ? this.referenceItem.toJSON() : <any>null;
@@ -46808,7 +46594,7 @@ export class NomenclatureItem implements INomenclatureItem {
 }
 
 export interface INomenclatureItem {
-    expiryDate?: LocalDateTime | null;
+    expiryDate?: Date | null;
     id?: number | null;
     owner?: PharmacyOwner | null;
     referenceItem?: PharmacyReferenceItem | null;
@@ -47187,10 +46973,10 @@ export class PharmacyReferenceItem implements IPharmacyReferenceItem {
     name?: string | null;
     normativeDocuments?: string | null;
     productInfo?: string | null;
-    regCertCancellationDate?: LocalDate | null;
-    regCertExpiryDate?: LocalDate | null;
+    regCertCancellationDate?: Date | null;
+    regCertExpiryDate?: Date | null;
     regCertNumber?: string | null;
-    regDate?: LocalDate | null;
+    regDate?: Date | null;
     type?: PharmacyReferenceItemType | null;
 
     constructor(data?: IPharmacyReferenceItem) {
@@ -47217,10 +47003,10 @@ export class PharmacyReferenceItem implements IPharmacyReferenceItem {
             this.name = data["name"] !== undefined ? data["name"] : <any>null;
             this.normativeDocuments = data["normativeDocuments"] !== undefined ? data["normativeDocuments"] : <any>null;
             this.productInfo = data["productInfo"] !== undefined ? data["productInfo"] : <any>null;
-            this.regCertCancellationDate = data["regCertCancellationDate"] ? LocalDate.fromJS(data["regCertCancellationDate"]) : <any>null;
-            this.regCertExpiryDate = data["regCertExpiryDate"] ? LocalDate.fromJS(data["regCertExpiryDate"]) : <any>null;
+            this.regCertCancellationDate = data["regCertCancellationDate"] ? new Date(data["regCertCancellationDate"].toString()) : <any>null;
+            this.regCertExpiryDate = data["regCertExpiryDate"] ? new Date(data["regCertExpiryDate"].toString()) : <any>null;
             this.regCertNumber = data["regCertNumber"] !== undefined ? data["regCertNumber"] : <any>null;
-            this.regDate = data["regDate"] ? LocalDate.fromJS(data["regDate"]) : <any>null;
+            this.regDate = data["regDate"] ? new Date(data["regDate"].toString()) : <any>null;
             this.type = data["type"] !== undefined ? data["type"] : <any>null;
         }
     }
@@ -47247,10 +47033,10 @@ export class PharmacyReferenceItem implements IPharmacyReferenceItem {
         data["name"] = this.name !== undefined ? this.name : <any>null;
         data["normativeDocuments"] = this.normativeDocuments !== undefined ? this.normativeDocuments : <any>null;
         data["productInfo"] = this.productInfo !== undefined ? this.productInfo : <any>null;
-        data["regCertCancellationDate"] = this.regCertCancellationDate ? this.regCertCancellationDate.toJSON() : <any>null;
-        data["regCertExpiryDate"] = this.regCertExpiryDate ? this.regCertExpiryDate.toJSON() : <any>null;
+        data["regCertCancellationDate"] = this.regCertCancellationDate ? this.regCertCancellationDate.toISOString() : <any>null;
+        data["regCertExpiryDate"] = this.regCertExpiryDate ? this.regCertExpiryDate.toISOString() : <any>null;
         data["regCertNumber"] = this.regCertNumber !== undefined ? this.regCertNumber : <any>null;
-        data["regDate"] = this.regDate ? this.regDate.toJSON() : <any>null;
+        data["regDate"] = this.regDate ? this.regDate.toISOString() : <any>null;
         data["type"] = this.type !== undefined ? this.type : <any>null;
         return data; 
     }
@@ -47270,10 +47056,10 @@ export interface IPharmacyReferenceItem {
     name?: string | null;
     normativeDocuments?: string | null;
     productInfo?: string | null;
-    regCertCancellationDate?: LocalDate | null;
-    regCertExpiryDate?: LocalDate | null;
+    regCertCancellationDate?: Date | null;
+    regCertExpiryDate?: Date | null;
     regCertNumber?: string | null;
-    regDate?: LocalDate | null;
+    regDate?: Date | null;
     type?: PharmacyReferenceItemType | null;
 }
 
@@ -47506,7 +47292,7 @@ export class CardGeneralPartDto implements ICardGeneralPartDto {
     card_status?: number | null;
     card_status_name?: string | null;
     deleted?: boolean | null;
-    deleted_date?: LocalDateTime | null;
+    deleted_date?: Date | null;
     deleted_message?: string | null;
     deleted_performer_id?: number | null;
     deleted_performer_name?: string | null;
@@ -47550,7 +47336,7 @@ export class CardGeneralPartDto implements ICardGeneralPartDto {
             this.card_status = data["card_status"] !== undefined ? data["card_status"] : <any>null;
             this.card_status_name = data["card_status_name"] !== undefined ? data["card_status_name"] : <any>null;
             this.deleted = data["deleted"] !== undefined ? data["deleted"] : <any>null;
-            this.deleted_date = data["deleted_date"] ? LocalDateTime.fromJS(data["deleted_date"]) : <any>null;
+            this.deleted_date = data["deleted_date"] ? new Date(data["deleted_date"].toString()) : <any>null;
             this.deleted_message = data["deleted_message"] !== undefined ? data["deleted_message"] : <any>null;
             this.deleted_performer_id = data["deleted_performer_id"] !== undefined ? data["deleted_performer_id"] : <any>null;
             this.deleted_performer_name = data["deleted_performer_name"] !== undefined ? data["deleted_performer_name"] : <any>null;
@@ -47594,7 +47380,7 @@ export class CardGeneralPartDto implements ICardGeneralPartDto {
         data["card_status"] = this.card_status !== undefined ? this.card_status : <any>null;
         data["card_status_name"] = this.card_status_name !== undefined ? this.card_status_name : <any>null;
         data["deleted"] = this.deleted !== undefined ? this.deleted : <any>null;
-        data["deleted_date"] = this.deleted_date ? this.deleted_date.toJSON() : <any>null;
+        data["deleted_date"] = this.deleted_date ? this.deleted_date.toISOString() : <any>null;
         data["deleted_message"] = this.deleted_message !== undefined ? this.deleted_message : <any>null;
         data["deleted_performer_id"] = this.deleted_performer_id !== undefined ? this.deleted_performer_id : <any>null;
         data["deleted_performer_name"] = this.deleted_performer_name !== undefined ? this.deleted_performer_name : <any>null;
@@ -47631,7 +47417,7 @@ export interface ICardGeneralPartDto {
     card_status?: number | null;
     card_status_name?: string | null;
     deleted?: boolean | null;
-    deleted_date?: LocalDateTime | null;
+    deleted_date?: Date | null;
     deleted_message?: string | null;
     deleted_performer_id?: number | null;
     deleted_performer_name?: string | null;
@@ -47795,7 +47581,7 @@ export class CallGridDto implements ICallGridDto {
     call_id?: number | null;
     call_status?: number | null;
     call_status_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     declarant_name?: string | null;
     declarant_phone?: string | null;
     district_name?: string | null;
@@ -47834,7 +47620,7 @@ export class CallGridDto implements ICallGridDto {
             this.call_id = data["call_id"] !== undefined ? data["call_id"] : <any>null;
             this.call_status = data["call_status"] !== undefined ? data["call_status"] : <any>null;
             this.call_status_name = data["call_status_name"] !== undefined ? data["call_status_name"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.declarant_name = data["declarant_name"] !== undefined ? data["declarant_name"] : <any>null;
             this.declarant_phone = data["declarant_phone"] !== undefined ? data["declarant_phone"] : <any>null;
             this.district_name = data["district_name"] !== undefined ? data["district_name"] : <any>null;
@@ -47873,7 +47659,7 @@ export class CallGridDto implements ICallGridDto {
         data["call_id"] = this.call_id !== undefined ? this.call_id : <any>null;
         data["call_status"] = this.call_status !== undefined ? this.call_status : <any>null;
         data["call_status_name"] = this.call_status_name !== undefined ? this.call_status_name : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["declarant_name"] = this.declarant_name !== undefined ? this.declarant_name : <any>null;
         data["declarant_phone"] = this.declarant_phone !== undefined ? this.declarant_phone : <any>null;
         data["district_name"] = this.district_name !== undefined ? this.district_name : <any>null;
@@ -47905,7 +47691,7 @@ export interface ICallGridDto {
     call_id?: number | null;
     call_status?: number | null;
     call_status_name?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     declarant_name?: string | null;
     declarant_phone?: string | null;
     district_name?: string | null;
@@ -48355,9 +48141,9 @@ export interface IModelAndView {
 
 export class CallTransferDto implements ICallTransferDto {
     call_id?: number | null;
-    date_accept?: LocalDateTime | null;
-    date_create?: LocalDateTime | null;
-    date_received?: LocalDateTime | null;
+    date_accept?: Date | null;
+    date_create?: Date | null;
+    date_received?: Date | null;
     id?: number | null;
     number?: string | null;
     performer_accept_id?: number | null;
@@ -48382,9 +48168,9 @@ export class CallTransferDto implements ICallTransferDto {
     init(data?: any) {
         if (data) {
             this.call_id = data["call_id"] !== undefined ? data["call_id"] : <any>null;
-            this.date_accept = data["date_accept"] ? LocalDateTime.fromJS(data["date_accept"]) : <any>null;
-            this.date_create = data["date_create"] ? LocalDateTime.fromJS(data["date_create"]) : <any>null;
-            this.date_received = data["date_received"] ? LocalDateTime.fromJS(data["date_received"]) : <any>null;
+            this.date_accept = data["date_accept"] ? new Date(data["date_accept"].toString()) : <any>null;
+            this.date_create = data["date_create"] ? new Date(data["date_create"].toString()) : <any>null;
+            this.date_received = data["date_received"] ? new Date(data["date_received"].toString()) : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.number = data["number"] !== undefined ? data["number"] : <any>null;
             this.performer_accept_id = data["performer_accept_id"] !== undefined ? data["performer_accept_id"] : <any>null;
@@ -48413,9 +48199,9 @@ export class CallTransferDto implements ICallTransferDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["call_id"] = this.call_id !== undefined ? this.call_id : <any>null;
-        data["date_accept"] = this.date_accept ? this.date_accept.toJSON() : <any>null;
-        data["date_create"] = this.date_create ? this.date_create.toJSON() : <any>null;
-        data["date_received"] = this.date_received ? this.date_received.toJSON() : <any>null;
+        data["date_accept"] = this.date_accept ? this.date_accept.toISOString() : <any>null;
+        data["date_create"] = this.date_create ? this.date_create.toISOString() : <any>null;
+        data["date_received"] = this.date_received ? this.date_received.toISOString() : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["number"] = this.number !== undefined ? this.number : <any>null;
         data["performer_accept_id"] = this.performer_accept_id !== undefined ? this.performer_accept_id : <any>null;
@@ -48437,9 +48223,9 @@ export class CallTransferDto implements ICallTransferDto {
 
 export interface ICallTransferDto {
     call_id?: number | null;
-    date_accept?: LocalDateTime | null;
-    date_create?: LocalDateTime | null;
-    date_received?: LocalDateTime | null;
+    date_accept?: Date | null;
+    date_create?: Date | null;
+    date_received?: Date | null;
     id?: number | null;
     number?: string | null;
     performer_accept_id?: number | null;
@@ -48495,58 +48281,6 @@ export interface ICardResultEkg {
     ekg_ch_s_s?: number | null;
     ekg_comments?: string | null;
     ekg_rhythm?: string | null;
-}
-
-export class ListDtoOfRole implements IListDtoOfRole {
-    list?: Role[] | null;
-    size?: number | null;
-    total?: number | null;
-
-    constructor(data?: IListDtoOfRole) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            if (data["list"] && data["list"].constructor === Array) {
-                this.list = [];
-                for (let item of data["list"])
-                    this.list.push(Role.fromJS(item));
-            }
-            this.size = data["size"] !== undefined ? data["size"] : <any>null;
-            this.total = data["total"] !== undefined ? data["total"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): ListDtoOfRole {
-        data = typeof data === 'object' ? data : {};
-        let result = new ListDtoOfRole();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.list && this.list.constructor === Array) {
-            data["list"] = [];
-            for (let item of this.list)
-                data["list"].push(item.toJSON());
-        }
-        data["size"] = this.size !== undefined ? this.size : <any>null;
-        data["total"] = this.total !== undefined ? this.total : <any>null;
-        return data; 
-    }
-}
-
-export interface IListDtoOfRole {
-    list?: Role[] | null;
-    size?: number | null;
-    total?: number | null;
 }
 
 export class CardBrigadePartDto implements ICardBrigadePartDto {
@@ -48715,7 +48449,7 @@ export interface IPharmacyMatrixGroupDto {
 
 export class BrigadeDutyRequestDto implements IBrigadeDutyRequestDto {
     comment?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     pharmacy_package_id?: number | null;
 
     constructor(data?: IBrigadeDutyRequestDto) {
@@ -48730,7 +48464,7 @@ export class BrigadeDutyRequestDto implements IBrigadeDutyRequestDto {
     init(data?: any) {
         if (data) {
             this.comment = data["comment"] !== undefined ? data["comment"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.pharmacy_package_id = data["pharmacy_package_id"] !== undefined ? data["pharmacy_package_id"] : <any>null;
         }
     }
@@ -48745,7 +48479,7 @@ export class BrigadeDutyRequestDto implements IBrigadeDutyRequestDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["comment"] = this.comment !== undefined ? this.comment : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["pharmacy_package_id"] = this.pharmacy_package_id !== undefined ? this.pharmacy_package_id : <any>null;
         return data; 
     }
@@ -48753,7 +48487,7 @@ export class BrigadeDutyRequestDto implements IBrigadeDutyRequestDto {
 
 export interface IBrigadeDutyRequestDto {
     comment?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     pharmacy_package_id?: number | null;
 }
 
@@ -48941,46 +48675,6 @@ export interface ISendBagDto {
     brigade_id?: number | null;
 }
 
-export class Chronology implements IChronology {
-    calendarType?: string | null;
-    id?: string | null;
-
-    constructor(data?: IChronology) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.calendarType = data["calendarType"] !== undefined ? data["calendarType"] : <any>null;
-            this.id = data["id"] !== undefined ? data["id"] : <any>null;
-        }
-    }
-
-    static fromJS(data: any): Chronology {
-        data = typeof data === 'object' ? data : {};
-        let result = new Chronology();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["calendarType"] = this.calendarType !== undefined ? this.calendarType : <any>null;
-        data["id"] = this.id !== undefined ? this.id : <any>null;
-        return data; 
-    }
-}
-
-export interface IChronology {
-    calendarType?: string | null;
-    id?: string | null;
-}
-
 export class CardObjectiveTonguePart implements ICardObjectiveTonguePart {
     tongue_clean_furred?: number | null;
     tongue_clean_furred_name?: string | null;
@@ -49083,7 +48777,7 @@ export interface ICallDeclarantPartDto {
 
 export class LogDto implements ILogDto {
     action_type?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     description?: string | null;
     id?: number | null;
     item_id?: number | null;
@@ -49108,7 +48802,7 @@ export class LogDto implements ILogDto {
     init(data?: any) {
         if (data) {
             this.action_type = data["action_type"] !== undefined ? data["action_type"] : <any>null;
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.description = data["description"] !== undefined ? data["description"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.item_id = data["item_id"] !== undefined ? data["item_id"] : <any>null;
@@ -49133,7 +48827,7 @@ export class LogDto implements ILogDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["action_type"] = this.action_type !== undefined ? this.action_type : <any>null;
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["description"] = this.description !== undefined ? this.description : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["item_id"] = this.item_id !== undefined ? this.item_id : <any>null;
@@ -49151,7 +48845,7 @@ export class LogDto implements ILogDto {
 
 export interface ILogDto {
     action_type?: string | null;
-    date?: LocalDateTime | null;
+    date?: Date | null;
     description?: string | null;
     id?: number | null;
     item_id?: number | null;
@@ -49166,7 +48860,7 @@ export interface ILogDto {
 }
 
 export class MobileCardChronic implements IMobileCardChronic {
-    date?: LocalDateTime | null;
+    date?: Date | null;
     diagnosis?: string | null;
     doctor?: string | null;
     reason?: string | null;
@@ -49183,7 +48877,7 @@ export class MobileCardChronic implements IMobileCardChronic {
 
     init(data?: any) {
         if (data) {
-            this.date = data["date"] ? LocalDateTime.fromJS(data["date"]) : <any>null;
+            this.date = data["date"] ? new Date(data["date"].toString()) : <any>null;
             this.diagnosis = data["diagnosis"] !== undefined ? data["diagnosis"] : <any>null;
             this.doctor = data["doctor"] !== undefined ? data["doctor"] : <any>null;
             this.reason = data["reason"] !== undefined ? data["reason"] : <any>null;
@@ -49200,7 +48894,7 @@ export class MobileCardChronic implements IMobileCardChronic {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? this.date.toJSON() : <any>null;
+        data["date"] = this.date ? this.date.toISOString() : <any>null;
         data["diagnosis"] = this.diagnosis !== undefined ? this.diagnosis : <any>null;
         data["doctor"] = this.doctor !== undefined ? this.doctor : <any>null;
         data["reason"] = this.reason !== undefined ? this.reason : <any>null;
@@ -49210,7 +48904,7 @@ export class MobileCardChronic implements IMobileCardChronic {
 }
 
 export interface IMobileCardChronic {
-    date?: LocalDateTime | null;
+    date?: Date | null;
     diagnosis?: string | null;
     doctor?: string | null;
     reason?: string | null;
@@ -49355,6 +49049,58 @@ export interface IPerformerType {
     id?: number | null;
     name?: string | null;
     shortName?: string | null;
+}
+
+export class ListDtoOfRole implements IListDtoOfRole {
+    list?: Role[] | null;
+    size?: number | null;
+    total?: number | null;
+
+    constructor(data?: IListDtoOfRole) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            if (data["list"] && data["list"].constructor === Array) {
+                this.list = [];
+                for (let item of data["list"])
+                    this.list.push(Role.fromJS(item));
+            }
+            this.size = data["size"] !== undefined ? data["size"] : <any>null;
+            this.total = data["total"] !== undefined ? data["total"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): ListDtoOfRole {
+        data = typeof data === 'object' ? data : {};
+        let result = new ListDtoOfRole();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.list && this.list.constructor === Array) {
+            data["list"] = [];
+            for (let item of this.list)
+                data["list"].push(item.toJSON());
+        }
+        data["size"] = this.size !== undefined ? this.size : <any>null;
+        data["total"] = this.total !== undefined ? this.total : <any>null;
+        return data; 
+    }
+}
+
+export interface IListDtoOfRole {
+    list?: Role[] | null;
+    size?: number | null;
+    total?: number | null;
 }
 
 export class CardResultMaterialsDto implements ICardResultMaterialsDto {
@@ -49705,31 +49451,6 @@ export enum Mode3 {
     ARCHIVED = "ARCHIVED", 
 }
 
-export enum LocalDateDayOfWeek {
-    MONDAY = "MONDAY", 
-    TUESDAY = "TUESDAY", 
-    WEDNESDAY = "WEDNESDAY", 
-    THURSDAY = "THURSDAY", 
-    FRIDAY = "FRIDAY", 
-    SATURDAY = "SATURDAY", 
-    SUNDAY = "SUNDAY", 
-}
-
-export enum LocalDateMonth {
-    JANUARY = "JANUARY", 
-    FEBRUARY = "FEBRUARY", 
-    MARCH = "MARCH", 
-    APRIL = "APRIL", 
-    MAY = "MAY", 
-    JUNE = "JUNE", 
-    JULY = "JULY", 
-    AUGUST = "AUGUST", 
-    SEPTEMBER = "SEPTEMBER", 
-    OCTOBER = "OCTOBER", 
-    NOVEMBER = "NOVEMBER", 
-    DECEMBER = "DECEMBER", 
-}
-
 export enum PermissionType {
     MODULE = "MODULE", 
     SECTION = "SECTION", 
@@ -49747,31 +49468,6 @@ export enum ChatMessageType {
     _2 = "2", 
     _3 = "3", 
     _4 = "4", 
-}
-
-export enum LocalDateTimeDayOfWeek {
-    MONDAY = "MONDAY", 
-    TUESDAY = "TUESDAY", 
-    WEDNESDAY = "WEDNESDAY", 
-    THURSDAY = "THURSDAY", 
-    FRIDAY = "FRIDAY", 
-    SATURDAY = "SATURDAY", 
-    SUNDAY = "SUNDAY", 
-}
-
-export enum LocalDateTimeMonth {
-    JANUARY = "JANUARY", 
-    FEBRUARY = "FEBRUARY", 
-    MARCH = "MARCH", 
-    APRIL = "APRIL", 
-    MAY = "MAY", 
-    JUNE = "JUNE", 
-    JULY = "JULY", 
-    AUGUST = "AUGUST", 
-    SEPTEMBER = "SEPTEMBER", 
-    OCTOBER = "OCTOBER", 
-    NOVEMBER = "NOVEMBER", 
-    DECEMBER = "DECEMBER", 
 }
 
 export enum ReportFormat {

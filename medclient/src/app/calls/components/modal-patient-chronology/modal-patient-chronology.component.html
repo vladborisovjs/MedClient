@@ -1,0 +1,20 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Хронология выездов
+    </div>
+  </div>
+  <div class="card-body chron">
+    <app-grid-table
+      [columnDefs]="colDefs"
+      [sizeColumnsToFit]="true"
+      [pagination]="false"
+      [listSource]="listSource">
+    </app-grid-table>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

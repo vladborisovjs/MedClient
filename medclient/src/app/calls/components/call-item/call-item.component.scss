@@ -1,0 +1,33 @@
+:host{
+  height: 100%;
+}
+.brigades-block{
+  height: 40%;
+}
+.map-block{
+  height: 60%;
+}
+
+.call-body{
+  overflow: auto;
+}
+
+.patients-row{
+  margin-bottom: 1rem;
+}
+.patients-title{
+  border-bottom: 1px dotted rgba(black, 0.2);
+}
+.patients-value{
+  font-weight: 500;
+  padding-left: 10px;
+  border-bottom: 1px dotted rgba(black, 0.2);
+  padding-right: 20px;
+}
+
+.patients-block{
+  line-height: 1.1rem;
+  display: flex;
+  align-items: flex-end;
+}
+

@@ -58,20 +58,20 @@
                        <!--[placeholder]="placeholder ? placeholder : label ? label : ''"-->
                        <!--[tabIndex]="tabIndex"></dictionary-template>-->
 
-  <!--<dictionary *ngIf="type ==='dict'" #ctrl-->
-              <!--[(model)]="value"-->
-              <!--(blur)="onInputBlur($event)"-->
-              <!--[dict]="dict"-->
-              <!--[short]="shortDict"-->
-              <!--[searchField]="dictSearchField"-->
-              <!--[placeholder]="placeholder ? placeholder : label ? label : ''"-->
-              <!--[dropdownPosition]="dropdownPosition"-->
-              <!--[filters]="dictFilters"-->
-              <!--[filtersOrder]="dictFiltersOrder"-->
-              <!--(dictSelect)="onDictSelect($event)"-->
-              <!--[disabled]="alwaysDisabled ? true : disabled"-->
-              <!--[bindValue]="bindValue"-->
-              <!--[bindLabel]="bindLabel"></dictionary>-->
+  <dictionary *ngIf="type ==='dict'" #ctrl
+              [(model)]="value"
+              (blur)="onInputBlur($event)"
+              [dict]="dict"
+              [short]="shortDict"
+              [searchField]="dictSearchField"
+              [placeholder]="placeholder ? placeholder : label ? label : ''"
+              [dropdownPosition]="dropdownPosition"
+              [filters]="dictFilters"
+              [filtersOrder]="dictFiltersOrder"
+              (dictSelect)="onDictSelect($event)"
+              [disabled]="alwaysDisabled ? true : disabled"
+              [bindValue]="bindValue"
+              [bindLabel]="bindLabel"></dictionary>
 
   <p-calendar *ngIf="type === 'date'" #ctrl
               [disabled]="alwaysDisabled ? true : disabled"

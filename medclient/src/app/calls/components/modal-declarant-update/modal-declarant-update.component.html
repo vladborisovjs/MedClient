@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Редактирование заявителя
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="description"
+      [item]="callItem.declarant"
+      [row]="true"
+      [form]="form"
+    ></app-simple-view>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" (click)="save()">Сохранить</button>
+        <button class="btn btn-secondary" (click)="back()">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>

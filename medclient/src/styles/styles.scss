@@ -12,6 +12,8 @@
 //@import "../../node_modules/primeng/resources/themes/bootstrap/theme.css";
 @import "../../node_modules/primeng/resources/primeng.min.css";
 
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
 .ui-state-active{
   background-color: lighten($blue, 80%);
 }
@@ -117,11 +119,240 @@ main {
   .ag-ltr{
     border-right: 1px solid $gray-500;
   }
-
-
   .ag-root {
     border-color: $blue;
   }
+
+}
+
+.toolbar {
+  padding: .15rem 0.5rem;
+  display: flex;
+}
+
+.toolbar-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.toolbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sc {
+  .sc-form {
+    .sc-control {
+      height: fit-content;
+      flex: 1 1 auto;
+      transition: background-color 0.25s ease;
+      min-width: 0;
+      &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $gray-400;
+      }
+      &::-moz-placeholder { /* Chrome/Opera/Safari */
+        color: $gray-400;
+      }
+    }
+    .sc-label {
+      &.label-after {
+        display: inline-block;
+      }
+    }
+    .sc-control-checkbox {
+      margin-right: 2px;
+    }
+    .sc-control-calendar {
+      width: 100%;
+      .ui-calendar {
+        width: 100%;
+      }
+      .ui-widget {
+        font-family: inherit;
+        color: $gray-700;
+        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+          color: $gray-400;
+        }
+        &:disabled {
+          background-color: $gray-200;
+          opacity: 1;
+        }
+      }
+      .ui-state-disabled {
+        background-color: $gray-200;
+        opacity: 1;
+      }
+      .ui-inputtext {
+        transition: background-color 0.25s ease;
+        width: 100%;
+        padding: $input-btn-padding-y $input-btn-padding-x;
+        font-size: $font-size-base;
+        line-height: $line-height-base;
+        background-color: $input-bg;
+        border-radius: $input-border-radius;
+        border: $input-border-width solid $input-border-color;
+      }
+      &.ui-inputwrapper-focus {
+        .ui-inputtext {
+          border-color: $input-focus-border-color;
+          box-shadow: $input-focus-box-shadow;
+        }
+      }
+    }
+    .archive-dictionary {
+      .ng-select-container {
+        transition: background-color 0.25s ease;
+      }
+    }
+  }
+  &.ng-invalid {
+    &.ng-touched {
+      .sc-control {
+        background-color: rgba($red, 0.4);
+        &:focus {
+          border-color: $red;
+        }
+      }
+      .sc-control-calendar {
+        .ui-inputtext {
+          background-color: rgba($red, 0.4);
+        }
+        &.ui-inputwrapper-focus {
+          .ui-inputtext {
+            border-color: $red;
+          }
+        }
+      }
+      .archive-dictionary {
+        .archive-select {
+          &.ng-select-focused {
+            .ng-select-container {
+              border-color: $red;
+            }
+          }
+          .ng-select-container {
+            background-color: rgba($red, 0.4);
+          }
+        }
+      }
+    }
+  }
+}
+
+.order-checkbox {
+  .sc-form {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.inline-checkbox {
+  .sc-form {
+    display: inline-block;
+    width: unset;
+    margin-right: 4px;
+  }
+}
+
+.line-form {
+  .sc-form {
+    display: flex;
+    .sc-label {
+      padding-right: 0.25rem;
+      min-width: 90px;
+      flex: 0 0 auto;
+    }
+  }
+}
+
+.ng-select.archive-select {
+  width: 100%;
+  transition: background-color 0.25s ease;
+  &.hide-cross {
+    .ng-clear-wrapper {
+      display: none;
+    }
+  }
+  &.ng-select-single {
+    &.ng-select-disabled {
+      .ng-select-container {
+        background-color: $gray-200;
+        opacity: 1;
+      }
+    }
+    &.ng-select-focused {
+      .ng-select-container {
+        //transition: background-color 0.25s ease;
+        background-color: $input-bg;
+        border-color: $input-focus-border-color;
+        box-shadow: $input-focus-box-shadow;
+        color: $input-focus-color;
+      }
+    }
+    .ng-select-container {
+      height: 100%;
+      min-height: 0;
+      background-color: $input-bg;
+      border-radius: $input-border-radius;
+      border: $input-border-width solid $input-border-color;
+      .ng-value-container {
+        padding-left: 0;
+        .ng-placeholder {
+          padding: $input-padding-y $input-padding-x;
+        }
+        .ng-value {
+          padding: $input-padding-y $input-padding-x;
+          font-size: $font-size-base;
+          line-height: $line-height-base;
+        }
+        .ng-input {
+          padding-left: 0;
+          top: 0;
+          input {
+            padding: $input-padding-y $input-padding-x;
+            font-size: $font-size-base;
+            line-height: $line-height-base;
+          }
+        }
+      }
+      .ng-arrow-wrapper {
+        padding: $input-btn-padding-y $input-btn-padding-x;
+      }
+    }
+  }
+}
+
+.ng-dropdown-panel.archive-select {
+  .ng-dropdown-panel-items {
+    .ng-option {
+      padding: $input-btn-padding-y $input-btn-padding-x;
+    }
+  }
+}
+
+.dict-item-control {
+  &.ng-invalid {
+    &.ng-touched {
+      .archive-select {
+        .ng-select-container {
+          background-color: rgba($red, 0.4);
+        }
+      }
+    }
+  }
+}
+
+.btn-tiny{ // take from badge
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
 }
 
 

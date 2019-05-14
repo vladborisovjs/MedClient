@@ -1,0 +1,48 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" *ngIf="edit">
+      Редактирование сведений о пациенте
+    </div>
+    <div class="card-title" *ngIf="!edit">
+      Добавление пациента
+    </div>
+  </div>
+  <div class="card-body" *ngIf="edit">
+    <app-simple-view
+      [descriptions]="description"
+      [item]="patient"
+      [row]="true"
+      [form]="form"
+    ></app-simple-view>
+  </div>
+  <div class="card-body patients-desc" *ngIf="!edit">
+    <div *ngFor="let newPatient of patients; index as i;">
+      <div>
+        <app-simple-view
+          [descriptions]="descriptionNew"
+          [item]="newPatient.item"
+          [row]="true"
+          [form]="newPatient.form"
+        ></app-simple-view>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-danger" (click)="deletePatient(i)">Удалить</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-left">
+
+    </div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" *ngIf="edit" (click)="save()">Сохранить</button>
+        <button class="btn btn-info" *ngIf="!edit" (click)="addPatient()">Добавить пациента</button>
+        <button class="btn btn-success" *ngIf="!edit" (click)="saveNewPatients()" [disabled]="!patients.length">
+          Сохранить
+        </button>
+        <button class="btn btn-secondary" (click)="back()">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
