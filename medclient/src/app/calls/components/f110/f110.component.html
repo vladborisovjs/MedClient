@@ -1,0 +1,66 @@
+<div class="nav-info-container">
+
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <div class="card-title">
+      Ф-110
+    </div>
+    <div class="toolbar-right"></div>
+  </div>
+  <div class="flexible mt-2">
+    <div class="toolbar-left">
+      <ul class="nav nav-tabs nav-info full-width">
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'side-one'">
+            Первая сторона
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'anamnesis'">
+           Анамнез
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'side-two'">
+            Объективные данные
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'result'">
+            Результат
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'protocol'">
+            Протокол
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="nav-tabs nav-buttons">
+      <div class="btn-group mr-2 ">
+        <button class="btn btn-sm btn-primary">Отправить на проверку</button>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-primary">Печать</button>
+        <button class="btn btn-sm btn-primary">Печать сопр. листа</button>
+        <button class="btn btn-sm btn-primary">Печать сигн. талона</button>
+      </div>
+    </div>
+  </div>
+  <!--<div class="card mt-1">-->
+    <router-outlet></router-outlet>
+  <!--</div>-->
+</div>
+
+

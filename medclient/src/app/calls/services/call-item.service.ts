@@ -6,7 +6,7 @@ import {
   CallFiasAddressDto,
   CallGeneralPartDto,
   FiasAddressObjectDto,
-  MedApi
+  MedApi, BrigadeAppointRequestDto, CardPatientPartDto
 } from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 import {Subject} from 'rxjs';
@@ -81,15 +81,57 @@ export class CallItemService {
     return this.api.getChronicCardUsingGET(this.user.subdivisionId, callId, patientId);
   }
 
-
-  saveDeclarant(editDeclarant) {
-    editDeclarant = CallDeclarantPartDto.fromJS(editDeclarant);
-    return this.api.updateDeclarantPartUsingPUT(this.user.subdivisionId, 408346, editDeclarant);
+  getProtocol(cardId) {
+    return this.api.readProtocolUsingGET_1(cardId);
   }
 
-  saveAddress(editAddress) {
+  getF110() {
+    return this.api.readAllUsingGET_7();
+  }
+
+  findBrigadesToAppoint(callId, radius = 0) {
+    return this.api.findBrigadesUsingGET(this.user.subdivisionId, callId, radius);
+  }
+
+  appointBrigadesToCall(callId, brigades: any[]) {
+    brigades.forEach(
+      bri => {
+        bri = BrigadeAppointRequestDto.fromJS(bri);
+      }
+    );
+    return this.api.setBrigadeUsingPOST(this.user.subdivisionId, callId, brigades).pipe(
+      tap(val => {
+          this.updateCall(callId);
+        }
+      )
+    );
+  }
+
+  getCallsBrigades(callId) {
+    return this.api.getBrigadesFromCallUsingGET(this.user.subdivisionId, callId);
+  }
+
+  saveDeclarant(editDeclarant, callId) {
+    editDeclarant = CallDeclarantPartDto.fromJS(editDeclarant);
+    return this.api.updateDeclarantPartUsingPUT(this.user.subdivisionId, callId, editDeclarant).pipe(
+      tap(val => {
+          this.updateCall(callId);
+        }
+      )
+    );
+  }
+
+  saveAddress(editAddress, callId) {
     editAddress = CallFiasAddressDto.fromJS(editAddress);
-    return this.api.updateAddressPartUsingPUT(this.user.subdivisionId, 408346, editAddress);
+    return this.api.updateAddressPartUsingPUT(this.user.subdivisionId, callId, editAddress);
+  }
+
+  getBrigadesCards(briScheduleId, callId) {
+    return this.api.readCardsByCallAndBrigadeUsingGET(this.user.subdivisionId, callId, briScheduleId);
+  }
+
+  createCallCard(briScheduleId, callId) {
+    return this.api.createCardUsingPOST(this.user.subdivisionId, callId, briScheduleId);
   }
 
 }

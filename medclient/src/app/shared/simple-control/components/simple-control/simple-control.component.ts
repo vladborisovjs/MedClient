@@ -13,6 +13,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() type: string;
   @Input() label: string;
+  @Input() postLabel: string;
   @Input() labelKey: string;
   @Input() formControlName: string;
   @Input() errorText: string;

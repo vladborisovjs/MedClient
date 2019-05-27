@@ -11,6 +11,7 @@ import {Observable, Subject} from 'rxjs';
 export class UserService {
   authSub: Subject<boolean>;
   subdivisionId: number;
+  token: string;
 
   constructor(private http: HttpClient,
               private router: Router,
@@ -31,6 +32,7 @@ export class UserService {
 
   initUser(user) {
     this.subdivisionId = user.subdivisionId;
+    this.token = user.token;
     this.authSub.next(true);
   }
 

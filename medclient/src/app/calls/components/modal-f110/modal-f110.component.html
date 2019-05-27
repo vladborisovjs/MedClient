@@ -1,0 +1,21 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Список Ф-110
+    </div>
+  </div>
+  <div class="card-body f110-table">
+    <app-grid-table
+      [columnDefs]="colDefs"
+      (onGridReady)="fitCol($event)"
+      [pagination]="false"
+      (onRowDblClick)="gotoCard($event)"
+      [listSource]="listSource">
+    </app-grid-table>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

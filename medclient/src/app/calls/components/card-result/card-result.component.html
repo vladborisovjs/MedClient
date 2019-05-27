@@ -1,0 +1,156 @@
+<div class="card m-0" >
+  <div class="card-header toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>
+    </div>
+    <div class="card-subtitle">Результат</div>
+    <div class="toolbar-right"></div>
+  </div>
+</div>
+
+<div class="flexible">
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-body">
+        <app-simple-view
+          [item]="cardResult['type']"
+          [form]="getBlockForm('type')"
+          [descriptions]="getBlockDescriptions('type')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div *ngFor="let block of blocks">
+      <div class="card" *ngIf="(mode !== 'undef' && getBlockForm(block.name)) && (!block.mode || block.mode === mode)">
+        <div class="card-header">
+          {{block.label}}
+        </div>
+        <div class="card-body">
+          <app-simple-view
+            [item]="block.itemName ? cardResult[block.itemName] : cardResult"
+            [form]="getBlockForm(block.name)"
+            [descriptions]="getBlockDescriptions(block.name)"
+            [row]="true"
+          ></app-simple-view>
+        </div>
+      </div>
+    </div>
+    <!--<div class="card">-->
+      <!--<div class="card-body">-->
+        <!--<app-simple-view-->
+          <!--[item]="cardResult"-->
+          <!--[form]="getBlockForm('comments')"-->
+          <!--[descriptions]="getBlockDescriptions('comments')"-->
+          <!--[row]="true"-->
+        <!--&gt;</app-simple-view>-->
+      <!--</div>-->
+    <!--</div>-->
+  </div>
+  <div class="col-6 full-width" *ngIf="mode && mode !== 'undef'">
+    <div class="card">
+      <div class="card-header">
+        Мероприятия
+      </div>
+      <div class="card-body pt-1 px-0 pb-0">
+        <ngb-tabset [destroyOnHide]="false">
+          <ngb-tab title="На месте">
+            <ng-template ngbTabContent>
+              <div class="therapies">
+                <app-grid-table
+                  [columnDefs]="colDefs"
+                  (onRowSelect)="selectTherapy($event)"
+                  [pagination]="false"
+                  [listSource]="listSource">
+                </app-grid-table>
+              </div>
+              <div class="toolbar-right">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-success" (click)="addTherapy(true)">Добавить</button>
+                  <button class="btn btn-sm btn-info" [disabled]="!selectedTherapy">Редактировать</button>
+                  <button class="btn btn-sm btn-danger" [disabled]="!selectedTherapy">Удалить</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  Эффективность
+                </div>
+                <div class="card-body">
+                  <app-simple-view
+                    [item]="cardResult.local_efficiency_assistance"
+                    [form]="getBlockForm('local_efficiency_assistance')"
+                    [descriptions]="getBlockDescriptions('local_efficiency_assistance')"
+                    [row]="true"
+                  ></app-simple-view>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab title="В машине">
+            <ng-template ngbTabContent>
+              <div class="therapies">
+                <app-grid-table
+                  [columnDefs]="colDefs"
+                  (onRowSelect)="selectTherapy($event)"
+                  [pagination]="false"
+                  [listSource]="cardResult.transport_therapies">
+                </app-grid-table>
+              </div>
+              <div class="toolbar-right">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-success" (click)="addTherapy(false)">Добавить</button>
+                  <button class="btn btn-sm btn-info" [disabled]="!selectedTherapy">Редактировать</button>
+                  <button class="btn btn-sm btn-danger" [disabled]="!selectedTherapy">Удалить</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  Эффективность
+                </div>
+                <div class="card-body">
+                  <app-simple-view
+                    [item]="cardResult.transport_efficiency_assistance"
+                    [form]="getBlockForm('transport_efficiency_assistance')"
+                    [descriptions]="getBlockDescriptions('transport_efficiency_assistance')"
+                    [row]="true"
+                  ></app-simple-view>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+        </ngb-tabset>
+      </div>
+    </div>
+    <div class="flexible">
+      <div class="col-6 pl-0">
+        <div class="card">
+          <div class="card-header">
+            ЭКГ после мероприятий
+          </div>
+          <div class="card-body">
+              <app-simple-view
+                [item]="cardResult.ekg_after"
+                [descriptions]="getBlockDescriptions('ekg_after')"
+                [form]="getBlockForm('ekg_after')"
+                [row]="true"
+              ></app-simple-view>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 pr-0">
+        <div class="card">
+          <div class="card-header">
+            Результат мероприятий
+          </div>
+          <div class="card-body">
+            <app-simple-view
+              [item]="cardResult.assistance_result"
+              [form]="getBlockForm('assistance_result')"
+              [descriptions]="getBlockDescriptions('assistance_result')"
+              [row]="true"
+            ></app-simple-view>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

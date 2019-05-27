@@ -1,0 +1,21 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Добавление медикаментов
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="descriptionDrugs"
+      [item]="drugs"
+      [row]="true"
+      [form]="form"
+    ></app-simple-view>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-right">
+      <button class="btn btn-success" (click)="save()">Сохранить</button>
+      <button class="btn btn-secondary" (click)="back()">Отмена</button>
+    </div>
+  </div>
+</div>

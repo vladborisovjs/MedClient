@@ -319,7 +319,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<LogDto>"
+              "$ref": "#/definitions/ListDtoOfLogDto"
             }
           },
           "401": {
@@ -361,7 +361,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<Role>"
+              "$ref": "#/definitions/ListDtoOfRole"
             }
           },
           "401": {
@@ -541,7 +541,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<Performer>"
+              "$ref": "#/definitions/ListDtoOfPerformer"
             }
           },
           "401": {
@@ -583,7 +583,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<Permission>"
+              "$ref": "#/definitions/ListDtoOfPermission"
             }
           },
           "401": {
@@ -635,7 +635,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<string>"
+              "$ref": "#/definitions/ListDtoOfstring"
             }
           },
           "201": {
@@ -10693,7 +10693,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<PerformerDto>"
+              "$ref": "#/definitions/ListDtoOfPerformerDto"
             }
           },
           "401": {
@@ -10872,7 +10872,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ListDto<Role>"
+              "$ref": "#/definitions/ListDtoOfRole"
             }
           },
           "401": {
@@ -18974,6 +18974,20 @@
             "format": "int64"
           },
           {
+            "name": "dateFrom",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "dateTo",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
             "name": "number",
             "in": "query",
             "required": false,
@@ -22658,7 +22672,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "is_unfounded": {
           "type": "boolean"
@@ -22777,7 +22792,8 @@
           "type": "boolean"
         },
         "date_doc": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -22805,65 +22821,6 @@
           "$ref": "#/definitions/Place"
         },
         "type": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "LocalDate": {
-      "type": "object",
-      "properties": {
-        "chronology": {
-          "$ref": "#/definitions/IsoChronology"
-        },
-        "dayOfMonth": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "dayOfWeek": {
-          "type": "string",
-          "enum": [
-            "MONDAY",
-            "TUESDAY",
-            "WEDNESDAY",
-            "THURSDAY",
-            "FRIDAY",
-            "SATURDAY",
-            "SUNDAY"
-          ]
-        },
-        "dayOfYear": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "era": {
-          "$ref": "#/definitions/Era"
-        },
-        "leapYear": {
-          "type": "boolean"
-        },
-        "month": {
-          "type": "string",
-          "enum": [
-            "JANUARY",
-            "FEBRUARY",
-            "MARCH",
-            "APRIL",
-            "MAY",
-            "JUNE",
-            "JULY",
-            "AUGUST",
-            "SEPTEMBER",
-            "OCTOBER",
-            "NOVEMBER",
-            "DECEMBER"
-          ]
-        },
-        "monthValue": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "year": {
           "type": "integer",
           "format": "int32"
         }
@@ -22897,7 +22854,8 @@
           "type": "string"
         },
         "state_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -22908,10 +22866,12 @@
           "type": "boolean"
         },
         "dateFrom": {
-          "$ref": "#/definitions/LocalDate"
+          "type": "string",
+          "format": "date-time"
         },
         "dateTo": {
-          "$ref": "#/definitions/LocalDate"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -23082,7 +23042,8 @@
           "type": "string"
         },
         "date_doc": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "deleted": {
           "type": "boolean"
@@ -23241,10 +23202,12 @@
       "type": "object",
       "properties": {
         "date_from": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_to": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "maxRow": {
           "type": "integer",
@@ -23475,7 +23438,8 @@
           "type": "number"
         },
         "date_inventory": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "deleted": {
           "type": "boolean"
@@ -23746,9 +23710,6 @@
         }
       }
     },
-    "Collection<GrantedAuthority>": {
-      "type": "object"
-    },
     "CardObjectivePartDto": {
       "type": "object",
       "properties": {
@@ -23911,6 +23872,25 @@
         },
         "unlaw_actions": {
           "type": "string"
+        }
+      }
+    },
+    "ListDtoOfLogDto": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LogDto"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -24203,7 +24183,8 @@
           "type": "string"
         },
         "time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -24411,24 +24392,8 @@
         }
       }
     },
-    "ListDto<string>": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "size": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
+    "CollectionOfGrantedAuthority": {
+      "type": "object"
     },
     "InquirerInCallDto": {
       "type": "object",
@@ -24671,7 +24636,8 @@
           "type": "string"
         },
         "status_time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "sub_code": {
           "type": "string"
@@ -24922,19 +24888,23 @@
       "type": "object",
       "properties": {
         "date_from": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_to": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "duty_comment": {
           "type": "string"
         },
         "duty_end_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "duty_start_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -25085,10 +25055,12 @@
           "type": "string"
         },
         "dateFromAsLocalDateTime": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "dateToAsLocalDateTime": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_from": {
           "type": "string"
@@ -25140,7 +25112,8 @@
           "format": "int64"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -25270,7 +25243,8 @@
       "type": "object",
       "properties": {
         "active_visit_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "active_visit_hours": {
           "type": "integer",
@@ -25356,7 +25330,8 @@
           "type": "string"
         },
         "death_time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "intoxication_type_id": {
           "type": "integer",
@@ -25439,6 +25414,25 @@
         }
       }
     },
+    "ListDtoOfPermission": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Permission"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "TransferAddresseeDto": {
       "type": "object",
       "properties": {
@@ -25477,7 +25471,8 @@
           "format": "int64"
         },
         "expiry_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "full_name": {
           "type": "string"
@@ -25593,75 +25588,6 @@
         },
         "zone": {
           "type": "string"
-        }
-      }
-    },
-    "LocalDateTime": {
-      "type": "object",
-      "properties": {
-        "chronology": {
-          "$ref": "#/definitions/Chronology"
-        },
-        "dayOfMonth": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "dayOfWeek": {
-          "type": "string",
-          "enum": [
-            "MONDAY",
-            "TUESDAY",
-            "WEDNESDAY",
-            "THURSDAY",
-            "FRIDAY",
-            "SATURDAY",
-            "SUNDAY"
-          ]
-        },
-        "dayOfYear": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "hour": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "minute": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "month": {
-          "type": "string",
-          "enum": [
-            "JANUARY",
-            "FEBRUARY",
-            "MARCH",
-            "APRIL",
-            "MAY",
-            "JUNE",
-            "JULY",
-            "AUGUST",
-            "SEPTEMBER",
-            "OCTOBER",
-            "NOVEMBER",
-            "DECEMBER"
-          ]
-        },
-        "monthValue": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "nano": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "second": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "year": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -25859,7 +25785,8 @@
       "type": "object",
       "properties": {
         "current_time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "incomings": {
           "type": "integer",
@@ -26001,7 +25928,8 @@
           "format": "int64"
         },
         "lastUpdate": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "name": {
           "type": "string"
@@ -26057,7 +25985,8 @@
           "format": "int64"
         },
         "expiry_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "full_name": {
           "type": "string"
@@ -26083,25 +26012,6 @@
         }
       }
     },
-    "ListDto<Permission>": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Permission"
-          }
-        },
-        "size": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "CardSubdivisionHeadDoctorPartDto": {
       "type": "object",
       "properties": {
@@ -26112,7 +26022,8 @@
           "type": "string"
         },
         "subdivision_head_doctor_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "subdivision_head_doctor_id": {
           "type": "integer",
@@ -26158,7 +26069,8 @@
       "type": "object",
       "properties": {
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -26282,7 +26194,8 @@
       "type": "object",
       "properties": {
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -26325,7 +26238,8 @@
           "type": "string"
         },
         "active_visit_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "active_visit_hours": {
           "type": "integer",
@@ -26376,7 +26290,8 @@
           "type": "string"
         },
         "death_time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "ekg_ch_s_s": {
           "type": "integer",
@@ -26507,7 +26422,8 @@
           "type": "string"
         },
         "transfer_patient_time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "transfusion_systems": {
           "type": "integer",
@@ -26547,7 +26463,8 @@
           "type": "string"
         },
         "transporting_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "transporting_type": {
           "type": "integer",
@@ -26638,25 +26555,6 @@
         }
       }
     },
-    "ListDto<Performer>": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Performer"
-          }
-        },
-        "size": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "CardBasicDatesPartDto": {
       "type": "object",
       "properties": {
@@ -26664,34 +26562,44 @@
           "type": "boolean"
         },
         "brigade_arrive_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_complete_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_departure_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_receiving_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_return_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_transport_begin_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_transport_end_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "call_create_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "call_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "card_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "full_time_interval": {
           "type": "string"
@@ -26787,7 +26695,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "guid": {
           "type": "string"
@@ -26820,7 +26729,8 @@
           "type": "string"
         },
         "expiry_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "full_name": {
           "type": "string"
@@ -26876,25 +26786,6 @@
         }
       }
     },
-    "ListDto<LogDto>": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/LogDto"
-          }
-        },
-        "size": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "GroupBagItemDto": {
       "type": "object",
       "properties": {
@@ -26936,13 +26827,16 @@
           "type": "string"
         },
         "brigade_arrive_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_departure_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_help_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_id": {
           "type": "integer",
@@ -26952,10 +26846,12 @@
           "type": "string"
         },
         "brigade_receiving_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_return_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "call_id": {
           "type": "integer",
@@ -26973,7 +26869,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "declarant_name": {
           "type": "string"
@@ -26982,7 +26879,8 @@
           "type": "boolean"
         },
         "deleted_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "deleted_message": {
           "type": "string"
@@ -27088,10 +26986,12 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_filled": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -27231,15 +27131,6 @@
         }
       }
     },
-    "Era": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "LoginPair": {
       "type": "object",
       "properties": {
@@ -27290,7 +27181,8 @@
           "type": "string"
         },
         "shift_senior_doctor_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "shift_senior_doctor_id": {
           "type": "integer",
@@ -27331,7 +27223,8 @@
           "type": "number"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "description": {
           "type": "string"
@@ -27342,11 +27235,31 @@
         }
       }
     },
+    "ListDtoOfstring": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "CardBrigadeDoctorPartDto": {
       "type": "object",
       "properties": {
         "brigade_doctor_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "brigade_doctor_id": {
           "type": "integer",
@@ -27961,7 +27874,8 @@
           "$ref": "#/definitions/ChatUser"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -28003,7 +27917,27 @@
       "type": "object",
       "properties": {
         "time": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ListDtoOfPerformerDto": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PerformerDto"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -28050,7 +27984,8 @@
           "format": "int64"
         },
         "expiry_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "full_name": {
           "type": "string"
@@ -28132,7 +28067,7 @@
       "type": "object",
       "properties": {
         "authorities": {
-          "$ref": "#/definitions/Collection<GrantedAuthority>"
+          "$ref": "#/definitions/CollectionOfGrantedAuthority"
         },
         "name": {
           "type": "string"
@@ -28143,16 +28078,8 @@
         },
         "subdivisionName": {
           "type": "string"
-        }
-      }
-    },
-    "IsoChronology": {
-      "type": "object",
-      "properties": {
-        "calendarType": {
-          "type": "string"
         },
-        "id": {
+        "token": {
           "type": "string"
         }
       }
@@ -28207,7 +28134,8 @@
           "type": "string"
         },
         "transporting_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "transporting_type_code": {
           "type": "string"
@@ -28339,7 +28267,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "full_name": {
           "type": "string"
@@ -28374,7 +28303,8 @@
           "type": "string"
         },
         "process_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "reason_id": {
           "type": "integer",
@@ -28469,6 +28399,25 @@
         }
       }
     },
+    "ListDtoOfPerformer": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Performer"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "CardObjectiveBreathPartDto": {
       "type": "object",
       "properties": {
@@ -28502,25 +28451,6 @@
         },
         "dyspnea_name": {
           "type": "string"
-        }
-      }
-    },
-    "ListDto<PerformerDto>": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PerformerDto"
-          }
-        },
-        "size": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -28588,7 +28518,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "declarant_name": {
           "type": "string"
@@ -28764,7 +28695,8 @@
           "type": "string"
         },
         "state_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "transport_brand": {
           "type": "string"
@@ -28811,15 +28743,6 @@
         }
       }
     },
-    "LongDto": {
-      "type": "object",
-      "properties": {
-        "call_id": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
     "FiasAddressHouseDto": {
       "type": "object",
       "properties": {
@@ -28837,6 +28760,15 @@
         },
         "structure": {
           "type": "string"
+        }
+      }
+    },
+    "LongDto": {
+      "type": "object",
+      "properties": {
+        "call_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -28881,10 +28813,12 @@
           "type": "string"
         },
         "birthday": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "document_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "document_name": {
           "type": "string"
@@ -29094,10 +29028,12 @@
       "type": "object",
       "properties": {
         "date_from": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_to": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -29229,7 +29165,8 @@
       "type": "object",
       "properties": {
         "expiryDate": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -29498,16 +29435,19 @@
           "type": "string"
         },
         "regCertCancellationDate": {
-          "$ref": "#/definitions/LocalDate"
+          "type": "string",
+          "format": "date-time"
         },
         "regCertExpiryDate": {
-          "$ref": "#/definitions/LocalDate"
+          "type": "string",
+          "format": "date-time"
         },
         "regCertNumber": {
           "type": "string"
         },
         "regDate": {
-          "$ref": "#/definitions/LocalDate"
+          "type": "string",
+          "format": "date-time"
         },
         "type": {
           "type": "string",
@@ -29696,7 +29636,8 @@
           "type": "boolean"
         },
         "deleted_date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "deleted_message": {
           "type": "string"
@@ -29852,7 +29793,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "declarant_name": {
           "type": "string"
@@ -30225,13 +30167,16 @@
           "format": "int64"
         },
         "date_accept": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_create": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "date_received": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "integer",
@@ -30288,25 +30233,6 @@
         },
         "ekg_rhythm": {
           "type": "string"
-        }
-      }
-    },
-    "ListDto<Role>": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Role"
-          }
-        },
-        "size": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -30410,7 +30336,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "pharmacy_package_id": {
           "type": "integer",
@@ -30487,17 +30414,6 @@
         }
       }
     },
-    "Chronology": {
-      "type": "object",
-      "properties": {
-        "calendarType": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        }
-      }
-    },
     "CardObjectiveTonguePart": {
       "type": "object",
       "properties": {
@@ -30545,7 +30461,8 @@
           "type": "string"
         },
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "description": {
           "type": "string"
@@ -30590,7 +30507,8 @@
       "type": "object",
       "properties": {
         "date": {
-          "$ref": "#/definitions/LocalDateTime"
+          "type": "string",
+          "format": "date-time"
         },
         "diagnosis": {
           "type": "string"
@@ -30660,6 +30578,25 @@
         },
         "shortName": {
           "type": "string"
+        }
+      }
+    },
+    "ListDtoOfRole": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Role"
+          }
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

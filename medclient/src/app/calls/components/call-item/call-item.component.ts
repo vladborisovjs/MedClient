@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {CallDto, CallPatientPartDto, MedApi} from '../../../../../swagger/med-api.service';
+import {CallDto, CallPatientPartDto, LogDto, MedApi} from '../../../../../swagger/med-api.service';
 import {ISimpleDescription} from '../../../shared/simple-control/services/simple-description.service';
 import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
 import {ColDef} from 'ag-grid-community';
@@ -15,6 +15,11 @@ import {CustomModalService} from '../../../shared/modal/services/custom-modal.se
 import {CallItemService} from '../../services/call-item.service';
 import {NotificationsService} from 'angular2-notifications';
 import {ModalPatientChronologyComponent} from '../modal-patient-chronology/modal-patient-chronology.component';
+import {ModalCallAppointBrigadeComponent} from '../modal-call-appoint-brigade/modal-call-appoint-brigade.component';
+import {ModalProtocolComponent} from '../modal-protocol/modal-protocol.component';
+import {ModalCallF110Component} from '../modal-call-f110/modal-call-f110.component';
+import {ModalCallBrigadeStatusesComponent} from '../modal-call-brigade-statuses/modal-call-brigade-statuses.component';
+import {ModalF110Component} from '../modal-f110/modal-f110.component';
 
 @Component({
   selector: 'app-call-item',
@@ -25,6 +30,7 @@ export class CallItemComponent implements OnInit, OnDestroy {
   id: number;
   sbscs: Subscription[] = [];
   callItem: CallDto;
+  callLog: LogDto;
   callPlate: IPlateInfo[] = [
     // general
     {
@@ -90,6 +96,7 @@ export class CallItemComponent implements OnInit, OnDestroy {
     },
   ];
   briListSource = [];
+  selectedBri: any;
 
   constructor(private route: ActivatedRoute,
               private api: MedApi,
@@ -104,22 +111,24 @@ export class CallItemComponent implements OnInit, OnDestroy {
     this.sbscs.push(
       this.route.data.subscribe(data => {
         this.callItem = data.callItem;
-        console.log('item', this.callItem);
       }),
       this.cs.callItemSub.subscribe(data => {
         this.callItem = data;
-        console.log('updated', this.callItem);
       }),
-      this.api.getBrigadesFromCallUsingGET(this.user.subdivisionId, this.callItem.general.call_id).subscribe(
-        bri => {
-          this.briListSource = bri;
-        }
-      )
     );
+    this.updateBriListSource();
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
+  }
+
+  updateBriListSource(){
+    this.cs.getCallsBrigades(this.callItem.general.call_id).subscribe(
+      bri => {
+        this.briListSource = bri;
+      }
+    );
   }
 
   editGeneral() {
@@ -162,9 +171,43 @@ export class CallItemComponent implements OnInit, OnDestroy {
     chronModal.componentInstance.patientId = patient.patient_id;
     chronModal.componentInstance.callId = this.callItem.general.call_id;
   }
+
+  showProtocol() {
+    const protocolModal = this.modal.open(ModalProtocolComponent, {size: 'lg'});
+    protocolModal.componentInstance.callId = this.callItem.general.call_id;
+  }
+
+  showF110() {
+    const f110Modal = this.modal.open(ModalF110Component, {size: 'lg'});
+    f110Modal.componentInstance.callId = this.callItem.general.call_id;
+  }
+
   editAddress() {
     const addressModal = this.modal.open(ModalAddressUpdateComponent);
     addressModal.componentInstance.callItem = this.callItem;
+  }
+
+  appointBrigade(){
+    const appointModal = this.modal.open(ModalCallAppointBrigadeComponent, {size: 'lg'});
+    appointModal.componentInstance.callItem = this.callItem;
+    appointModal.result.then(
+      () => this.updateBriListSource()
+    );
+  }
+
+  selectBri(e){
+    this.selectedBri = e ? e.data : null;
+  }
+
+  openBri110(){
+    const cardsList = this.modal.open(ModalCallF110Component);
+    cardsList.componentInstance.brigade = this.selectedBri;
+
+  }
+
+  openBriStatuses(){
+    const briStatuses = this.modal.open(ModalCallBrigadeStatusesComponent, {size: 'lg'});
+    briStatuses.componentInstance.brigade = this.selectedBri;
   }
 
 

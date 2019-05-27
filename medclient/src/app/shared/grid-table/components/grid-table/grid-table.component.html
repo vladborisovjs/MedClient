@@ -16,6 +16,7 @@
                  (firstDataRendered)="onFirstDataRendered($event)"
                  rowHeight="24"
                  [rowSelection]="multiSelect ? 'multiple' : 'single'"
+                 rowMultiSelectWithClick = "multiSelect ? true : false"
                  rowDeselection="true"
                  (paginationChanged)="page($event)"
                  (sortChanged)="sortChange($event)"
@@ -32,13 +33,12 @@
                  [enableSorting]="draggable ? false : sorting"
                  groupHeaders
 
-
-
                  [enableFilter]="enableFilter"
                  rowHeight="24"
                  [pagination]="draggable ? false : pagination"
                  [localeText]="localeText"
                  [rowSelection]="multiSelect ? 'multiple' : 'single'"
+                 rowMultiSelectWithClick = "multiSelect ? true : false"
                  rowDeselection="true"
                  [rowDragManaged]="draggable"
                  [animateRows]="animated"

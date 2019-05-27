@@ -142,7 +142,7 @@ export class ModalAddressUpdateComponent implements OnInit {
     Object.assign(this.callItem.address.house, this.formHouse.getRawValue());
     Object.assign(this.callItem.address.settlement, this.formSettlement.getRawValue());
     Object.assign(this.callItem.address.street, this.formStreet.getRawValue());
-    this.cs.saveAddress(this.callItem.address).subscribe(
+    this.cs.saveAddress(this.callItem.address, this.callItem.general.call_id).subscribe(
       res => {
         this.ns.success('Успешно', 'Данные сохранены');
         this.back();

@@ -1,0 +1,92 @@
+<div class="card m-0" >
+  <div class="card-header toolbar">
+    <div class="toolbar-left">
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" (click)="back()"><i class="fas fa-lg fa-arrow-circle-left"></i></button>
+        <button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>
+      </div>
+    </div>
+    <div class="card-subtitle">Редактирование пациента</div>
+    <div class="toolbar-right"></div>
+  </div>
+</div>
+<div class="flexible">
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Основные данные
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('general')"
+          [preprocessed]="true"
+          [row]="true"
+          [item]="patient"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Трудовая деятельность
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('occupation')"
+          [preprocessed]="true"
+          [item]="patient"
+          [row]="true"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Документ, удостоверяющий личность
+      </div>
+    <div class="card-body">
+      <app-simple-view
+        [descriptions]="getBlockDescriptions('personalDoc')"
+        [preprocessed]="true"
+        [item]="patient"
+        [row]="true"
+        [form]="formPatient">
+      </app-simple-view>
+    </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Данные о страховании
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('insurance')"
+          [preprocessed]="true"
+          [item]="patient"
+          [row]="true"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Адрес постоянной регистрации
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('address')"
+          [preprocessed]="true"
+          [item]="patient"
+          [row]="true"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+  </div>
+</div>
+
+

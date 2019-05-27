@@ -1,0 +1,299 @@
+<div class="card m-0" >
+  <div class="card-header toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>
+    </div>
+    <div class="card-subtitle">Объективные данные</div>
+    <div class="toolbar-right"></div>
+  </div>
+</div>
+<div class="flexible">
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Общее состояние
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('general_state')"
+          [item]="objective.general_state"
+          [row]="true"
+          [form]="getBlockForm('general_state')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        GLASGOW Coma
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('glasgow')"
+          [item]="objective.glasgow"
+          [row]="true"
+          [form]="getBlockForm('glasgow')">
+        ></app-simple-view>
+      </div>
+    </div>
+      <div class="card">
+      <div class="card-header">
+        Дополнительные объективные данные <br> (кроме отмеченных)
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('addition')"
+          [item]="objective.addition"
+          [row]="true"
+          [form]="getBlockForm('addition')">
+        ></app-simple-view>
+      </div>
+      </div>
+    <div class="card">
+      <div class="card-header">
+        Рефлексы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('reflexes')"
+          [item]="objective.reflexes"
+          [row]="true"
+          [form]="getBlockForm('reflexes')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Зрачки
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('pupils')"
+          [item]="objective.pupils"
+          [row]="true"
+          [form]="getBlockForm('pupils')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Лимфатические узлы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('lymph')"
+          [item]="objective.lymph"
+          [row]="true"
+          [form]="getBlockForm('lymph')">
+        ></app-simple-view>
+      </div>
+    </div>
+</div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Отеки
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('edema')"
+          [item]="objective.edema"
+          [row]="true"
+          [form]="getBlockForm('edema')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Кожные покровы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('skin')"
+          [item]="objective.skin"
+          [row]="true"
+          [form]="getBlockForm('skin')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Сердцебиение
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('heart')"
+          [item]="objective.heart"
+          [row]="true"
+          [form]="getBlockForm('heart')">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Другое
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('other')"
+          [item]="objective.other"
+          [row]="true"
+          [form]="getBlockForm('other')">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Дыхание
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('breath')"
+          [item]="objective.breath"
+          [row]="true"
+          [form]="getBlockForm('breath')">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Хрипы в легких
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('wheezing')"
+          [item]="objective.wheezing"
+          [row]="true"
+          [form]="getBlockForm('wheezing')">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Стул и мочеиспускание
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('excreta')"
+          [item]="objective.excreta"
+          [row]="true"
+          [form]="getBlockForm('excreta')">
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Слизистая зева
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('throat')"
+          [item]="objective.throat"
+          [row]="true"
+          [form]="getBlockForm('throat')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Миндалины
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('tonsils')"
+          [item]="objective.tonsils"
+          [row]="true"
+          [form]="getBlockForm('tonsils')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Перкуторно над легким звук
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('perc')"
+          [item]="objective.perc"
+          [row]="true"
+          [form]="getBlockForm('perc')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Язык
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('tongue')"
+          [item]="objective.tongue"
+          [row]="true"
+          [form]="getBlockForm('tongue')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Живот
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('stomach')"
+          [item]="objective.stomach"
+          [row]="true"
+          [form]="getBlockForm('stomach')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Печень
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('liver')"
+          [item]="objective.liver"
+          [row]="true"
+          [form]="getBlockForm('liver')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Диспетические явления
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('dyspeptic')"
+          [item]="objective.dyspeptic"
+          [row]="true"
+          [form]="getBlockForm('dyspeptic')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Диурез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('diuresis')"
+          [item]="objective.diuresis"
+          [row]="true"
+          [form]="getBlockForm('diuresis')">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Признаки алкогольного опьянения
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('alcohol')"
+          [item]="objective.alcohol"
+          [row]="true"
+          [form]="getBlockForm('alcohol')">
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+</div>

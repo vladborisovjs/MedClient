@@ -144,7 +144,7 @@ export class GridTableComponent implements OnInit, OnChanges {
       if (this.multiSelect) {
         this.onRowSelect.emit(this.gridApi.getSelectedRows());
       } else {
-        this.onRowSelect.emit(e.data);
+        this.onRowSelect.emit(e);
       }
     } else if (this.gridApi.getSelectedRows().length === 0) {
       this.onRowSelect.emit(null);

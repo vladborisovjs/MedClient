@@ -1,0 +1,31 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Подвтердите назначение бригад
+    </div>
+  </div>
+  <div class="card-body">
+    <div *ngFor="let bri of brigades">
+      <app-info-plate
+        [item]="bri"
+        [properties]="briProp"></app-info-plate>
+      <br>
+    </div>
+    <app-simple-view
+      [descriptions]="desc"
+      [row]="true"
+      [item]="receivingType"
+      [form]="form"
+    ></app-simple-view>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" (click)="confirm()">
+          Назначить
+        </button>
+        <button class="btn btn-secondary" (click)="back()">Назад</button>
+      </div>
+    </div>
+  </div>
+</div>

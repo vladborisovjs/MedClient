@@ -1,0 +1,81 @@
+<div class="card m-0" >
+  <div class="card-header toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>
+    </div>
+    <div class="card-subtitle">Анамнез</div>
+    <div class="toolbar-right"></div>
+  </div>
+</div>
+
+<div class="flexible">
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Эпидемиологический анамнез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="anamnesis.epidemic"
+          [form]="getBlockForm('epidemic')"
+          [descriptions]="getBlockDescriptions('epidemic')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Аллергический анамнез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="anamnesis.allergic"
+          [form]="getBlockForm('allergic')"
+          [descriptions]="getBlockDescriptions('allergic')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Гинекологический анамнез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="anamnesis.gynecologic"
+          [form]="getBlockForm('gynecologic')"
+          [descriptions]="getBlockDescriptions('gynecologic')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Жалобы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="anamnesis.complaints"
+          [form]="getBlockForm('complaints')"
+          [descriptions]="getBlockDescriptions('complaints')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Заболевания
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="anamnesis.illnes"
+          [form]="getBlockForm('illnes')"
+          [descriptions]="getBlockDescriptions('illnes')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+</div>

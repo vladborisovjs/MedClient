@@ -44312,6 +44312,7 @@ export class LoginInfo implements ILoginInfo {
     name?: string | null;
     subdivisionId?: number | null;
     subdivisionName?: string | null;
+    token?: string | null;
 
     constructor(data?: ILoginInfo) {
         if (data) {
@@ -44328,6 +44329,7 @@ export class LoginInfo implements ILoginInfo {
             this.name = data["name"] !== undefined ? data["name"] : <any>null;
             this.subdivisionId = data["subdivisionId"] !== undefined ? data["subdivisionId"] : <any>null;
             this.subdivisionName = data["subdivisionName"] !== undefined ? data["subdivisionName"] : <any>null;
+            this.token = data["token"] !== undefined ? data["token"] : <any>null;
         }
     }
 
@@ -44344,6 +44346,7 @@ export class LoginInfo implements ILoginInfo {
         data["name"] = this.name !== undefined ? this.name : <any>null;
         data["subdivisionId"] = this.subdivisionId !== undefined ? this.subdivisionId : <any>null;
         data["subdivisionName"] = this.subdivisionName !== undefined ? this.subdivisionName : <any>null;
+        data["token"] = this.token !== undefined ? this.token : <any>null;
         return data; 
     }
 }
@@ -44353,6 +44356,7 @@ export interface ILoginInfo {
     name?: string | null;
     subdivisionId?: number | null;
     subdivisionName?: string | null;
+    token?: string | null;
 }
 
 export class CallDto implements ICallDto {

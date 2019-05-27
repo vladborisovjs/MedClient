@@ -11,7 +11,7 @@ export class CallItemResolverService {
   constructor(private cs: CallItemService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
-    return this.cs.getCall(parseInt(route.paramMap.get('id'), 10));
+    return this.cs.getCall(parseInt(route.paramMap.get('callId'), 10));
   }
 }
 

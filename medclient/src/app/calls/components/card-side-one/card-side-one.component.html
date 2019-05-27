@@ -1,0 +1,136 @@
+<div class="flexible">
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Карта вызова
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="cardInfoSideOne.general"
+          [properties]="getPlateDescriptions('card')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Данные о вызове
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="cardInfoSideOne.general"
+          [properties]="getPlateDescriptions('call')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="toolbar justify-content-between">
+          <!--<div class="toolbar-left"></div>-->
+          <div class="card-subtitle">Пациент</div>
+          <div class="toolbar-right">
+            <button class="btn btn-info btn-wide btn-sm" (click)="goToPatient()"><i class="fas fa-pen"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="cardInfoSideOne.patient"
+          [properties]="getPlateDescriptions('patient')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Адресс вызова
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="cardInfoSideOne.address"
+          [properties]="getPlateDescriptions('address')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Заявитель
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="cardInfoSideOne.declarant"
+          [properties]="getPlateDescriptions('declarant')"></app-info-plate>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Бригада
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="cardInfoSideOne.brigade"
+          [properties]="getPlateDescriptions('brigade')"></app-info-plate>
+        Состав
+        <div *ngFor="let performer of cardInfoSideOne.brigade.performers">
+          <app-info-plate
+            [item]="performer"
+            [properties]="getPlateDescriptions('briPerformer')"></app-info-plate>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Хронология отработки
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="descriptions"
+          [row]="true"
+          [item]="cardInfoSideOne.general.basic_dates"
+          [form]="form"></app-simple-view>
+        <app-info-plate
+          [item]="cardInfoSideOne.general.basic_dates"
+          [properties]="getPlateDescriptions('time')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Подписи
+      </div>
+      <div class="card-body null-padding">
+        <table class="table table-bordered table-sm table-striped null-margin">
+          <thead>
+          <tr>
+            <th scope="col">Должность</th>
+            <th scope="col">Фио</th>
+            <th scope="col">Подпись</th>
+            <th scope="col">Дата и время</th>
+            <th scope="col">Комментарий</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td >Сотрудник бригады</td>
+            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_name}}</td>
+            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_signed}}</td>
+            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_date}}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td >Старший фельдшер</td>
+            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_name}}</td>
+            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_checked}}</td>
+            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_date}}</td>
+            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_comment}}</td>
+          </tr>
+          <tr>
+            <td>Заведующий отделения</td>
+            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_name}}</td>
+            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_checked}}</td>
+            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_date}}</td>
+            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_comment}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,22 @@
+<div class="card bri-cards">
+  <div class="card-header">
+    <div class="card-title">
+      Карты Ф-100 бригады
+    </div>
+  </div>
+  <div class="card-body full-height">
+    <app-grid-table
+      [columnDefs]="colDefs"
+      [sizeColumnsToFit]="true"
+      [pagination]="false"
+      (onRowDblClick)="gotoCard($event)"
+      [listSource]="listSource">
+    </app-grid-table>
+
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-primary" (click)="createCard()">
+      Создать Ф-110
+    </button>
+  </div>
+</div>

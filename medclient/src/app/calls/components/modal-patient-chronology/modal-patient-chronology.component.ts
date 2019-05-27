@@ -57,7 +57,6 @@ listSource: any[] = [];
       this.cs.getChronology(this.patientId, this.callId ).subscribe(
         list => {
           this.listSource = list;
-          console.log('Chron:', list);
         }
       )
   }

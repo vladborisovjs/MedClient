@@ -2,3 +2,31 @@
   overflow: auto;
   height: 100%;
 }
+
+.list-block{
+  width: 45%;
+  height: 100%;
+}
+.preview-block{
+  width: 55%;
+  height: 100%;
+
+}
+
+
+.bri-info-title{
+  width: 8rem;
+  text-align: end;
+}
+
+.bri-info-value{
+  font-weight: 500;
+  padding-left: 10px;
+}
+
+.bri-info-block{
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px dotted rgba(black, 0.2);
+}
+

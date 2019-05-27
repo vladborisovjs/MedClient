@@ -1,5 +1,6 @@
 const protocol = 'http:',
   host = '172.16.6.166:8080'; // стэнд телда
+  hostWs = '172.16.6.166'; // стэнд телда
 
 const PROXY_CONFIG = {
   "/": {
@@ -22,6 +23,12 @@ const PROXY_CONFIG = {
         });
       }
     }
+  },
+  "/tcmk/api/stomp": {
+    "target": `ws://${hostWs}`,
+    "secure": false,
+    "ws": true,
+    "logLevel": "debug",
   }
 };
 

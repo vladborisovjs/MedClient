@@ -27,13 +27,13 @@ export class ModalDeclarantUpdateComponent implements OnInit {
     },
     {
       label: 'Тип',
-      key: 'declarant_type_name',
+      key: 'declarant_type_id',
       type: 'dict',
       shortDict: true,
       dictFilters: {type: 'DECLARANT'},
       dictFiltersOrder: ['type'],
       bindLabel: 'name',
-      bindValue: 'name',
+      bindValue: 'id',
       dict: 'readAllUsingGET_34'
     }
   ];
@@ -55,7 +55,7 @@ export class ModalDeclarantUpdateComponent implements OnInit {
   save() {
     console.log(this.callItem.declarant);
     Object.assign(this.callItem.declarant, this.form.getRawValue());
-    this.cs.saveDeclarant(this.callItem.declarant).subscribe(
+    this.cs.saveDeclarant(this.callItem.declarant, this.callItem.general.call_id).subscribe(
       res => {
         this.ns.success('Успешно', 'Данные сохранены');
         this.back();

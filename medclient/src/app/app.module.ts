@@ -7,12 +7,16 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {API_BASE_URL, MedApi} from '../../swagger/med-api.service';
 import {environment} from '../environments/environment';
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, registerLocaleData} from '@angular/common';
+import localeRu from '@angular/common/locales/ru';
 import {AuthInceptor} from './services/auth-inceptor';
 import {UserService} from './services/user.service';
 import {SimpleNotificationsModule} from 'angular2-notifications';
+import {SocketService} from './services/socket.service';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 const LOCATION_REF = new InjectionToken('LOCATION_REF');
+registerLocaleData(localeRu);
 
 @NgModule({
   declarations: [
@@ -39,7 +43,6 @@ const LOCATION_REF = new InjectionToken('LOCATION_REF');
       provide: API_BASE_URL,
       useFactory: (locationRef: Location) => {
         const path = `${locationRef.protocol}//${locationRef.host}${locationRef.pathname}${environment.apiUrl}`;
-        console.log('path', path);
         return path.slice(0, -1); // удаляем последний слэш
       },
       deps: [LOCATION_REF]
@@ -49,8 +52,10 @@ const LOCATION_REF = new InjectionToken('LOCATION_REF');
       useClass: AuthInceptor,
       multi: true
     },
+    UserService,
+    SocketService,
     MedApi,
-    UserService
+    NgbActiveModal
   ],
   bootstrap: [AppComponent]
 })

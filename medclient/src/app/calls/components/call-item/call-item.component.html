@@ -1,9 +1,16 @@
 <div class="row null-margin full-height">
   <div class="col-7 null-padding full-height ">
     <div class="card full-height">
-      <div class="card-header">
+      <div class="card-header toolbar justify-content-between">
         <div class="card-title">
           Вызов №{{callItem.general.call_number}}
+        </div>
+        <div class="toolbar-right">
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-sm btn-primary">Передача</button>
+            <button class="btn btn-sm btn-primary" (click)="showF110()">Список Ф-110</button>
+            <button class="btn btn-sm btn-primary" (click)="showProtocol()">Протокол</button>
+          </div>
         </div>
       </div>
       <div class="card-body call-body">
@@ -85,9 +92,15 @@
   <div class="col-5 null-padding full-height">
     <div class="card brigades-block">
       <div class="card-header toolbar justify-content-between">
-        <div class="toolbar-left"><button class="btn btn-primary"> Назначить бригаду</button></div>
-        <div class="card-subtitle">Назначенные бригады</div>
-        <div class="toolbar-right"></div>
+        <div class="toolbar-left"><button class="btn btn-sm btn-primary" (click)="appointBrigade()">Назначить <i class="fas fa-sm fa-plus"></i></button></div>
+        <div class="card-subtitle">Назначены</div>
+        <div class="toolbar-right">
+          <div class="btn-group">
+            <button class="btn btn-sm btn-primary" (click)="openBriStatuses()" [disabled]="!selectedBri">Статус</button>
+            <button class="btn btn-sm btn-primary" [disabled]="!selectedBri" (click)="openBri110()">Ф-110</button>
+            <button class="btn btn-sm btn-primary" [disabled]="!selectedBri">Журнал</button>
+          </div>
+        </div>
       </div>
       <div class="card-body null-padding">
         <app-grid-table
@@ -95,6 +108,7 @@
           [sizeColumnsToFit]="true"
           [pagination]="false"
           (onGridReady)="fitCol($event)"
+          (onRowSelect)="selectBri($event)"
           [listSource]="briListSource">
         </app-grid-table>
       </div>

@@ -80,10 +80,10 @@
               [ngModelOptions]="{standalone: true}"
               class="sc-control-calendar"
               [(ngModel)]="value"
+              [showTime]="true"
+              hourFormat="24"
               (onBlur)="onInputBlur($event)"
-              [yearNavigator]="true"
-              yearRange="1900:2030"
-              [monthNavigator]="true"
+
               [dateFormat]="dateFormat"></p-calendar>
 
   <ng-select *ngIf="type === 'select'" #ctrl
@@ -96,5 +96,7 @@
              [bindLabel]="'name'"
              [bindValue]="bindValue? (bindValue ==='selfObject') ? null : bindValue : 'id'"
              [items]="selectList"></ng-select>
+
+  <div *ngIf="postLabel" class="sc-post-label">{{postLabel}}</div>
 
 </form>
