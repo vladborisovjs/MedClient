@@ -12,36 +12,44 @@ export class MainComponent implements OnInit {
   constructor(private user: UserService) { }
   menuItems: IMenuItem[] = [
     {
-      label: 'Вызовы',
+      label: 'Диспетчеризация',
       routerLink: '/calls',
+      iconClass: 'fas fa-solar-panel'
     },
-    // {
-    //   label: 'Главная',
-    //   routerLink: '/start',
-    // },
     {
-      label: 'Графики работы',
+      label: 'Архив',
+      routerLink: '/archive',
+      iconClass: 'fas fa-archive'
+    },
+    {
+      label: 'Управление сотрудниками',
       routerLink: '/schedule',
+      iconClass: 'far fa-calendar-alt'
     },
     {
       label: 'Справочники',
       routerLink: '/dictionaries',
+      iconClass: 'fas fa-book'
     },
     {
       label: 'Отчеты',
       routerLink: '/reports',
+      iconClass: 'fas fa-file-alt'
     },
     {
       label: 'Карта',
       routerLink: '/map',
+      iconClass: 'fas fa-map-marked-alt'
     },
     {
       label: 'Аптека',
       routerLink: '/drugstore',
+      iconClass: 'fas fa-medkit'
     },
     {
       label: 'Администрирование',
       routerLink: '/admin',
+      iconClass: 'fas fa-cogs'
     },
   ];
 

@@ -12,7 +12,14 @@
     </div>
     <div class="card">
       <div class="card-header">
-        Данные о вызове
+        <div class="toolbar justify-content-between">
+          <div class="card-subtitle">Данные о вызове</div>
+          <div class="toolbar-right">
+            <a href="/#/calls/{{cardInfoSideOne.general.call_id}}" target="_blank">
+              <button class="btn btn-info btn-wide btn-sm" ><i class="fas fa-phone-square fa-lg"></i></button>
+            </a>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <app-info-plate
@@ -31,6 +38,14 @@
         </div>
       </div>
       <div class="card-body">
+        <div class="plate-list">
+          <div class="gen-info-char">
+            <div class="plate-title">Имя:</div>
+            <div class="plate-value">{{cardInfoSideOne.patient.patient_secondname}}</div>
+            <div class="plate-value">{{cardInfoSideOne.patient.patient_firstname}}</div>
+            <div class="plate-value">{{cardInfoSideOne.patient.patient_patronymic}}</div>
+          </div>
+        </div>
         <app-info-plate
           [item]="cardInfoSideOne.patient"
           [properties]="getPlateDescriptions('patient')"></app-info-plate>
@@ -70,13 +85,19 @@
         <div *ngFor="let performer of cardInfoSideOne.brigade.performers">
           <app-info-plate
             [item]="performer"
-            [properties]="getPlateDescriptions('briPerformer')"></app-info-plate>
+            [properties]="getPlateDescriptions('briPerformer')">
+          </app-info-plate>
         </div>
       </div>
     </div>
     <div class="card">
       <div class="card-header">
-        Хронология отработки
+        <div class="toolbar justify-content-between">
+          <div class="card-subtitle">Хронология отработки</div>
+          <div class="toolbar-right">
+            <button class="btn btn-success btn-sm" (click)="updateCD()">Cохранить</button>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <app-simple-view
@@ -109,21 +130,21 @@
             <td >Сотрудник бригады</td>
             <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_name}}</td>
             <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_signed}}</td>
-            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_date}}</td>
+            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_date | date: 'dd.MM.yyyy HH:mm'}}</td>
             <td></td>
           </tr>
           <tr>
             <td >Старший фельдшер</td>
             <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_name}}</td>
             <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_checked}}</td>
-            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_date}}</td>
+            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_date | date: 'dd.MM.yyyy HH:mm'}}</td>
             <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_comment}}</td>
           </tr>
           <tr>
             <td>Заведующий отделения</td>
             <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_name}}</td>
             <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_checked}}</td>
-            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_date}}</td>
+            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_date | date: 'dd.MM.yyyy HH:mm'}}</td>
             <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_comment}}</td>
           </tr>
           </tbody>

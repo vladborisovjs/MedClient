@@ -1,15 +1,17 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {CallDto, CardSideOneDto} from '../../../../../swagger/med-api.service';
+import {CardSideOneDto} from '../../../../../swagger/med-api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
-import {ISimpleDescription} from '../../../shared/simple-control/services/simple-description.service';
+import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
+import {CardItemService} from '../../services/card-item.service';
+import {NotificationsService} from 'angular2-notifications';
 
 @Component({
   selector: 'app-card-side-one',
   templateUrl: './card-side-one.component.html',
-  styleUrls: ['./card-side-one.component.scss']
+  styleUrls: ['./card-side-one.component.scss', '../../../shared/info-plate/components/info-plate/info-plate.component.scss']
 })
 export class CardSideOneComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
@@ -20,18 +22,18 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
       title: 'Номер: ', field: 'number', type: 'number', block: 'card'
     },
     {
-      title: 'Дата и время: ', field: 'basic_dates', subField: 'card_date', type: 'bean', block: 'card', datePipeFormat: 'dd.MM.yyyy hh:mm'
+      title: 'Дата и время: ', field: 'basic_dates', subField: 'call_date', type: 'bean', block: 'card', datePipeFormat: 'dd.MM.yyyy HH:mm'
     },
     {
       title: 'Подразделение: ', field: 'subdivision_name', type: 'text', block: 'card'
+    },
+    {
+      title: 'Сотрудник: ', field: 'performer_name', type: 'text', block: 'card'
     },
 
     // call
     {
       title: 'Номер: ', field: 'call_number', type: 'number', block: 'call'
-    },
-    {
-      title: 'Дата и время: ', field: 'basic_dates', subField: 'card_date', type: 'bean', block: 'card', datePipeFormat: 'dd.MM.yyyy hh:mm'
     },
     {
       title: 'Тип: ', field: 'call_type_name', type: 'text', block: 'call'
@@ -50,17 +52,17 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
     },
 
     // patient
-    {
-      title: 'Фио: ', field: 'patient_name',   type: 'text', block: 'patient'
-    },
+    // {
+    //   title: 'Фио: ', field: 'patient_secondname',  type: 'text', block: 'patient'
+    // },
     {
       title: 'Пол: ', field: 'patient_sex_name',   type: 'text', block: 'patient'
     },
     {
-      title: 'Возраст: ', field: 'declarant_name',   type: 'text', block: 'patient'
+      title: 'Возраст: ', field: 'patient_age_years',   type: 'text', block: 'patient'
     },
 
-    //address
+    // address
     {
       title: 'Район: ', field: 'district', subField: 'name',  type: 'bean', block: 'address'
     },
@@ -107,64 +109,93 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
   descriptions: ISimpleDescription[] = [
     {
       label: 'Вызов принят:',
-      key: 'call_create_date',
+      key: 'brigade_receiving_date',
       type: 'date',
       styleClass: 'col-6'
     },
     {
       label: 'Бригада выехала:',
-      key: '',
+      key: 'brigade_departure_date',
       type: 'date',
       styleClass: 'col-6'
     },
     {
       label: 'Бригада прибыла:',
-      key: '',
+      key: 'brigade_arrive_date',
       type: 'date',
       styleClass: 'col-6'
     },
     {
       label: 'Начало транспортировки:',
-      key: '',
+      key: 'brigade_transport_begin_date',
       type: 'date',
       styleClass: 'col-6'
     },
     {
       label: 'Окончание транспортировки:',
-      key: '',
+      key: 'brigade_transport_end_date',
       type: 'date',
       styleClass: 'col-6'
     },
     {
       label: 'Завершение вызова:',
-      key: '',
+      key: 'brigade_complete_date',
       type: 'date',
       styleClass: 'col-6'
     },
     {
       label: 'Возвращение на станцию:',
-      key: '',
+      key: 'brigade_return_date',
       type: 'date',
       styleClass: 'col-6'
     },
   ];
   form: FormGroup;
 
-  constructor(private route: ActivatedRoute, private router: Router ) { }
+  constructor(
+    private cas: CardItemService,
+    private route: ActivatedRoute,
+    private sds: SimpleDescriptionService,
+    private router: Router,
+    private ns: NotificationsService) { }
 
   ngOnInit() {
+    this.form = this.sds.makeForm(this.descriptions);
     this.sbscs.push(
       this.route.data.subscribe(data => {
         this.cardInfoSideOne = data.cardInfo;
         console.log('->', this.cardInfoSideOne);
       })
     );
+    this.updatePatient();
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
   }
 
+  updatePatient() {
+    this.cas.getPatient(this.cardInfoSideOne.general.card_id).subscribe(
+      data => {
+        this.cardInfoSideOne.patient = data;
+      }
+    );
+    console.log(this.cardInfoSideOne.patient);
+  }
+
+  updateCD() {
+    console.log(this.form.getRawValue());
+    Object.assign(this.cardInfoSideOne.general.basic_dates, this.form.getRawValue());
+    this.cas.updateChronology(this.cardInfoSideOne.general.card_id, this.cardInfoSideOne.general.basic_dates).subscribe(
+      res => {
+        this.ns.success('Успешно', 'Данные обновлены');
+      },
+      err => {
+        this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
+        console.log('Save Dates', err);
+      }
+    );
+  }
   getPlateDescriptions(block: string): IPlateInfo[] {
     return this.plateProp.filter(el => {
       if (el.block) {
@@ -174,7 +205,7 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToPatient(){
+  goToPatient() {
     this.router.navigate(['patient'], {relativeTo: this.route.parent});
   }
 

@@ -4,7 +4,7 @@ import {NotificationsService} from 'angular2-notifications';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {FormGroup} from '@angular/forms';
-import {CardObjectivePartDto} from '../../../../../swagger/med-api.service';
+import {CardObjectivePartDto, CardPatientPartDto} from '../../../../../swagger/med-api.service';
 import {CardItemService} from '../../services/card-item.service';
 
 @Component({
@@ -16,11 +16,13 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
   cardId: any;
   objective: CardObjectivePartDto;
+  patientYear: number;
   forms: {
     block: string,
     descriptions: ISimpleDescription[],
     form?: FormGroup
-  }[] = [
+  }[] =
+    [
     {
       block: 'general_state',
       descriptions: [
@@ -64,6 +66,50 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     },
     {
       block: 'glasgow',
+      descriptions: [
+        {
+          label: 'Речевая реакция: ',
+          key: 'verbal',
+          type: 'select',
+          styleClass: 'line-form  col-12',
+          selectList: [
+            {name: 'Правильная речь', id: 5},
+            {name: 'Спутанная речь', id: 4},
+            {name: 'Членораздельная речь (отдельный набор слов)', id: 3},
+            {name: 'Нечленораздельная речь (непонятные звуки)', id: 2},
+            {name: 'Отсутствие речевой продукции', id: 1},
+          ],
+        },
+        {
+          label: 'Двигательная реакция: ',
+          key: 'motor',
+          type: 'select',
+          styleClass: 'line-form  col-12',
+          selectList: [
+            {name: 'По команде', id: 6},
+            {name: 'Локализация боли', id: 5},
+            {name: 'Удаление конечности от источника раздражения', id: 4},
+            {name: 'Аномальное сгибание (декортикационная ригидность)', id: 3},
+            {name: 'Аномальное разгибание (децеребрационная ригидность)', id: 2},
+            {name: 'Отсутствие реакции на боль', id: 1},
+          ],
+        },
+        {
+          label: 'Открывание глаз: ',
+          key: 'eye',
+          type: 'select',
+          styleClass: 'line-form  col-12',
+          selectList: [
+            {name: 'Произвольное', id: 4},
+            {name: 'На окрик', id: 3},
+            {name: 'На боль', id: 2},
+            {name: 'Отсутствие реакции', id: 1},
+          ],
+        },
+      ]
+    },
+    {
+      block: 'glasgowChild',
       descriptions: [
         {
           label: 'Речевая реакция: ',
@@ -240,63 +286,63 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
           label: 'ЧСС: ',
           key: 'chss',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'в сек.',
         },
         {
           label: 'PS: ',
           key: 'ps',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'в сек.',
         },
         {
           label: 'АД: ',
           key: 'ad',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'мм Hg',
         },
         {
           label: 'АДN: ',
           key: 'adn',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'мм Hg',
         },
         {
           label: 'АД max: ',
           key: 'admax',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'мм Hg',
         },
         {
           label: 't тела: ',
           key: 'bodytemp',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: '°C',
         },
         {
           label: 'ЧД: ',
           key: 'chd',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'в сек.',
         },
         {
           label: 'Глюкометрия: ',
           key: 'glucometry',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: 'ммоль',
         },
         {
           label: 'Sat O2: ',
           key: 'pulse_oximetry',
           type: 'text',
-          styleClass: 'line-form col-12',
+          styleClass: 'line-form col-11',
           postLabel: '%',
         },
       ]
@@ -891,16 +937,32 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
         type: 'select',
         styleClass: 'line-form  col-12',
         selectList: [
-          {name: 'Ребенок улыбается, ориентируется на звук, следит за объектами, интерактивен', id: 5},
-          {name: 'Ребенка при плаче можно успокоить, интерактивность неполноценная', id: 4},
-          {name: 'При плаче успокаивается, но ненадолго, стонет', id: 3},
-          {name: 'Не успокаивается при плаче, беспокоен', id: 2},
-          {name: 'Плач и интерактивность отсутствуют', id: 1},
+          {name: 'Правильная речь', id: 5},
+          {name: 'Спутанная речь', id: 4},
+          {name: 'Членораздельная речь (отдельный набор слов)', id: 3},
+          {name: 'Нечленораздельная речь (непонятные звуки)', id: 2},
+          {name: 'Отсутствие речевой продукции', id: 1},
         ],
         additional: {
           block: 'glasgow'
         },
       },
+    {
+      label: 'Речевая реакция: ',
+      key: '',
+      type: 'select',
+      styleClass: 'line-form  col-12',
+      selectList: [
+        {name: 'Ребенок улыбается, ориентируется на звук, следит за объектами, интерактивен', id: 5},
+        {name: 'Ребенка при плаче можно успокоить, интерактивность неполноценная', id: 4},
+        {name: 'При плаче успокаивается, но ненадолго, стонет', id: 3},
+        {name: 'Не успокаивается при плаче, беспокоен', id: 2},
+        {name: 'Плач и интерактивность отсутствуют', id: 1},
+      ],
+      additional: {
+        block: 'glasgow'
+      },
+    },
       {
         label: 'Двигательная реакция: ',
         key: '',
@@ -1844,12 +1906,20 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       this.route.parent.paramMap.subscribe(data => {
         this.cardId = data.get('cardId');
       }),
-
     );
+    this.getPatientYear();
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
+  }
+
+  getPatientYear() {
+    this.cas.getPatient(this.cardId).subscribe(
+      data => {
+        this.patientYear = data.patient_age_years;
+      }
+    );
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {

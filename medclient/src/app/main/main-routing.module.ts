@@ -24,10 +24,14 @@ const routes: Routes = [
         loadChildren: '../calls/calls.module#CallsModule'
       },
       {
+        path: 'archive',
+        loadChildren: '../archive/archive.module#ArchiveModule'
+      },
+      {
         path: 'schedule',
         loadChildren: '../schedule/schedule.module#ScheduleModule',
         data: {
-          title: 'Графики работы',
+          title: 'Управление сотрудниками',
         },
       },
       {

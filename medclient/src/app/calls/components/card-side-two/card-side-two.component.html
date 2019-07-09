@@ -27,12 +27,18 @@
         GLASGOW Coma
       </div>
       <div class="card-body">
-        <app-simple-view
+        <app-simple-view *ngIf="patientYear<=3"
+          [descriptions]="getBlockDescriptions('glasgowChild')"
+          [item]="objective.glasgow"
+          [row]="true"
+          [form]="getBlockForm('glasgow')">
+          ></app-simple-view>
+        <app-simple-view *ngIf="patientYear > 3"
           [descriptions]="getBlockDescriptions('glasgow')"
           [item]="objective.glasgow"
           [row]="true"
           [form]="getBlockForm('glasgow')">
-        ></app-simple-view>
+        </app-simple-view>
       </div>
     </div>
       <div class="card">

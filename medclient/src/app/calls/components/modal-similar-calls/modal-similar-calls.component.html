@@ -1,0 +1,21 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Похожие вызовы
+    </div>
+  </div>
+  <div class="card-body similar-calls-table">
+    <app-grid-table
+      [columnDefs]="colDefs"
+      (onGridReady)="fitCol($event)"
+      [listSource]="listSource"
+      (onRowDblClick)="setSimilarCall()"
+      (onRowSelect)="selectCall($event)">
+    </app-grid-table>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

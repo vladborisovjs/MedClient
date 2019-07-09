@@ -20,12 +20,13 @@ export class ModalAddressUpdateComponent implements OnInit {
   formDistrict: FormGroup;
   formStreet: FormGroup;
   formSettlement: FormGroup;
+  // TODO ИСПРАВИТЬ РЕГИОН, РАЙОН, НАС. ПУНКТ, УЛИЦА
   descriptionRegion: ISimpleDescription[] = [
     {
       label: 'Регион',
       key: 'name',
       type: 'text',
-      styleClass: 'col-4',
+      styleClass: 'text-danger col-4',
     }
   ];
   descriptionDistrict: ISimpleDescription[] = [
@@ -33,7 +34,7 @@ export class ModalAddressUpdateComponent implements OnInit {
       label: 'Район',
       key: 'name',
       type: 'text',
-      styleClass: 'col-4'
+      styleClass: 'text-danger col-4'
     }
   ];
   descriptionSettlement: ISimpleDescription[] = [
@@ -41,7 +42,7 @@ export class ModalAddressUpdateComponent implements OnInit {
       label: 'Населенный пункт',
       key: 'name',
       type: 'text',
-      styleClass: 'col-4'
+      styleClass: 'text-danger col-4'
     }
   ];
   descriptionStreet: ISimpleDescription[] = [
@@ -49,7 +50,7 @@ export class ModalAddressUpdateComponent implements OnInit {
       label: 'Улица',
       key: 'name',
       type: 'text',
-      styleClass: 'col-4'
+      styleClass: 'text-danger col-4'
     }
   ];
   descriptionHouse: ISimpleDescription[] = [
@@ -58,21 +59,21 @@ export class ModalAddressUpdateComponent implements OnInit {
       key: 'number',
       type: 'text',
       styleClass: 'col-4'
-    }
-  ];
-  descriptionRest: ISimpleDescription[] = [
+    },
     {
       label: 'Корпус',
-      key: 'id',
+      key: 'building',
       type: 'text',
       styleClass: 'col-4'
     },
     {
       label: 'Лит./Стр.',
-      key: 'id',
+      key: 'structure',
       type: 'text',
       styleClass: 'col-4'
     },
+  ];
+  descriptionRest: ISimpleDescription[] = [
     {
       label: 'Подъезд',
       key: 'entrance',

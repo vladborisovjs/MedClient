@@ -6,7 +6,7 @@ import {
   CallFiasAddressDto,
   CallGeneralPartDto,
   FiasAddressObjectDto,
-  MedApi, BrigadeAppointRequestDto, CardPatientPartDto
+  MedApi, BrigadeAppointRequestDto, CardPatientPartDto, CallTransferDto
 } from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 import {Subject} from 'rxjs';
@@ -85,8 +85,20 @@ export class CallItemService {
     return this.api.readProtocolUsingGET_1(cardId);
   }
 
-  getF110() {
-    return this.api.readAllUsingGET_7();
+  getJournal(briScheduleId, callId) {
+    return this.api.getBrigadeScheduleCallTransferHistoryUsingGET_1(this.user.subdivisionId, callId, briScheduleId);
+  }
+
+  getTransfer(callId) {
+    return this.api.getSendListUsingGET(this.user.subdivisionId, callId);
+  }
+
+  getAvailable(callId) {
+    return this.api.readAllPrimaryUsingGET(this.user.subdivisionId, callId);
+  }
+
+  getF110(callId, deleted) {
+    return this.api.readCardsByCallAndSubdivisionUsingGET(this.user.subdivisionId, callId, deleted);
   }
 
   findBrigadesToAppoint(callId, radius = 0) {
@@ -131,7 +143,20 @@ export class CallItemService {
   }
 
   createCallCard(briScheduleId, callId) {
-    return this.api.createCardUsingPOST(this.user.subdivisionId, callId, briScheduleId);
+    return this.api.createCardUsingPOST(callId, briScheduleId);
+  }
+
+  getCallBrigadeStatusesHistory(briScheduleId, callId) {
+    // return this.api.getBrigadeScheduleCallTransferHistoryUsingGET_1(this.user.subdivisionId, callId, briScheduleId);
+    return this.api.readAvailableEventsUsingGET(this.user.subdivisionId, callId, briScheduleId);
+  }
+
+  saveCallBrigadeStatusesHistory(briScheduleId, callId, sList) {
+    return this.api.createNewMessageUsingPOST(this.user.subdivisionId, callId, briScheduleId, sList);
+  }
+
+  postTransfer(callId, transfers) {
+    return this.api.getSubdivisionsForCallTransferUsingPOST(this.user.subdivisionId, callId, transfers);
   }
 
 }

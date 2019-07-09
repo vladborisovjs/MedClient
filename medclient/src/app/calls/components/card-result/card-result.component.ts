@@ -6,10 +6,11 @@ import {CardItemService} from '../../services/card-item.service';
 import {NotificationsService} from 'angular2-notifications';
 import {Subscription} from 'rxjs';
 import {ColDef} from 'ag-grid-community';
-import {CardResultDto, MedApi} from '../../../../../swagger/med-api.service';
+import {CardResultDto, MedApi, TherapyDto} from '../../../../../swagger/med-api.service';
 import {DatePipe} from '@angular/common';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ModalAddTherapyComponent} from '../modal-add-therapy/modal-add-therapy.component';
+import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
 
 @Component({
   selector: 'app-card-result',
@@ -18,13 +19,14 @@ import {ModalAddTherapyComponent} from '../modal-add-therapy/modal-add-therapy.c
 })
 export class CardResultComponent implements OnInit {
   datePipe = new DatePipe('ru');
+  therapies: TherapyDto;
   colDefs: ColDef[] = [
     {
       headerName: 'Дата',
       field: 'date',
       sortable: true,
       filter: true,
-      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy hh:mm'),
+      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       width: 200
     },
     {
@@ -35,7 +37,8 @@ export class CardResultComponent implements OnInit {
       width: 500
     }
   ];
-  listSource: any[] = [];
+  listLocal: any[] = [];
+  listTransport: any[] = [];
   selectedTherapy: any;
   sbscs: Subscription[] = [];
   cardResult: CardResultDto;
@@ -81,7 +84,7 @@ export class CardResultComponent implements OnInit {
           {
             label: 'Способ',
             type: 'dict',
-            key: 'hosp_transporation_id',
+            key: 'transporting_type_id',
             shortDict: true,
             bindLabel: 'name',
             bindValue: 'id',
@@ -173,7 +176,7 @@ export class CardResultComponent implements OnInit {
             bindLabel: 'name',
             bindValue: 'id',
             dict: 'readAllUsingGET_34',
-            styleClass: 'line-form col-6',
+            styleClass: 'line-form col-5',
           },
           {
             label: 'Через',
@@ -324,13 +327,13 @@ export class CardResultComponent implements OnInit {
             label: 'Ритм',
             type: 'text',
             key: 'ekg_rhythm',
-            styleClass: 'line-form col-6'
+            styleClass: 'line-form col-12'
           },
           {
             label: 'ЧСС',
             type: 'number',
             key: 'ekg_ch_s_s',
-            styleClass: 'line-form col-6',
+            styleClass: 'line-form col-12',
             postLabel: 'в мин'
           },
           {
@@ -368,14 +371,14 @@ export class CardResultComponent implements OnInit {
     {label: 'Диагноз', name: 'diagnosis', itemName: 'diagnosis'},
     {label: 'Экг', name: 'ekg', itemName: 'ekg'},
     {label: 'Активное посещение', name: 'active_visit', itemName: 'active_visit'},
-    {label: 'Примечание', name: 'comments'},
+    // {label: 'Примечание', name: 'comments'},
     // {label: 'Мероприятия на месте', name: 'local_therapies', itemName: 'local_therapies'},
     // {label: 'Мероприятия в машине', name: 'transport_therapies', itemName: 'transport_therapies'},
     // {label: 'Эффективность', name: 'local_efficiency_assistance', itemName: 'local_efficiency_assistance'},
     // {label: 'Эффективность', name: 'transport_efficiency_assistance', itemName: 'transport_efficiency_assistance'},
     // {label: 'Экг после меропрятий', name: 'ekg_after', itemName: 'ekg_after'},
     // {label: 'Результат меропрятий', name: 'assistance_result', itemName: 'assistance_result'},
-    ];
+  ];
 
 
   constructor(private api: MedApi, private route: ActivatedRoute,
@@ -383,7 +386,8 @@ export class CardResultComponent implements OnInit {
               private ns: NotificationsService,
               private modal: NgbModal,
               private modalInstance: NgbActiveModal,
-              private sds: SimpleDescriptionService) {
+              private sds: SimpleDescriptionService,
+              private cmodal: CustomModalService) {
   }
 
   ngOnInit() {
@@ -410,14 +414,20 @@ export class CardResultComponent implements OnInit {
         val => this.setMode(val.type_id)
       )
     );
-      console.log(this.cardResult);
+    console.log(this.cardResult);
   }
 
   updateTherapies() {
-    this.api.readAllUsingGET_40().subscribe(
+    this.cas.getLocalTransportAssistance(undefined, true).subscribe(
       therapies => {
         console.log('->', therapies);
-        this.listSource = therapies;
+        this.listLocal = therapies;
+      }
+    );
+    this.cas.getLocalTransportAssistance(undefined, false).subscribe(
+      therapies => {
+        console.log('->', therapies);
+        this.listTransport = therapies;
       }
     );
   }
@@ -438,6 +448,8 @@ export class CardResultComponent implements OnInit {
 
   selectTherapy(e) {
     this.selectedTherapy = e.data;
+    console.log(this.selectedTherapy.date);
+    console.log(this.selectedTherapy.text);
   }
 
   addTherapy(local) {
@@ -451,6 +463,43 @@ export class CardResultComponent implements OnInit {
       }
     );
     addTh.componentInstance.local = local;
+    addTh.componentInstance.therapyAct = true;
+  }
+
+  editTherapy(local) {
+    const editTh = this.modal.open(ModalAddTherapyComponent, {size: 'lg'});
+    editTh.componentInstance.therapies = this.selectedTherapy;
+    editTh.result.then(
+      success => {
+        this.modalInstance.close();
+      },
+      rej => {
+        this.updateTherapies();
+      }
+    );
+    editTh.componentInstance.local = local;
+    editTh.componentInstance.therapyAct = false;
+  }
+
+  deleteTherapy() {
+    console.log(this.selectedTherapy);
+    this.cmodal.confirm('Удаление терапии', 'Вы уверены, что хотите удалить терапию' + '?').then(
+      res => {
+        if (res) {
+                this.cas.deleteTherapy(this.selectedTherapy.id).subscribe(
+                  success => {
+                    this.ns.success('Успешно', 'Данные удалены');
+                    this.updateTherapies();
+                  },
+                  err => {
+                    this.ns.error('Ошибка', 'Не удалось удалить данные на сервере');
+                    console.log('Delete Therapy', err);
+                  }
+                );
+        }
+      },
+      () => {}
+    );
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {

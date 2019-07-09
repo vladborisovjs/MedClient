@@ -20,6 +20,7 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() isError: boolean = false;
   @Input() placeholder = '';
   @Input() rows = 2;
+  @Input() showTime: boolean = true;
   @Input() dict;
   @Input() dictFilters: any = {};
   @Input() dictFiltersOrder: any = [];

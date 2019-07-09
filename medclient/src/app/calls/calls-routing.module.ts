@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Вызовы',
+      title: 'Диспетчеризация',
     },
     children: [
       {

@@ -6,9 +6,9 @@
           Вызов №{{callItem.general.call_number}}
         </div>
         <div class="toolbar-right">
-          <div class="btn-group btn-group-sm">
-            <button class="btn btn-sm btn-primary">Передача</button>
-            <button class="btn btn-sm btn-primary" (click)="showF110()">Список Ф-110</button>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-primary " (click)="openTransfer()">Передача</button>
+            <button class="btn btn-sm btn-primary " (click)="showF110()">Список Ф-110</button>
             <button class="btn btn-sm btn-primary" (click)="showProtocol()">Протокол</button>
           </div>
         </div>
@@ -52,12 +52,11 @@
             </div>
           </div>
           <div class="btn-group">
-            <button class="btn btn-outline-info btn-tiny" (click)="showChronology(patient)">Хронология выездов <i class="fas  fa-history"></i></button>
-            <button class="btn btn-outline-info btn-tiny" (click)="editPatients(patient)">Редактировать <i class="fas  fa-pen"></i></button>
+            <button class="btn btn-outline-info btn-tiny " (click)="showChronology(patient)">Хронология выездов <i class="fas  fa-history"></i></button>
+            <button class="btn btn-outline-info btn-tiny " (click)="editPatients(patient)">Редактировать <i class="fas  fa-pen"></i></button>
             <button class="btn btn-outline-danger btn-tiny" (click)="deletePatient(patient)">Удалить <i class="fas fa-times"></i></button>
           </div>
         </div>
-
         <div class="toolbar justify-content-between">
           <div class="toolbar-left"></div>
           <div class="card-subtitle">Адрес вызова</div>
@@ -96,9 +95,9 @@
         <div class="card-subtitle">Назначены</div>
         <div class="toolbar-right">
           <div class="btn-group">
-            <button class="btn btn-sm btn-primary" (click)="openBriStatuses()" [disabled]="!selectedBri">Статус</button>
-            <button class="btn btn-sm btn-primary" [disabled]="!selectedBri" (click)="openBri110()">Ф-110</button>
-            <button class="btn btn-sm btn-primary" [disabled]="!selectedBri">Журнал</button>
+            <button class="btn btn-sm btn-primary " (click)="openBriStatuses()" [disabled]="!selectedBri">Статус</button>
+            <button class="btn btn-sm btn-primary " [disabled]="!selectedBri" (click)="openBri110()">Ф-110</button>
+            <button class="btn btn-sm btn-primary" [disabled]="!selectedBri" (click)="openJournal()">Журнал</button>
           </div>
         </div>
       </div>

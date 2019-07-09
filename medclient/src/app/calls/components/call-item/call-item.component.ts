@@ -1,8 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {CallDto, CallPatientPartDto, LogDto, MedApi} from '../../../../../swagger/med-api.service';
-import {ISimpleDescription} from '../../../shared/simple-control/services/simple-description.service';
 import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
 import {ColDef} from 'ag-grid-community';
 import {UserService} from '../../../services/user.service';
@@ -20,6 +19,9 @@ import {ModalProtocolComponent} from '../modal-protocol/modal-protocol.component
 import {ModalCallF110Component} from '../modal-call-f110/modal-call-f110.component';
 import {ModalCallBrigadeStatusesComponent} from '../modal-call-brigade-statuses/modal-call-brigade-statuses.component';
 import {ModalF110Component} from '../modal-f110/modal-f110.component';
+import {ModalCallJournalComponent} from '../modal-call-journal/modal-call-journal.component';
+import {ModalCallTransferComponent} from '../modal-call-transfer/modal-call-transfer.component';
+import {ModalCallTransferAvailableComponent} from '../modal-call-transfer-available/modal-call-transfer-available.component';
 
 @Component({
   selector: 'app-call-item',
@@ -37,7 +39,7 @@ export class CallItemComponent implements OnInit, OnDestroy {
       title: 'Номер: ', field: 'call_number', type: 'number', block: 'general'
     },
     {
-      title: 'Дата и время: ', field: 'date', type: 'date', block: 'general', datePipeFormat: 'dd.MM.yyyy hh:mm'
+      title: 'Дата и время: ', field: 'date', type: 'date', block: 'general', datePipeFormat: 'dd.MM.yyyy HH:mm'
     },
     {
       title: 'Тип: ', field: 'call_type_name', type: 'text', block: 'general'
@@ -123,7 +125,7 @@ export class CallItemComponent implements OnInit, OnDestroy {
     this.sbscs.forEach(el => el.unsubscribe());
   }
 
-  updateBriListSource(){
+  updateBriListSource() {
     this.cs.getCallsBrigades(this.callItem.general.call_id).subscribe(
       bri => {
         this.briListSource = bri;
@@ -141,7 +143,7 @@ export class CallItemComponent implements OnInit, OnDestroy {
     declarantModal.componentInstance.callItem = this.callItem;
   }
 
-  editPatients(patient?: CallPatientPartDto){
+  editPatients(patient?: CallPatientPartDto) {
     const patModal = this.modal.open(ModalCallPatientsUpdateComponent, {size: !patient? 'lg': null});
     patModal.componentInstance.callItem = this.callItem;
     patModal.componentInstance.patient = patient;
@@ -156,14 +158,14 @@ export class CallItemComponent implements OnInit, OnDestroy {
               this.ns.success('Успешно', 'Данные обновлены');
             },
             err => {
-              this.ns.error('Ошибка', 'Не удалось удалить пациента')
+              this.ns.error('Ошибка', 'Не удалось удалить пациента');
             }
 
           );
         }
       },
       () => {}
-    )
+    );
   }
 
   showChronology(patient) {
@@ -187,7 +189,7 @@ export class CallItemComponent implements OnInit, OnDestroy {
     addressModal.componentInstance.callItem = this.callItem;
   }
 
-  appointBrigade(){
+  appointBrigade() {
     const appointModal = this.modal.open(ModalCallAppointBrigadeComponent, {size: 'lg'});
     appointModal.componentInstance.callItem = this.callItem;
     appointModal.result.then(
@@ -195,17 +197,32 @@ export class CallItemComponent implements OnInit, OnDestroy {
     );
   }
 
-  selectBri(e){
+  selectBri(e) {
     this.selectedBri = e ? e.data : null;
   }
 
-  openBri110(){
+  openBri110() {
     const cardsList = this.modal.open(ModalCallF110Component);
     cardsList.componentInstance.brigade = this.selectedBri;
 
   }
 
-  openBriStatuses(){
+  openJournal() {
+    const journal = this.modal.open(ModalCallJournalComponent, {size: 'lg'});
+    journal.componentInstance.brigade = this.selectedBri;
+  }
+
+  openTransfer() {
+    const transfer = this.modal.open(ModalCallTransferComponent, {size: 'lg'});
+    transfer.componentInstance.callId = this.callItem.general.call_id;
+  }
+
+  // openAvailable() {
+  //   const available = this.modal.open(ModalCallTransferAvailableComponent);
+  //   available.componentInstance.callId = this.callItem.general.call_id;
+  // }
+
+  openBriStatuses() {
     const briStatuses = this.modal.open(ModalCallBrigadeStatusesComponent, {size: 'lg'});
     briStatuses.componentInstance.brigade = this.selectedBri;
   }

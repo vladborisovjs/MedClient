@@ -1,0 +1,42 @@
+<div class="card">
+  <div class="card-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="card-title">
+      Добавление сотрудника в смену бригады
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="desc"
+      [item]="performerItem"
+      [form]="form"
+      [row]="true"
+    ></app-simple-view>
+  </div>
+  <div class="card-body pt-0" *ngIf="selectedPerformer">
+    <b>{{selectedPerformer.type_name}}</b> - {{selectedPerformer.second_name}} {{selectedPerformer.first_name}} {{selectedPerformer.patronymic}}<br>
+    <div *ngFor="let p of selectedPerformer.periods">
+      <b>Часы работы:</b> {{p.date_from | date: 'dd.MM.yyyy HH:mm' }} - {{p.date_to | date: 'dd.MM.yyyy HH:mm' }}
+    </div>
+  </div>
+  <div class="card-body pTable">
+    <app-grid-table
+      [columnDefs]="pColDef"
+      [listSource]="pSource"
+      [pagination]="false"
+      (onRowSelect)="selectPerformer($event)"
+    ></app-grid-table>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" [disabled]="!selectedPerformer" (click)="addPerformer()">
+        Добавить
+      </button>
+      <button class="btn btn-secondary" (click)="back()">
+        Назад
+      </button>
+    </div>
+  </div>
+</div>

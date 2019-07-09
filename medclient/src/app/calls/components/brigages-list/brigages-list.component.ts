@@ -4,6 +4,7 @@ import {BrigadeDutyRequestDto, BrigadeScheduleDto, MedApi, Mode} from '../../../
 import {HttpClient} from '@angular/common/http';
 import {DatePipe} from '@angular/common';
 import {BrigadeDutyService} from '../../services/brigade-duty.service';
+import {NotificationsService} from 'angular2-notifications';
 
 @Component({
   selector: 'app-brigages-list',
@@ -41,7 +42,7 @@ export class BrigagesListComponent implements OnInit {
       field: 'date',
       sortable: true,
       filter: true,
-      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy hh:mm'),
+      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       width: 100
     },
     {
@@ -66,7 +67,9 @@ export class BrigagesListComponent implements OnInit {
   doings: any[];
   datePipe = new DatePipe('ru');
 
-  constructor( private http: HttpClient, private bs: BrigadeDutyService) {
+  constructor( private http: HttpClient,
+               private bs: BrigadeDutyService,
+               private ns: NotificationsService) {
   }
 
   ngOnInit() {
@@ -100,31 +103,41 @@ export class BrigagesListComponent implements OnInit {
   }
 
   endDuty(){
+    let d = new Date();
+    // d.setHours(d.getHours() + 3);
     let dutyResult: any = {
       pharmacy_package_id: this.selectedBrigade.pharmacy_package_id,
       comment: '',
-      date: new Date()
+      date: d
     };
     dutyResult = BrigadeDutyRequestDto.fromJS(dutyResult);
     console.log('endDuty', this.selectedBrigade);
     this.bs.endDuty(this.selectedBrigade.id, dutyResult).subscribe(
       res =>{
         console.log(res);
+        this.updateBrigades();
+      },
+      error1 => {
+        console.log('end duty error');
+        this.ns.warn('Ошибка', 'Возможно у бригады есть незавершенные вызовы. \n Проверьте занятость!');
+        console.log(error1);
       }
     )
   }
 
   startDuty(){
+    let d = new Date();
     let dutyResult: any = {
       pharmacy_package_id: this.selectedBrigade.pharmacy_package_id,
       comment: '',
-      date: new Date()
+      date: d
     };
     dutyResult = BrigadeDutyRequestDto.fromJS(dutyResult);
     console.log('startDuty', this.selectedBrigade, dutyResult);
-    this.bs.endDuty(this.selectedBrigade.id, dutyResult).subscribe(
+    this.bs.startDuty(this.selectedBrigade.id, dutyResult).subscribe(
       res =>{
         console.log(res);
+        this.updateBrigades();
       }
     )
   }

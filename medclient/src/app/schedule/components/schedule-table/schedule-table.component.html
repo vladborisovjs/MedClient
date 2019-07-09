@@ -1,0 +1,31 @@
+<table class=" table table-sm table-bordered table-striped table-hover" *ngIf="mode === 'performers'">
+  <thead>
+  <tr>
+    <th class="sticky-top" >Сотрудник</th>
+    <th class="sticky-top">Должность</th>
+    <th class="sticky-top" scope="col" *ngFor="let date of dateLabels">{{date}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let row of rows">
+    <td>{{row.performer.first_name}} {{row.performer.second_name}}</td>
+    <td>{{row.performer.position}}</td>
+    <td class="selectable-cell" (click)="clickDate({performer: row.performer, date: date, duty: row[date]})" *ngFor="let date of dates">{{row[date] ? row[date][0].period_type.name ? row[date][0].period_type.name : 'в/г'  : ''}}</td>
+  </tr>
+  </tbody>
+</table>
+
+<table class=" table table-sm table-bordered table-striped table-hover" *ngIf="mode === 'brigades'">
+  <thead>
+  <tr>
+    <th >Бригада</th>
+    <th scope="col" *ngFor="let date of dateLabels">{{date}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let row of rows">
+    <td>{{row.brigade_name}}</td>
+    <td class="selectable-cell center-me" (click)="clickDate({brigade: {brigadeId: row.brigade_id, brigadeName: row.brigade_name, brigadeTypeName: row.brigade_type_name}, date: date, duty: row[date] })" *ngFor="let date of dates"><i *ngIf="row[date]" class="fas fa-ambulance"></i></td>
+  </tr>
+  </tbody>
+</table>

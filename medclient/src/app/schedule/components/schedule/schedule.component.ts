@@ -9,19 +9,19 @@ import {ICardMenuItem} from '../../../navigation/components/card-menu/card-menu.
 export class ScheduleComponent implements OnInit {
   cardMenuItems: ICardMenuItem[] = [
     {
-      label: 'Сотрудники',
+      label: 'Графики сотрудников',
       routerLink: 'employees',
       iconClass: 'fas fa-user-md'
     },
     {
-      label: 'Бригады',
+      label: 'Смены бригад',
       routerLink: 'brigades',
       iconClass: 'fas fa-user-friends'
     },
     {
       label: 'Управление бригадами',
       routerLink: 'brigades-control',
-      iconClass: 'fas fa-users-cog'
+      iconClass: 'fas fa-ambulance'
     },
   ];
   constructor() { }

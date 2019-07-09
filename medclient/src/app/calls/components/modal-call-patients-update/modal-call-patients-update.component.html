@@ -36,13 +36,13 @@
     </div>
     <div class="toolbar-right">
       <div class="btn-group">
-        <button class="btn btn-success" *ngIf="edit" (click)="save()">Сохранить</button>
-        <button class="btn btn-info" *ngIf="!edit" (click)="addPatient()">Добавить пациента</button>
-        <button class="btn btn-success" *ngIf="!edit" (click)="saveNewPatients()" [disabled]="!patients.length">
+        <button class="btn btn-success " *ngIf="edit" (click)="save()">Сохранить</button>
+        <button class="btn btn-info " *ngIf="!edit" (click)="addPatient()">Добавить пациента</button>
+        <button class="btn btn-success " *ngIf="!edit" (click)="saveNewPatients()" [disabled]="!patients.length">
           Сохранить
         </button>
         <button class="btn btn-secondary" (click)="back()">Отмена</button>
-      </div>
+    </div>
     </div>
   </div>
 </div>

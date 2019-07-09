@@ -6,6 +6,7 @@ export interface ISimpleDescription {
   type: string; // text, number, textarea, dict, template, select
   label?: string; // название
   postLabel?: string; // лэйбл после формы (например единицы измерения)
+  showTime?: boolean // выбор времени на датапикере
   errorText?: string; // текст для вывода ошибки
   placeholder?: string;
   required?: boolean; // обязательность

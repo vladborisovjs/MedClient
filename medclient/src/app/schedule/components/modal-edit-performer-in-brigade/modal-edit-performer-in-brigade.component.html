@@ -1,0 +1,26 @@
+<div class="card">
+  <div class="card-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="card-title">
+      Редактирование смены сотрудника в бригаде
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-subtitle">
+      {{performerInfo.second_name}} {{performerInfo.first_name}} - {{performerInfo.type_name}}
+    </div>
+    <app-simple-view
+    [descriptions]="desc"
+    [item]="performerInfo.period_details"
+    [form]="form"
+    ></app-simple-view>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" (click)="save()">Применить</button>
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

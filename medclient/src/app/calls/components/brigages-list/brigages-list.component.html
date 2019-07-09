@@ -19,7 +19,7 @@
         <!--</button>-->
       <!--</div>-->
     </div>
-    <div class="card-title">Бригады</div>
+    <h5>Бригады</h5>
     <div class="toolbar-right"></div>
   </div>
   <div class="card-body full-height null-padding">
@@ -48,13 +48,13 @@
         <ngb-tabset class="card-header p-0 flex-ngb-tabs">
           <ngb-tab title="Информация о смене" [disabled]="!selectedBrigade">
             <ng-template ngbTabContent>
-              <div class="flexible full-height">
+              <div class="flexible full-height" *ngIf="selectedBrigade">
                 <div class="col-7 p-0">
                   <div class="card full-height">
                     <div class="card-header">
                       Общая информация
                     </div>
-                    <div class="card-body pb-0" *ngIf="selectedBrigade">
+                    <div class="card-body pb-0" >
                       <div class="bri-info-block">
                         <div class="bri-info-title">Наименование:</div>
                         <div class="bri-info-value">{{selectedBrigade.brigade_name}}</div>
@@ -73,19 +73,19 @@
                       </div>
                       <div class="bri-info-block">
                         <div class="bri-info-title">График:</div>
-                        <div class="bri-info-value">{{selectedBrigade.period_details.date_from | date: 'dd.MM hh:mm'}} - {{selectedBrigade.period_details.date_to | date: 'dd.MM hh:mm'}}</div>
+                        <div class="bri-info-value">{{selectedBrigade.period_details.date_from | date: 'dd.MM HH:mm'}} - {{selectedBrigade.period_details.date_to | date: 'dd.MM HH:mm'}}</div>
                       </div>
                       <div class="bri-info-block" *ngIf="mode === modes.ONLINE">
                         <div class="bri-info-title">Начало смены:</div>
-                        <div class="bri-info-value">{{selectedBrigade.period_details.duty_start_date | date: 'dd.MM hh:mm'}}</div>
+                        <div class="bri-info-value">{{selectedBrigade.period_details.duty_start_date | date: 'dd.MM HH:mm'}}</div>
                       </div>
                       <div class="bri-info-block" *ngIf="mode === modes.OFFLINE">
                         <div class="bri-info-title">Смена:</div>
-                        <div class="bri-info-value">{{selectedBrigade.period_details.duty_start_date | date: 'dd.MM hh:mm'}} - {{selectedBrigade.period_details.duty_end_date | date: 'dd.MM hh:mm'}}</div>
+                        <div class="bri-info-value">{{selectedBrigade.period_details.duty_start_date | date: 'dd.MM HH:mm'}} - {{selectedBrigade.period_details.duty_end_date | date: 'dd.MM HH:mm'}}</div>
                       </div>
                       <div class="toolbar-right pt-2">
                           <button class="btn btn-sm btn-info" (click)="endDuty()" *ngIf="mode === modes.ONLINE">Уход с линии</button>
-                          <button class="btn btn-sm btn-info" (click)="startDuty()" *ngIf="mode === modes.UPCOMING">Вывести на линию</button>
+                          <button class="btn btn-sm btn-info" (click)="startDuty()" *ngIf="mode === modes.OFFLINE">Вывести на линию</button>
                       </div>
                     </div>
                   </div>
@@ -95,22 +95,25 @@
                     <div class="card-header">
                       Состав
                     </div>
-                    <div class="card-body" *ngIf="selectedBrigade">
+                    <div class="card-body" >
                       <div class="bri-info-block" *ngFor="let p of selectedBrigade.performers">
                         <div class="bri-info-title">{{p.performer_type_name}}:</div>
                         <div class="bri-info-value">{{p.performer_first_name}} {{p.performer_second_name}}</div>
                       </div>
                     </div>
-                    <div class="card-body" *ngIf="selectedBrigade">
+                    <div class="card-body" >
                     </div>
                   </div>
                 </div>
+              </div>
+              <div *ngIf="!selectedBrigade" class="patch" >
+                <h2>Выберите бригаду</h2>
               </div>
             </ng-template>
           </ngb-tab>
           <ngb-tab title="Занятость" [disabled]="!selectedBrigade">
             <ng-template ngbTabContent>
-              <div class="card">
+              <div class="card" *ngIf="selectedBrigade">
                 <div class="card-header">
                   Занятость
                 </div>
@@ -133,11 +136,14 @@
                   </table>
                 </div>
               </div>
+              <div *ngIf="!selectedBrigade" class="patch" >
+                <h2>Выберите бригаду</h2>
+              </div>
             </ng-template>
           </ngb-tab>
           <ngb-tab title="Журнал событий" [disabled]="!selectedBrigade">
             <ng-template ngbTabContent>
-              <div class="card full-height">
+              <div class="card full-height" *ngIf="selectedBrigade">
                 <div class="card-body full-height p-0">
                   <app-grid-table
                     [columnDefs]="colDefsLog"
@@ -146,6 +152,9 @@
                     [listSource]="listSourceLog">
                   </app-grid-table>
                 </div>
+              </div>
+              <div *ngIf="!selectedBrigade" class="patch" >
+                <h2>Выберите бригаду</h2>
               </div>
             </ng-template>
           </ngb-tab>

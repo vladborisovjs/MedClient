@@ -1,0 +1,21 @@
+@import "../../../../styles/variables";
+
+.dict-list {
+  .dict-list-body {
+    overflow: auto;
+  }
+  .nav-item {
+    margin-bottom: 1px;
+    border-radius: 0.25rem;
+    background-color: $primary;
+    .nav-link {
+      color: $white;
+    }
+    &:hover {
+      background-color: darken($info-alt, 12);
+    }
+  }
+  .dict-list-container {
+    padding: 2px;
+  }
+}

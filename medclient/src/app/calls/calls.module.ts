@@ -41,6 +41,11 @@ import { ModalAddDrugsComponent } from './components/modal-add-drugs/modal-add-d
 import {BrigadeDutyService} from './services/brigade-duty.service';
 import { ModalCallBrigadeStatusesComponent } from './components/modal-call-brigade-statuses/modal-call-brigade-statuses.component';
 import { ModalF110Component } from './components/modal-f110/modal-f110.component';
+import { ModalCallJournalComponent } from './components/modal-call-journal/modal-call-journal.component';
+import { ModalCallTransferComponent } from './components/modal-call-transfer/modal-call-transfer.component';
+import { ModalCallTransferAvailableComponent } from './components/modal-call-transfer-available/modal-call-transfer-available.component';
+import { ModalCreateCallComponent } from './components/modal-create-call/modal-create-call.component';
+import { ModalSimilarCallsComponent } from './components/modal-similar-calls/modal-similar-calls.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +73,11 @@ import { ModalF110Component } from './components/modal-f110/modal-f110.component
     ModalAddDrugsComponent,
     ModalCallBrigadeStatusesComponent,
     ModalF110Component,
+    ModalCallJournalComponent,
+    ModalCallTransferComponent,
+    ModalCallTransferAvailableComponent,
+    ModalCreateCallComponent,
+    ModalSimilarCallsComponent,
   ],
   imports: [
     CommonModule,
@@ -108,7 +118,12 @@ import { ModalF110Component } from './components/modal-f110/modal-f110.component
     ModalAddDrugsComponent,
     ModalCallBrigadeStatusesComponent,
     ModalAddDrugsComponent,
-    ModalF110Component
+    ModalF110Component,
+    ModalCallJournalComponent,
+    ModalCallTransferComponent,
+    ModalCallTransferAvailableComponent,
+    ModalCreateCallComponent,
+    ModalSimilarCallsComponent
   ]
 })
 export class CallsModule {

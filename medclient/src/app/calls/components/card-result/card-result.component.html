@@ -35,16 +35,16 @@
         </div>
       </div>
     </div>
-    <!--<div class="card">-->
-      <!--<div class="card-body">-->
-        <!--<app-simple-view-->
-          <!--[item]="cardResult"-->
-          <!--[form]="getBlockForm('comments')"-->
-          <!--[descriptions]="getBlockDescriptions('comments')"-->
-          <!--[row]="true"-->
-        <!--&gt;</app-simple-view>-->
-      <!--</div>-->
-    <!--</div>-->
+    <div class="card">
+      <div class="card-body">
+        <app-simple-view
+          [item]="cardResult"
+          [form]="getBlockForm('comments')"
+          [descriptions]="getBlockDescriptions('comments')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
   </div>
   <div class="col-6 full-width" *ngIf="mode && mode !== 'undef'">
     <div class="card">
@@ -60,15 +60,15 @@
                   [columnDefs]="colDefs"
                   (onRowSelect)="selectTherapy($event)"
                   [pagination]="false"
-                  [listSource]="listSource">
+                  [listSource]="listLocal">
                 </app-grid-table>
               </div>
               <div class="toolbar-right">
                 <div class="btn-group">
                   <button class="btn btn-sm btn-success" (click)="addTherapy(true)">Добавить</button>
-                  <button class="btn btn-sm btn-info" [disabled]="!selectedTherapy">Редактировать</button>
-                  <button class="btn btn-sm btn-danger" [disabled]="!selectedTherapy">Удалить</button>
-                </div>
+                  <button class="btn btn-sm btn-info " (click)="editTherapy(true)" [disabled]="!selectedTherapy">Редактировать</button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteTherapy()" [disabled]="!selectedTherapy">Удалить</button>
+              </div>
               </div>
               <div class="card">
                 <div class="card-header">
@@ -92,14 +92,14 @@
                   [columnDefs]="colDefs"
                   (onRowSelect)="selectTherapy($event)"
                   [pagination]="false"
-                  [listSource]="cardResult.transport_therapies">
+                  [listSource]="listTransport">
                 </app-grid-table>
               </div>
               <div class="toolbar-right">
                 <div class="btn-group">
                   <button class="btn btn-sm btn-success" (click)="addTherapy(false)">Добавить</button>
-                  <button class="btn btn-sm btn-info" [disabled]="!selectedTherapy">Редактировать</button>
-                  <button class="btn btn-sm btn-danger" [disabled]="!selectedTherapy">Удалить</button>
+                  <button class="btn btn-sm btn-info " (click)="editTherapy(false)" [disabled]="!selectedTherapy">Редактировать</button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteTherapy()" [disabled]="!selectedTherapy">Удалить</button>
                 </div>
               </div>
               <div class="card">
@@ -127,12 +127,12 @@
             ЭКГ после мероприятий
           </div>
           <div class="card-body">
-              <app-simple-view
-                [item]="cardResult.ekg_after"
-                [descriptions]="getBlockDescriptions('ekg_after')"
-                [form]="getBlockForm('ekg_after')"
-                [row]="true"
-              ></app-simple-view>
+            <app-simple-view
+              [item]="cardResult.ekg_after"
+              [descriptions]="getBlockDescriptions('ekg_after')"
+              [form]="getBlockForm('ekg_after')"
+              [row]="true"
+            ></app-simple-view>
           </div>
         </div>
       </div>

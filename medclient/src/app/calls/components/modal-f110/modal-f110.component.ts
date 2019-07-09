@@ -4,6 +4,7 @@ import {CallItemService} from '../../services/call-item.service';
 import {ColDef} from 'ag-grid-community';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-modal-f110',
@@ -13,6 +14,7 @@ import {Subscription} from 'rxjs';
 export class ModalF110Component implements OnInit {
   callId: any;
   sbscs: Subscription[] = [];
+  datePipe = new DatePipe('ru');
   colDefs: ColDef[] = [
     {
       headerName: '№',
@@ -29,6 +31,7 @@ export class ModalF110Component implements OnInit {
     {
       headerName: 'Дата',
       field: 'date',
+      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       sortable: true,
       filter: true
     }
@@ -40,7 +43,7 @@ export class ModalF110Component implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.cs.getF110().subscribe(
+    this.cs.getF110(this.callId, undefined).subscribe(
       list => {
         this.listSource = list;
       }

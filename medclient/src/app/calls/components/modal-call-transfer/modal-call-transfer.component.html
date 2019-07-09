@@ -1,0 +1,25 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Вызов передан
+    </div>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-left">
+      <button class="btn btn-primary" (click)="openAvailable()"><i class="fas fa-plus"></i> Добавить передачу </button>
+    </div>
+  </div>
+  <div class="card-body transer-table">
+    <app-grid-table
+      [columnDefs]="colDefs"
+      (onGridReady)="fitCol($event)"
+      [pagination]="false"
+      [listSource]="listSource">
+    </app-grid-table>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

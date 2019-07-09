@@ -1,3 +1,49 @@
-<p>
-  employees works!
-</p>
+<div class="card full-height">
+  <div class="card-header">
+    <div class="card-title">
+      График работы сотрудников
+    </div>
+  </div>
+  <div class="card-body p-2">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <form [formGroup]="form" novalidate autocomplete="off" class="sc-form form-group flexible">
+          <div>
+            Период:
+          </div>
+          <ng-select
+            [placeholder]="'Месяц'"
+            [bindLabel]="'label'"
+            [bindValue]="'id'"
+            [items]="months"
+            class="archive-select mon-select"
+            [formControlName]="'month'">
+          </ng-select>
+          <input
+            type="number"
+            class="sc-control form-control year-select"
+            [formControlName]="'year'"
+            [placeholder]="'год'">
+        </form>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-primary" (click)="prolongation()">
+          Пролонгация
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <div class="card-body p-0 sch-table">
+    <app-schedule-table *ngIf="scheduleDatesColumns.length"
+                        (clickDateEvent)="openSchedule($event)"
+                        [rows]="scheduleList"
+                        [mode]="'performers'"
+                        [dates]="scheduleDatesColumns"
+                        [dateLabels]="dateLabels"></app-schedule-table>
+    <div *ngIf="!scheduleDatesColumns.length" class="patch" >
+      <h2>Загрузка...</h2>
+    </div>
+  </div>
+</div>
+

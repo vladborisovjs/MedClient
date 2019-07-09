@@ -46,6 +46,7 @@ export class ModalDeclarantUpdateComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.description);
+    console.log(this.callItem.general.call_id);
   }
 
   back() {
@@ -53,7 +54,6 @@ export class ModalDeclarantUpdateComponent implements OnInit {
   }
 
   save() {
-    console.log(this.callItem.declarant);
     Object.assign(this.callItem.declarant, this.form.getRawValue());
     this.cs.saveDeclarant(this.callItem.declarant, this.callItem.general.call_id).subscribe(
       res => {

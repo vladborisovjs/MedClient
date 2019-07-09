@@ -684,7 +684,7 @@ export class MedApi {
      * @return OK
      */
     createUsingPOST_4(dto: BrigadeTypeDto): Observable<BrigadeTypeDto> {
-        let url_ = this.baseUrl + "/api/brigade_types";
+        let url_ = this.baseUrl + "/api/brigade_types/create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(dto);
@@ -714,6 +714,79 @@ export class MedApi {
     }
 
     protected processCreateUsingPOST_4(response: HttpResponseBase): Observable<BrigadeTypeDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? BrigadeTypeDto.fromJS(resultData200) : new BrigadeTypeDto();
+            return _observableOf(result200);
+            }));
+        } else if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 403) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BrigadeTypeDto>(<any>null);
+    }
+
+    /**
+     * обновление сведений о типе бригад
+     * @param dto dto
+     * @return OK
+     */
+    updateUsingPUT_4(dto: BrigadeTypeDto): Observable<BrigadeTypeDto> {
+        let url_ = this.baseUrl + "/api/brigade_types/update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "*/*"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUsingPUT_4(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUsingPUT_4(<any>response_);
+                } catch (e) {
+                    return <Observable<BrigadeTypeDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<BrigadeTypeDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateUsingPUT_4(response: HttpResponseBase): Observable<BrigadeTypeDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -821,79 +894,6 @@ export class MedApi {
     }
 
     /**
-     * обновление сведений о типе бригад
-     * @param dto dto
-     * @return OK
-     */
-    updateUsingPUT_4(dto: BrigadeTypeDto): Observable<BrigadeTypeDto> {
-        let url_ = this.baseUrl + "/api/brigade_types/{id}";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(dto);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json", 
-                "Accept": "*/*"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateUsingPUT_4(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateUsingPUT_4(<any>response_);
-                } catch (e) {
-                    return <Observable<BrigadeTypeDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<BrigadeTypeDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processUpdateUsingPUT_4(response: HttpResponseBase): Observable<BrigadeTypeDto> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? BrigadeTypeDto.fromJS(resultData200) : new BrigadeTypeDto();
-            return _observableOf(result200);
-            }));
-        } else if (status === 201) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BrigadeTypeDto>(<any>null);
-    }
-
-    /**
      * DEPRECATED возвращает список бригад по заданным параметрам
      * @param deleted (optional) deleted
      * @param subdivisionId (optional) subdivisionId
@@ -974,7 +974,7 @@ export class MedApi {
      * @return OK
      */
     createUsingPOST_3(dto: BrigadeDto): Observable<BrigadeDto> {
-        let url_ = this.baseUrl + "/api/brigades";
+        let url_ = this.baseUrl + "/api/brigades/create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(dto);
@@ -1004,6 +1004,79 @@ export class MedApi {
     }
 
     protected processCreateUsingPOST_3(response: HttpResponseBase): Observable<BrigadeDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? BrigadeDto.fromJS(resultData200) : new BrigadeDto();
+            return _observableOf(result200);
+            }));
+        } else if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 403) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BrigadeDto>(<any>null);
+    }
+
+    /**
+     * обновление сведений о бригаде кроме статуса
+     * @param dto dto
+     * @return OK
+     */
+    updateUsingPUT_3(dto: BrigadeDto): Observable<BrigadeDto> {
+        let url_ = this.baseUrl + "/api/brigades/update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "*/*"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUsingPUT_3(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUsingPUT_3(<any>response_);
+                } catch (e) {
+                    return <Observable<BrigadeDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<BrigadeDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateUsingPUT_3(response: HttpResponseBase): Observable<BrigadeDto> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1089,79 +1162,6 @@ export class MedApi {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = resultData200 ? BrigadeDto.fromJS(resultData200) : new BrigadeDto();
             return _observableOf(result200);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BrigadeDto>(<any>null);
-    }
-
-    /**
-     * обновление сведений о бригаде кроме статуса
-     * @param dto dto
-     * @return OK
-     */
-    updateUsingPUT_3(dto: BrigadeDto): Observable<BrigadeDto> {
-        let url_ = this.baseUrl + "/api/brigades/{id}";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(dto);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json", 
-                "Accept": "*/*"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateUsingPUT_3(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateUsingPUT_3(<any>response_);
-                } catch (e) {
-                    return <Observable<BrigadeDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<BrigadeDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processUpdateUsingPUT_3(response: HttpResponseBase): Observable<BrigadeDto> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? BrigadeDto.fromJS(resultData200) : new BrigadeDto();
-            return _observableOf(result200);
-            }));
-        } else if (status === 201) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
             }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -13659,6 +13659,79 @@ export class MedApi {
     }
 
     /**
+     * update
+     * @param dto dto
+     * @return OK
+     */
+    updateUsingPUT_13(dto: HospitalDto): Observable<HospitalDto> {
+        let url_ = this.baseUrl + "/api/hospitals/update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "*/*"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUsingPUT_13(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUsingPUT_13(<any>response_);
+                } catch (e) {
+                    return <Observable<HospitalDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<HospitalDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateUsingPUT_13(response: HttpResponseBase): Observable<HospitalDto> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? HospitalDto.fromJS(resultData200) : new HospitalDto();
+            return _observableOf(result200);
+            }));
+        } else if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 403) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<HospitalDto>(<any>null);
+    }
+
+    /**
      * readOne
      * @param id id
      * @return OK
@@ -13725,79 +13798,6 @@ export class MedApi {
             }));
         }
         return _observableOf<SubdivisionFlatDto>(<any>null);
-    }
-
-    /**
-     * update
-     * @param dto dto
-     * @return OK
-     */
-    updateUsingPUT_13(dto: HospitalDto): Observable<HospitalDto> {
-        let url_ = this.baseUrl + "/api/hospitals/{id}";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(dto);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json", 
-                "Accept": "*/*"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateUsingPUT_13(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateUsingPUT_13(<any>response_);
-                } catch (e) {
-                    return <Observable<HospitalDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<HospitalDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processUpdateUsingPUT_13(response: HttpResponseBase): Observable<HospitalDto> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? HospitalDto.fromJS(resultData200) : new HospitalDto();
-            return _observableOf(result200);
-            }));
-        } else if (status === 201) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server error occurred.", status, _responseText, _headers);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<HospitalDto>(<any>null);
     }
 
     /**
@@ -28227,7 +28227,7 @@ export class MedApi {
     }
 
     /**
-     * [CREATE ]создание нового вызова [возвращает callId]
+     * [CREATE] создание нового вызова [возвращает callId]
      * @param subId subId
      * @param dto dto
      * @return OK
@@ -28461,6 +28461,7 @@ export class MedApi {
 
     /**
      * [READ] возвращает список вызовов по заданным параметрам поиска
+     * @param subId subId
      * @param subdivisionId (optional) 
      * @param dateFrom (optional) 
      * @param dateTo (optional) 
@@ -28482,8 +28483,11 @@ export class MedApi {
      * @param reasonTypeId (optional) 
      * @return OK
      */
-    readAllUsingPOST(subdivisionId?: number | null | undefined, dateFrom?: Date | null | undefined, dateTo?: Date | null | undefined, number?: string | null | undefined, declarantName?: string | null | undefined, declarantPhone?: string | null | undefined, patientName?: string | null | undefined, patientSex?: number | null | undefined, patientAgeYears?: number | null | undefined, patientAgeMonths?: number | null | undefined, patientAgeDays?: number | null | undefined, aoName?: string | null | undefined, districtId?: number | null | undefined, performer?: string | null | undefined, callTypeId?: number | null | undefined, declarantTypeId?: number | null | undefined, phone?: string | null | undefined, callPlaceTypeId?: number | null | undefined, reasonTypeId?: number | null | undefined): Observable<CallGridDto[]> {
+    readAllUsingPOST(subId: number, subdivisionId?: number | null | undefined, dateFrom?: Date | null | undefined, dateTo?: Date | null | undefined, number?: string | null | undefined, declarantName?: string | null | undefined, declarantPhone?: string | null | undefined, patientName?: string | null | undefined, patientSex?: number | null | undefined, patientAgeYears?: number | null | undefined, patientAgeMonths?: number | null | undefined, patientAgeDays?: number | null | undefined, aoName?: string | null | undefined, districtId?: number | null | undefined, performer?: string | null | undefined, callTypeId?: number | null | undefined, declarantTypeId?: number | null | undefined, phone?: string | null | undefined, callPlaceTypeId?: number | null | undefined, reasonTypeId?: number | null | undefined): Observable<CallGridDto[]> {
         let url_ = this.baseUrl + "/api/subdivisions/{subId}/calls/request?";
+        if (subId === undefined || subId === null)
+            throw new Error("The parameter 'subId' must be defined.");
+        url_ = url_.replace("{subId}", encodeURIComponent("" + subId)); 
         if (subdivisionId !== undefined)
             url_ += "subdivisionId=" + encodeURIComponent("" + subdivisionId) + "&"; 
         if (dateFrom !== undefined)
@@ -29287,16 +29291,12 @@ export class MedApi {
 
     /**
      * [CREATE] подразделение -> вызов -> бригада -> Форма 110/у
-     * @param subId subId
      * @param callId callId
      * @param brigadeScheduleId brigadeScheduleId
      * @return OK
      */
-    createCardUsingPOST(subId: number, callId: number, brigadeScheduleId: number): Observable<CardDto> {
+    createCardUsingPOST(callId: number, brigadeScheduleId: number): Observable<CardDto> {
         let url_ = this.baseUrl + "/api/subdivisions/{subId}/calls/{callId}/brigade_schedules/{brigadeScheduleId}/cards";
-        if (subId === undefined || subId === null)
-            throw new Error("The parameter 'subId' must be defined.");
-        url_ = url_.replace("{subId}", encodeURIComponent("" + subId)); 
         if (callId === undefined || callId === null)
             throw new Error("The parameter 'callId' must be defined.");
         url_ = url_.replace("{callId}", encodeURIComponent("" + callId)); 
@@ -31170,11 +31170,15 @@ export class MedApi {
 
     /**
      * update
+     * @param id id
      * @param dto dto
      * @return OK
      */
-    updateUsingPUT_32(dto: TherapyDto): Observable<TherapyDto> {
+    updateUsingPUT_32(id: number, dto: TherapyDto): Observable<TherapyDto> {
         let url_ = this.baseUrl + "/api/therapies/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(dto);
@@ -31243,17 +31247,17 @@ export class MedApi {
 
     /**
      * delete
-     * @param dto dto
+     * @param id id
      * @return OK
      */
-    deleteUsingDELETE_3(dto: TherapyDto): Observable<void> {
+    deleteUsingDELETE_3(id: number): Observable<void> {
         let url_ = this.baseUrl + "/api/therapies/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(dto);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
@@ -46827,7 +46831,6 @@ export class Performer implements IPerformer {
     firstName?: string | null;
     id?: number | null;
     login?: string | null;
-    name?: string | null;
     online?: boolean | null;
     password?: string | null;
     patronymic?: string | null;
@@ -46863,7 +46866,6 @@ export class Performer implements IPerformer {
             this.firstName = data["firstName"] !== undefined ? data["firstName"] : <any>null;
             this.id = data["id"] !== undefined ? data["id"] : <any>null;
             this.login = data["login"] !== undefined ? data["login"] : <any>null;
-            this.name = data["name"] !== undefined ? data["name"] : <any>null;
             this.online = data["online"] !== undefined ? data["online"] : <any>null;
             this.password = data["password"] !== undefined ? data["password"] : <any>null;
             this.patronymic = data["patronymic"] !== undefined ? data["patronymic"] : <any>null;
@@ -46907,7 +46909,6 @@ export class Performer implements IPerformer {
         data["firstName"] = this.firstName !== undefined ? this.firstName : <any>null;
         data["id"] = this.id !== undefined ? this.id : <any>null;
         data["login"] = this.login !== undefined ? this.login : <any>null;
-        data["name"] = this.name !== undefined ? this.name : <any>null;
         data["online"] = this.online !== undefined ? this.online : <any>null;
         data["password"] = this.password !== undefined ? this.password : <any>null;
         data["patronymic"] = this.patronymic !== undefined ? this.patronymic : <any>null;
@@ -46944,7 +46945,6 @@ export interface IPerformer {
     firstName?: string | null;
     id?: number | null;
     login?: string | null;
-    name?: string | null;
     online?: boolean | null;
     password?: string | null;
     patronymic?: string | null;

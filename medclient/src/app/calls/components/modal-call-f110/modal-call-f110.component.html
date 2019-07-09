@@ -14,9 +14,14 @@
     </app-grid-table>
 
   </div>
-  <div class="card-footer">
-    <button class="btn btn-primary" (click)="createCard()">
-      Создать Ф-110
-    </button>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" (click)="createCard()">
+        Создать карту
+      </button>
+      <button class="btn btn-secondary" (click)="cancel()">
+        Назад
+      </button>
+    </div>
   </div>
 </div>

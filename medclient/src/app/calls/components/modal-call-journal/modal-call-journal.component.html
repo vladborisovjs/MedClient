@@ -1,0 +1,20 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Журнал
+    </div>
+  </div>
+  <div class="card-body journal-table">
+    <app-grid-table
+      [columnDefs]="colDefs"
+      (onGridReady)="fitCol($event)"
+      [pagination]="false"
+      [listSource]="listSource">
+    </app-grid-table>
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

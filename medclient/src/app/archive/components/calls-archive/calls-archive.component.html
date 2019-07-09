@@ -1,0 +1,84 @@
+<div class="card full-height">
+  <div class="card-header">
+    <h5 class="center-me">
+      Поиск вызовов
+    </h5>
+  </div>
+  <div class="card-body p-0 full-height flexible">
+    <div class="card col-3 p-0">
+      <div class="scrollable full-height">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-subtitle">
+              Вызов
+            </div>
+          </div>
+          <div class="p-1">
+            <app-simple-view
+              [descriptions]="getBlockDescriptions('callInfo')"
+              [preprocessed]="true"
+              [form]="form"
+              [row]="true"
+              [item]="filters">
+            </app-simple-view>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-subtitle">
+              Пациент
+            </div>
+          </div>
+          <div class="p-1">
+            <app-simple-view
+              [descriptions]="getBlockDescriptions('patient')"
+              [preprocessed]="true"
+              [form]="form"
+              [row]="true"
+              [item]="filters">
+            </app-simple-view>
+            <app-simple-view
+              [descriptions]="getBlockDescriptions('address')"
+              [preprocessed]="true"
+              [form]="form"
+              [row]="true"
+              [item]="filters">
+            </app-simple-view>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-subtitle">
+              Заявитель
+            </div>
+          </div>
+          <div class="p-1">
+            <app-simple-view
+              [descriptions]="getBlockDescriptions('declarant')"
+              [preprocessed]="true"
+              [form]="form"
+              [row]="true"
+              [item]="filters">
+            </app-simple-view>
+          </div>
+        </div>
+        <div class="btn-group w-100 p-1">
+          <button class="btn btn-success" [disabled]="loading" (click)="searchCalls()">
+            <i class="fas fa-search" *ngIf="!loading"></i>
+            <i class="fas fa-cog fa-spin" *ngIf="loading"></i>
+            Найти
+          </button>
+          <button class="btn btn-warning" (click)="eraseFilters()"><i class="fas fa-eraser"></i> Очистить</button>
+        </div>
+      </div>
+    </div>
+    <div class="card col-9 p-0 full-height">
+      <app-grid-table
+        [listSource]="listSource"
+        [columnDefs]="colDefs"
+        (onGridReady)="fitCol($event)"
+        (onRowDblClick)="goToCall($event)">
+      </app-grid-table>
+    </div>
+  </div>
+</div>

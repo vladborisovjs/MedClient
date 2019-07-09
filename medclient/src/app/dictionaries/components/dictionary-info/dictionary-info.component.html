@@ -1,0 +1,36 @@
+<div class="card full-height w-50">
+  <div class="card-header toolbar">
+    <div class="card-title">
+      Справочник «{{dict.title}}»
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-success" *ngIf="dict.type === 'list'" (click)="createItem()">
+        <i class="fas fa-plus"></i> Новая запись
+      </button>
+    </div>
+  </div>
+  <div class="card-body p-0 full-height">
+    <app-grid-table *ngIf="dict.type === 'list'"
+    [columnDefs]="dict.colDef"
+    [listSource]="dList"
+    (onRowDblClick)="goToItem($event)"
+    ></app-grid-table>
+
+    <p-treeTable [value]="tree" *ngIf="dict.type === 'tree'" class="subdev-tree">
+      <!--<ng-template pTemplate="header">-->
+        <!--<tr>-->
+          <!--<th>Наименование</th>-->
+        <!--</tr>-->
+      <!--</ng-template>-->
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+        <tr>
+          <td>
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            <a [routerLink]="rowData.id">{{rowData.name}}</a>
+          </td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+
+  </div>
+</div>

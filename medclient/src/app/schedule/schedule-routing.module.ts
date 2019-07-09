@@ -4,6 +4,10 @@ import {ScheduleComponent} from './components/schedule/schedule.component';
 import {EmployeesComponent} from './components/employees/employees.component';
 import {BrigadesComponent} from './components/brigades/brigades.component';
 import {BrigadesControlComponent} from './components/brigades-control/brigades-control.component';
+import {DictionaryInfoComponent} from '../dictionaries/components/dictionary-info/dictionary-info.component';
+import {DictionaryItemComponent} from '../dictionaries/components/dictionary-item/dictionary-item.component';
+import {BrigadesControlListResolverService} from './services/resolvers/brigades-control-list-resolver.service';
+import {BrigadesControlItemResolverService} from './services/resolvers/brigades-control-item-resolver.service';
 
 const routes: Routes = [
   {
@@ -20,7 +24,7 @@ const routes: Routes = [
         path: 'employees',
         component: EmployeesComponent,
         data: {
-          title: 'Cотрудник',
+          title: 'Сотрудники',
         },
       },
       {
@@ -32,10 +36,32 @@ const routes: Routes = [
       },
       {
         path: 'brigades-control',
-        component: BrigadesControlComponent,
         data: {
-          title: 'Управление бригадами',
+          title: 'Список бригад',
         },
+        children: [
+          {
+            path: '',
+            component: DictionaryInfoComponent,
+            data: {
+              title: null,
+            },
+            resolve: {
+              // itemWithList: DictionaryInfoResolverService
+              itemWithList: BrigadesControlListResolverService
+            }
+          },
+          {
+            path: ':dictItem',
+            component: DictionaryItemComponent,
+            data: {
+              title: 'Бригада',
+            },
+            resolve: {
+              itemWithContent: BrigadesControlItemResolverService
+            }
+          }
+        ]
       },
     ]
   },

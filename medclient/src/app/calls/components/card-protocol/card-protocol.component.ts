@@ -16,7 +16,7 @@ export class CardProtocolComponent implements OnInit {
       field: 'date',
       sortable: true,
       filter: true,
-      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy hh:mm'),
+      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       width: 100
     },
     {

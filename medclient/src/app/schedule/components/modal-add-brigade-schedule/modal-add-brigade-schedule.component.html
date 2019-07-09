@@ -1,0 +1,68 @@
+<div class="card">
+  <div class="card-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="card-title">
+      {{mode === 'new'? 'Добаление' : 'Редактирование'}} смены бригады
+    </div>
+  </div>
+  <div class="card-body">
+    Бригада: <b>{{brigade.brigadeName}}</b><br> Специализация: <b>{{brigade.brigadeTypeName}}</b><br>
+    <div class="col-4">
+      <app-simple-view
+        [item]="scheduleItem"
+        [form]="form"
+        [preprocessed]="true"
+        [descriptions]="timeDesc"
+        [row]="true"
+      ></app-simple-view>
+    </div>
+  </div>
+  <div class="card-header toolbar">
+    <div class="toolbar-left card-subtitle">Сотрудники</div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-danger" (click)="deletePerformer()" [disabled]="!selectedPerformer">Удалить</button>
+        <button (click)="addPerformer()" class="btn btn-primary">Добавить</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body body-for-table">
+    <app-grid-table
+      [columnDefs]="performersColDef"
+      (onGridReady)="fitCol($event)"
+      (onRowDblClick)="editPerformer($event)"
+      (onRowSelect)="selectPerformer($event)"
+      [pagination]="false"
+      [listSource]="performersList">
+    </app-grid-table>
+  </div>
+  <div class="card-header toolbar">
+    <div class="toolbar-left card-subtitle">Автотраспорт</div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-danger" (click)="deleteTransport()" [disabled]="!selectedTransport">Удалить</button>
+        <button (click)="addTransport()" class="btn btn-primary">Добавить</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body body-for-table">
+    <app-grid-table
+      [columnDefs]="transportColDef"
+      (onGridReady)="fitCol($event)"
+      (onRowDblClick)="editTransport($event)"
+      (onRowSelect)="selectTransport($event)"
+      [pagination]="false"
+      [listSource]="transportList">
+    </app-grid-table>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" (click)="save()"
+              [disabled]="transportList.length === 0 || performersList.length < 2">Сохранить
+      </button>
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

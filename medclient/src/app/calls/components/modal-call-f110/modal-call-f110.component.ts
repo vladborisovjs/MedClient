@@ -4,6 +4,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {ColDef} from 'ag-grid-community';
 import {CallItemService} from '../../services/call-item.service';
 import {NotificationsService} from 'angular2-notifications';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-modal-call-f110',
@@ -12,12 +13,14 @@ import {NotificationsService} from 'angular2-notifications';
 })
 export class ModalCallF110Component implements OnInit {
   @Input() brigade: any;
+  datePipe = new DatePipe('ru');
   colDefs: ColDef[] = [
     {
-      headerName: 'Номер',
+      headerName: '№',
       field: 'number',
       sortable: true,
-      filter: true
+      filter: true,
+      width: 80
     },
     {
       headerName: 'Бригада',
@@ -28,6 +31,7 @@ export class ModalCallF110Component implements OnInit {
     {
       headerName: 'Дата',
       field: 'date',
+      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       sortable: true,
       filter: true
     }
@@ -65,6 +69,10 @@ export class ModalCallF110Component implements OnInit {
         this.modalInstance.dismiss();
       }
     );
+  }
+
+  cancel() {
+    this.modalInstance.dismiss();
   }
 
 }

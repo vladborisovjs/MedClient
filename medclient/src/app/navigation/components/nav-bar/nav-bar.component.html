@@ -8,10 +8,13 @@
     <ul class="navbar-nav mr-auto">
       <ng-container *ngFor="let item of items">
         <li *ngIf="!item.items" routerLinkActive="active" class="nav-item">
-          <a class="nav-link" [routerLink]="item.routerLink">{{item.label}}</a>
+          <a class="nav-link" [routerLink]="item.routerLink">
+            <i *ngIf="item.iconClass" [class]=item.iconClass></i>
+            {{item.label}}
+          </a>
         </li>
         <li *ngIf="item.items" class="nav-item" ngbDropdown>
-          <a  class="nav-link dropdown-toggle" ngbDropdownToggle role="button">{{item.label}} <span class="caret"></span></a>
+          <a  class="nav-link dropdown-toggle" ngbDropdownToggle role="button"> <i *ngIf="item.iconClass" [class]=item.iconClass></i>{{item.label}} <span class="caret"></span></a>
           <div class="dropdown-menu" ngbDropdownMenu>
             <a *ngFor="let subItem of item.items" class="dropdown-item" role="button" [routerLink]="subItem.routerLink">{{subItem.label}}</a>
           </div>
@@ -19,7 +22,7 @@
       </ng-container>
 
     </ul>
-    <button class="btn btn-info btn-wide" (click)="onExit.emit($event)"> Выход </button>
+    <button class="btn btn-info" (click)="onExit.emit($event)"> <i class="fas fa-sign-out-alt"></i> Выход </button>
   </div>
 
 </nav>

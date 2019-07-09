@@ -5,21 +5,39 @@
     </div>
   </div>
   <div class="card-body p-0">
-    <table class="table">
+    <table class="table table-sm ">
       <thead>
       <tr>
-        <th scope="col">Передать</th>
-        <th scope="col">Сообщение</th>
-        <th scope="col">Дата и время</th>
-        <th scope="col">Вид передачи</th>
+        <th class="check-status" scope="col">Передать</th>
+        <th class="check-status" scope="col">Сообщение</th>
+        <th class="check-status" scope="col">Дата и время</th>
+        <th class="check-status" scope="col">Вид передачи</th>
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>1</td>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
+      <tr *ngFor="let status of statuses">
+        <td class="check-status">
+          <app-simple-view
+            [descriptions]="descriptions.check"
+            [form]="status.form"
+            [item]="status">
+          </app-simple-view>
+        </td>
+        <td>{{status.name}}</td>
+        <td>
+          <app-simple-view
+            [descriptions]="descriptions.dt"
+            [form]="status.form"
+            [item]="status">
+          </app-simple-view>
+        </td>
+        <td>
+          <app-simple-view
+            [descriptions]="descriptions.transfer"
+            [form]="status.form"
+            [item]="status">
+          </app-simple-view>
+        </td>
       </tr>
       </tbody>
     </table>
@@ -27,8 +45,8 @@
   <div class="card-footer toolbar">
     <div class="toolbar-right">
       <div class="btn-group">
-        <button class="btn btn-primary">Передать</button>
-        <button class="btn btn-secondary">Назад</button>
+        <button class="btn btn-primary" (click)="save()">Передать</button>
+        <button class="btn btn-secondary" (click)="back()">Назад</button>
       </div>
     </div>
   </div>

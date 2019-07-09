@@ -1,0 +1,15 @@
+@import "~src/styles/variables";
+
+:host {
+  height: 100%;
+}
+
+th {
+  background: white;
+}
+
+.selectable-cell:hover {
+  background-color: $primary;
+  color: white;
+  cursor: pointer;
+}

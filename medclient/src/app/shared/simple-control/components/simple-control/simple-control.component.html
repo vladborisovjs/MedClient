@@ -1,4 +1,4 @@
-<form novalidate #ele class="sc-form form-group">
+<form novalidate #ele class="sc-form form-group {{postLabel? 'input-group': ''}}">
   <input [ngModelOptions]="{standalone: true}"
          class="sc-control-checkbox"
          [disabled]="alwaysDisabled ? true : disabled"
@@ -9,6 +9,7 @@
                                                                                                        style="color: red">{{errorText}}</span>
   </div>
 
+
   <input *ngIf="type === 'text' || type === 'number'" #ctrl
          [ngModelOptions]="{standalone: true}"
          class="sc-control form-control"
@@ -17,18 +18,23 @@
          [title]="value ? value : ''"
          [disabled]="alwaysDisabled ? true : disabled"
          [type]="type"
+         [attr.aria-describedby]="'post-label'"
          [placeholder]="placeholder ? placeholder : label ? label : ''"
          [tabIndex]="tabIndex">
 
+
   <input *ngIf="type === 'password'" #ctrl
          [ngModelOptions]="{standalone: true}"
-         class="sc-control form-control"
+         class=" form-control"
          (blur)="onInputBlur($event)"
          [(ngModel)]="value"
          [disabled]="alwaysDisabled ? true : disabled"
          [type]="type"
+         [attr.aria-describedby]="'post-label'"
          [placeholder]="placeholder ? placeholder : label ? label : ''"
          [tabIndex]="tabIndex">
+
+
 
   <textarea *ngIf="type === 'textarea'" #ctrl
             [ngModelOptions]="{standalone: true}"
@@ -37,6 +43,7 @@
             (blur)="onInputBlur($event)"
             [(ngModel)]="value"
             [title]="value ? value : ''"
+            [attr.aria-describedby]="'post-label'"
             [disabled]="alwaysDisabled ? true : disabled"
             [placeholder]="placeholder ? placeholder : label ? label : ''"
             [tabIndex]="tabIndex"></textarea>
@@ -71,6 +78,7 @@
               (dictSelect)="onDictSelect($event)"
               [disabled]="alwaysDisabled ? true : disabled"
               [bindValue]="bindValue"
+              [attr.aria-describedby]="'post-label'"
               [bindLabel]="bindLabel"></dictionary>
 
   <p-calendar *ngIf="type === 'date'" #ctrl
@@ -80,10 +88,9 @@
               [ngModelOptions]="{standalone: true}"
               class="sc-control-calendar"
               [(ngModel)]="value"
-              [showTime]="true"
+              [showTime]="showTime"
               hourFormat="24"
               (onBlur)="onInputBlur($event)"
-
               [dateFormat]="dateFormat"></p-calendar>
 
   <ng-select *ngIf="type === 'select'" #ctrl
@@ -97,6 +104,9 @@
              [bindValue]="bindValue? (bindValue ==='selfObject') ? null : bindValue : 'id'"
              [items]="selectList"></ng-select>
 
-  <div *ngIf="postLabel" class="sc-post-label">{{postLabel}}</div>
+  <!--<div *ngIf="postLabel" class="sc-post-label">{{postLabel}}</div>-->
+  <div *ngIf="postLabel" class="input-group-append">
+    <span class="input-group-text"  id="post-label">{{postLabel}}</span>
+  </div>
 
 </form>

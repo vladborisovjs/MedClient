@@ -1,0 +1,30 @@
+<div class="card dict-item-body">
+  <div class="card-header">
+    <div class="card-title">
+      {{title}} - {{item.id !== 0 ? 'Редактирование' : 'Новая запись'}}
+    </div>
+  </div>
+  <div class="card-body">
+    <div *ngFor="let b of dictItem.blocks">
+      <div class="card-subtitle">
+        {{b.title}}
+      </div>
+      <app-simple-view
+        [descriptions]="getBlockDescriptions(b.key)"
+        [form]="form"
+        [preprocessed]="true"
+        [item]="item"
+        [row]="true"
+      ></app-simple-view>
+    </div>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-success" (click)="save()" *ngIf="item.id !== 0">Сохранить</button>
+      <button class="btn btn-success" (click)="create()" *ngIf="item.id === 0">Создать</button>
+    </div>
+  </div>
+</div>

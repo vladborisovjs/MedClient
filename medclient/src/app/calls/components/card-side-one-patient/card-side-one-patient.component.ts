@@ -302,6 +302,7 @@ export class CardSideOnePatientComponent implements OnInit {
     this.router.navigate(['../'], {relativeTo: this.route.parent});
   }
 
+
   getBlockDescriptions(block: string): ISimpleDescription[] {
     return this.descriptionPatient.filter(el => {
       if (el.additional) {
@@ -312,17 +313,18 @@ export class CardSideOnePatientComponent implements OnInit {
   }
 
   save() {
-    Object.assign(this.patient, this.formPatient.getRawValue());
-    console.log('->>', this.patient);
-    // this.cas.saveEditCardPatient(this.cardId, this.patient).subscribe(
-      // res => {
-      //   this.ns.success('Успешно', 'Данные сохранены');
-      //   this.back();
-      // },
-      // err => {
-      //   this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-      //   console.log('Save Address', err);
-      // }
-    // );
+    let patient = [];
+    Object.assign(patient, this.formPatient.getRawValue());
+    console.log('->>', patient);
+    this.cas.saveEditCardPatient(this.cardId, patient).subscribe(
+      res => {
+        this.ns.success('Успешно', 'Данные сохранены');
+        this.back();
+      },
+      err => {
+        this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
+        console.log('Save Address', err);
+      }
+    );
   }
 }

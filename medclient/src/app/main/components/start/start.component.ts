@@ -9,12 +9,17 @@ import {ICardMenuItem} from '../../../navigation/components/card-menu/card-menu.
 export class StartComponent implements OnInit {
   cardMenuItems: ICardMenuItem[] = [
     {
-      label: 'Вызовы',
+      label: 'Диспетчеризация',
       routerLink: '/calls',
-      iconClass: 'fas fa-phone'
+      iconClass: 'fas fa-solar-panel'
     },
     {
-      label: 'График работы',
+      label: 'Архив',
+      routerLink: '/archive',
+      iconClass: 'fas fa-archive'
+    },
+    {
+      label: 'Управление сотрудниками',
       routerLink: '/schedule',
       iconClass: 'far fa-calendar-alt'
     },

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  CardAnamnesisPartDto,
+  CardAnamnesisPartDto, CardBasicDatesPartDto, CardGeneralPartDto,
   CardObjectivePartDto,
   CardPatientPartDto,
   CardResultDto,
@@ -9,13 +9,14 @@ import {
   MedApi, TherapyDto, TherapyItemDto
 } from '../../../../swagger/med-api.service';
 import {Observable} from 'rxjs';
+import {UserService} from '../../services/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CardItemService {
 
-  constructor(private api: MedApi) { }
+  constructor(private api: MedApi, private user: UserService) { }
 
   getCartSideOne(cardId): Observable<CardSideOneDto> {
     return this.api.readSideOneUsingGET(cardId);
@@ -27,6 +28,10 @@ export class CardItemService {
 
   getPatient(cardId): Observable<CardPatientPartDto> {
     return this.api.readSideOnePatientPartUsingGET(cardId);
+  }
+
+  getGeneral(cardId): Observable<CardGeneralPartDto> {
+    return this.api.readSideOneGeneralPartUsingGET_1(cardId);
   }
 
   getAnamnesis(cardId): Observable<CardAnamnesisPartDto> {
@@ -71,13 +76,29 @@ export class CardItemService {
     return this.api.createUsingPOST_31(therapy);
   }
 
-  deleteTherapy(therapy) {
+  editTherapy(id, therapy): Observable<TherapyDto> {
     therapy = TherapyDto.fromJS(therapy);
-    return this.api.deleteUsingDELETE_3(therapy);
+    return this.api.updateUsingPUT_32(id, therapy);
+  }
+
+  deleteTherapy(id) {
+    return this.api.deleteUsingDELETE_3(id);
   }
 
   saveIventories(inventories): Observable<TherapyItemDto> {
     inventories = TherapyItemDto.fromJS(inventories);
     return this.api.createUsingPOST_31(inventories);
+  }
+
+  getLocalTransportAssistance(resultId, isLocal) {
+    return this.api.readAllUsingGET_40(resultId, isLocal);
+  }
+
+  saveRequestCheck() {
+    return this.api.readAllUsingPOST_1(this.user.subdivisionId);
+  }
+  updateChronology(cardId, chronology): Observable<CardBasicDatesPartDto> {
+    chronology = CardBasicDatesPartDto.fromJS(chronology);
+    return this.api.updateBasicDatesUsingPUT(cardId, chronology);
   }
 }

@@ -1,0 +1,84 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Создать вызов
+      <button *ngIf="similarCalls.length > 0" class="btn btn-success blinking" (click)="showSimilarCalls()"><i class="fas fa-search blinking"></i>
+        Похожих вызовов:{{similarCalls.length}}
+      </button>
+    </div>
+  </div>
+  <div class="card-body p-0 full-height flexible">
+    <div class="card col-12 p-0">
+        <div class="card">
+          <div class="card-header">
+            1. Данные о вызове
+          </div>
+          <div class="card-body p-0">
+            <app-simple-view
+              [descriptions]="getBlockDescriptions('general')"
+              [item]="callItem"
+              [preprocessed]="true"
+              [row]="true"
+              [form]="form">
+            </app-simple-view>
+          </div>
+          <div class="card-header">
+            2. Пациент
+          </div>
+          <div class="card-body p-0">
+            <div *ngFor="let newPat of patients; index as i;">
+              <app-simple-view
+                [descriptions]="getBlockDescriptions('patient')"
+                [item]="newPat.item"
+                [preprocessed]="true"
+                [row]="true"
+                [form]="newPat.form">
+              </app-simple-view>
+              <div class="toolbar-right">
+                <button class="btn btn-danger" (click)="deletePatient(i)">Удалить</button>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer toolbar-right">
+            <div class="btn-group">
+              <button class="btn btn-info" (click)="addPatient()">Добавить пациента</button>
+            </div>
+          </div>
+          <div class="card-header">
+            3. Адрес вызова
+          </div>
+          <div class="card-body p-0">
+          <app-simple-view
+            [descriptions]="getBlockDescriptions('address')"
+            [preprocessed]="true"
+            [item]="callItem"
+            [form]="form"
+            [row]="true"
+          ></app-simple-view>
+          </div>
+          <div class="card-header">
+            4. Заявитель
+          </div>
+          <div class="card-body p-0">
+            <app-simple-view
+              [descriptions]="getBlockDescriptions('declarant')"
+              [preprocessed]="true"
+              [item]="callItem"
+              [row]="true"
+              [form]="form">
+            </app-simple-view>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" (click)="create()">
+        Создать
+      </button>
+      <button class="btn btn-secondary" (click)="cancel()">
+        Отмена
+      </button>
+    </div>
+  </div>
+</div>

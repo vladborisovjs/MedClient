@@ -1,7 +1,7 @@
 <div class="card">
   <div class="card-header">
     <div class="card-title">
-      Добавить мероприятие проведенное {{local? 'на месте': 'в машине'}}
+      {{therapyAct? 'Добавить': 'Редактировать'}} мероприятие проведенное {{local? 'на месте': 'в машине'}}
     </div>
   </div>
   <div class="card-body">
@@ -12,13 +12,11 @@
       [form]="form"
     ></app-simple-view>
     <div class="nav-tabs nav-buttons">
-      <div class="btn-group mr-2">
+      <div class="btn-group">
         <button class="btn btn-sm btn-success" (click)="addDrugs()">Добавить</button>
-      </div>
-      <div class="btn-group mr-2">
         <button class="btn btn-sm btn-info" >Редактировать</button>
-      </div>
-      <button class="btn btn-sm btn-danger" >Удалить</button>
+        <button class="btn btn-sm btn-danger" >Удалить</button>
+    </div>
     </div>
     <div class="therapies">
       <app-grid-table
@@ -31,12 +29,15 @@
   </div>
   <div class="card-footer">
     <div class="toolbar-right">
-      <div class="btn-group mr-2">
-        <button class="btn btn-success" (click)="save()">
+      <div class="btn-group">
+        <button *ngIf="therapyAct" class="btn btn-success" (click)="save()">
           Сохранить
         </button>
-      </div>
+        <button *ngIf="!therapyAct" class="btn btn-success" (click)="edit()">
+          Обновить
+        </button>
         <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
     </div>
   </div>
 </div>

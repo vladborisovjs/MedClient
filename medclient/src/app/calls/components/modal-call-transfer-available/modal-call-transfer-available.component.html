@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Передача вызова
+    </div>
+  </div>
+  <table class="table table-sm ">
+    <tbody>
+    <tr *ngFor="let checkbox of checkboxesArr">
+      <td class="check-status">
+        <app-simple-view
+          [descriptions]="descriptions.check"
+          [form]="checkbox.form"
+          [item]="checkbox.checkboxesArr">
+        </app-simple-view>
+      </td>
+      <td>{{checkbox.short_name}}</td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-primary" (click)="transfer()">Передать</button>
+        <button class="btn btn-secondary" (click)="cancel()">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
