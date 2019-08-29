@@ -59,7 +59,7 @@
   </div>
   <div class="card-footer toolbar-right">
     <div class="btn-group">
-      <button class="btn btn-success" (click)="save()"
+      <button class="btn btn-success" (click)="buildObjectForSaving()"
               [disabled]="transportList.length === 0 || performersList.length < 2">Сохранить
       </button>
       <button class="btn btn-secondary" (click)="back()">Назад</button>

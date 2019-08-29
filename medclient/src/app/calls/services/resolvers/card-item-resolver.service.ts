@@ -13,33 +13,41 @@ export class CardItemResolverService {
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
 
-
-    if (route.routeConfig.path === 'side-one') {
+    if (route.routeConfig.path === 'card') {
+      console.log('carddddd');
       return this.cas.getCartSideOne(parseInt(route.parent.paramMap.get('cardId'), 10));
     }
 
-    if (route.routeConfig.path === 'side-two') {
-      return this.cas.getCartSideTwo(parseInt(route.parent.paramMap.get('cardId'), 10));
-    }
-
-    if (route.routeConfig.path === 'patient') {
-      return this.cas.getPatient(parseInt(route.parent.parent.paramMap.get('cardId'), 10));
-    }
-
-    if (route.routeConfig.path === 'anamnesis') {
-      return this.cas.getAnamnesis(parseInt(route.parent.paramMap.get('cardId'), 10));
-    }
+    // if (route.routeConfig.path === 'side-one') {
+    //   return this.cas.getCartSideOne(parseInt(route.parent.paramMap.get('cardId'), 10));
+    // }
+    //
+    // if (route.routeConfig.path === 'side-two') {
+    //   return this.cas.getCartSideTwo(parseInt(route.parent.paramMap.get('cardId'), 10));
+    // }
+    //
+    // if (route.routeConfig.path === 'patient') {
+    //   return this.cas.getPatient(parseInt(route.parent.parent.paramMap.get('cardId'), 10));
+    // }
+    //
+    // if (route.routeConfig.path === 'anamnesis') {
+    //   return this.cas.getAnamnesis(parseInt(route.parent.paramMap.get('cardId'), 10));
+    // }
 
     if (route.routeConfig.path === 'protocol') {
       return this.cas.getProtocol(parseInt(route.parent.paramMap.get('cardId'), 10));
     }
 
-    if (route.routeConfig.path === 'result') {
-      return this.cas.getResult(parseInt(route.parent.paramMap.get('cardId'), 10));
-    }
+    // if (route.routeConfig.path === 'result') {
+    //   return this.cas.getResult(parseInt(route.parent.paramMap.get('cardId'), 10));
+    // }
+    //
+    // if (route.routeConfig.path === 'therapies') {
+    //   return this.cas.getTherapy(parseInt(route.parent.parent.paramMap.get('cardId'), 10));
+    // }
 
-    if (route.routeConfig.path === 'therapies') {
-      return this.cas.getTherapy(parseInt(route.parent.parent.paramMap.get('cardId'), 10));
+    if (route.routeConfig.path === ':cardId') {
+      return this.cas.getCard(parseInt(route.paramMap.get('cardId'), 10));
     }
 
     return {};

@@ -1,125 +1,128 @@
-<div class="row null-margin full-height">
-  <div class="col-7 null-padding full-height ">
-    <div class="card full-height">
-      <div class="card-header toolbar justify-content-between">
-        <div class="card-title">
-          Вызов №{{callItem.general.call_number}}
-        </div>
-        <div class="toolbar-right">
-          <div class="btn-group">
-            <button class="btn btn-sm btn-primary " (click)="openTransfer()">Передача</button>
-            <button class="btn btn-sm btn-primary " (click)="showF110()">Список Ф-110</button>
-            <button class="btn btn-sm btn-primary" (click)="showProtocol()">Протокол</button>
-          </div>
-        </div>
-      </div>
-      <div class="card-body call-body">
-        <div class="toolbar justify-content-between">
-          <div class="toolbar-left"></div>
-          <div class="card-subtitle">Данные о вызове</div>
-          <div class="toolbar-right">
-            <button class="btn btn-info btn-wide" (click)="editGeneral()"><i class="fas fa-pen"></i></button>
-          </div>
-        </div>
-        <app-info-plate
-          [item]="callItem.general"
-          [properties]="getPlateDescriptions('general')"></app-info-plate>
-        <div class="toolbar justify-content-between">
-          <div class="toolbar-left"></div>
-          <div class="card-subtitle">Пациенты</div>
-          <div class="toolbar-right">
-            <button class="btn btn-info btn-wide" (click)="editPatients()"><i class="fas fa-plus"></i></button>
-          </div>
-        </div>
-        <div *ngIf="!callItem.patients.length">Пациенты не указаны</div>
-        <div *ngFor="let patient of callItem.patients" class="patients-row">
-          <div class="flexible" >
-            <div class="patients-block">
-              <span class="patients-title">ФИО:</span>
-              <span class="patients-value">{{patient.patient_secondname}} {{patient.patient_firstname}} {{patient.patient_patronymic}}</span>
-            </div>
-            <div class="patients-block">
-              <span class="patients-title ">Возраст:</span>
-              <span class="patients-value">
-              {{patient.patient_age_years ? patient.patient_age_years + ' лет': ''}}
-              {{patient.patient_age_months ? patient.patient_age_months + ' месяцев': ''}}
-              {{patient.patient_age_days ? patient.patient_age_days + ' дней': ''}}
-            </span>
-            </div>
-            <div class="patients-block">
-              <span class="patients-title">Пол:</span>
-              <span class="patients-value">{{patient.patient_sex_name}}</span>
-            </div>
-          </div>
-          <div class="btn-group">
-            <button class="btn btn-outline-info btn-tiny " (click)="showChronology(patient)">Хронология выездов <i class="fas  fa-history"></i></button>
-            <button class="btn btn-outline-info btn-tiny " (click)="editPatients(patient)">Редактировать <i class="fas  fa-pen"></i></button>
-            <button class="btn btn-outline-danger btn-tiny" (click)="deletePatient(patient)">Удалить <i class="fas fa-times"></i></button>
-          </div>
-        </div>
-        <div class="toolbar justify-content-between">
-          <div class="toolbar-left"></div>
-          <div class="card-subtitle">Адрес вызова</div>
-          <div class="toolbar-right">
-            <button class="btn btn-info btn-wide" (click)="editAddress()"><i class="fas fa-pen"></i></button>
-          </div>
-        </div>
-        <app-info-plate
-          [item]="callItem.address"
-          [properties]="getPlateDescriptions('address')"></app-info-plate>
-        <!--<app-simple-view-->
-        <!--[descriptions]="getBlockDescriptions('address')"-->
-        <!--[item]="callItem.address"-->
-        <!--&gt;</app-simple-view>-->
-        <div class="toolbar justify-content-between">
-          <div class="toolbar-left"></div>
-          <div class="card-subtitle">Заявитель</div>
-          <div class="toolbar-right">
-            <button class="btn btn-info btn-wide" (click)="editDeclarant()"><i class="fas fa-pen"></i></button>
-          </div>
-        </div>
-        <app-info-plate
-          [item]="callItem.declarant"
-          [properties]="getPlateDescriptions('declarant')"></app-info-plate>
-        <!--<app-simple-view-->
-        <!--[descriptions]="getBlockDescriptions('declarant')"-->
-        <!--[item]="callItem.address"-->
-        <!--&gt;</app-simple-view>-->
-      </div>
-    </div>
+<div class="card full-height w-100">
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <div class="card-subtitle">Вызов №{{callItem.call.id}}</div>
+    <div class="toolbar-right"></div>
   </div>
-  <div class="col-5 null-padding full-height">
-    <div class="card brigades-block">
-      <div class="card-header toolbar justify-content-between">
-        <div class="toolbar-left"><button class="btn btn-sm btn-primary" (click)="appointBrigade()">Назначить <i class="fas fa-sm fa-plus"></i></button></div>
-        <div class="card-subtitle">Назначены</div>
-        <div class="toolbar-right">
-          <div class="btn-group">
-            <button class="btn btn-sm btn-primary " (click)="openBriStatuses()" [disabled]="!selectedBri">Статус</button>
-            <button class="btn btn-sm btn-primary " [disabled]="!selectedBri" (click)="openBri110()">Ф-110</button>
-            <button class="btn btn-sm btn-primary" [disabled]="!selectedBri" (click)="openJournal()">Журнал</button>
+  <div class="flexible w-100 h-100" resizable="horizontal" (onResize)="resize($event)" saveName="call-item">
+    <div class="general-block" leftResizable>
+      <div class="card full-height">
+        <div class="card-header toolbar justify-content-between">
+          <div class="toolbar-left">
+            <div class="btn-group">
+              <button *ngIf="!isEdit" class="btn btn-primary btn-sm" (click)="unlockForm()">
+                Редактировать <i class="fa fa-pen"></i>
+              </button>
+              <button *ngIf="isEdit" type="button" class="btn btn-success btn-sm" [disabled]="form.invalid" (click)="save()">
+                Сохранить <i class="fas fa-save"></i>
+              </button>
+
+              <button *ngIf="isEdit" class="btn btn-warning btn-sm" (click)="revertForm()">
+                Отменить изменения <i class="fas fa-undo"></i>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="card-body null-padding">
-        <app-grid-table
-          [columnDefs]="briCallDefs"
-          [sizeColumnsToFit]="true"
-          [pagination]="false"
-          (onGridReady)="fitCol($event)"
-          (onRowSelect)="selectBri($event)"
-          [listSource]="briListSource">
-        </app-grid-table>
-      </div>
-    </div>
-    <div class="card map-block">
-      <div class="card-header">
-        <div class="card-title">
-          Карта
+        <div class="card-body call-body">
+          <div class="toolbar justify-content-between">
+            <div class="toolbar-left"></div>
+            <div class="card-subtitle">Данные о вызове</div>
+            <div class="toolbar-right">
+            </div>
+          </div>
+          <app-simple-view
+            [descriptions]="getBlockDescriptions('general')"
+            [item]="callItem.call"
+            [preprocessed]="true"
+            [row]="true"
+            [form]="form"
+          ></app-simple-view>
+          <div class="toolbar justify-content-between">
+            <div class="toolbar-left"></div>
+            <div class="card-subtitle">Пациенты</div>
+            <div class="toolbar-right">
+              <button *ngIf="isEdit" class="btn btn-info btn-wide" (click)="editPatients()"><i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div *ngIf="callItem.patientList && !callItem.patientList.length">Пациенты не указаны</div>
+          <div *ngFor="let patient of callItem.patientList; index as i" class="patients-row">
+            <div class="flexible">
+              <div class="patients-block">
+                <span class="patients-title">ФИО:</span>
+                <span class="patients-value">{{patient.surname}} {{patient.name}} {{patient.patronymic}}</span>
+              </div>
+              <div class="patients-block">
+                <span class="patients-title ">Возраст:</span>
+                <span class="patients-value">
+              {{patient.ageYears ? patient.ageYears + ' лет': ''}}
+              {{patient.ageMonths ? patient.ageMonths + ' месяцев': ''}}
+              {{patient.ageDays ? patient.ageDays + ' дней': ''}}
+            </span>
+              </div>
+              <div class="patients-block">
+                <span class="patients-title">Пол:</span>
+                <span class="patients-value">{{patient.gender? 'Мужской' : 'Женский'}}</span>
+              </div>
+            </div>
+            <div class="btn-group">
+              <!--<button [disabled]="!isEdit" class="btn btn-outline-info btn-tiny " (click)="showChronology(patient)">-->
+              <!--Хронология выездов <i class="fas  fa-history"></i></button>-->
+              <button [disabled]="!isEdit" class="btn btn-outline-info btn-tiny " (click)="editPatients(patient)">
+                Редактировать <i class="fas  fa-pen"></i></button>
+              <button [disabled]="!isEdit" class="btn btn-outline-danger btn-tiny" (click)="deletePatient(i)">Удалить <i
+                class="fas fa-times"></i></button>
+            </div>
+          </div>
+          <div class="toolbar justify-content-between">
+            <div class="toolbar-left"></div>
+            <div class="card-subtitle">Адрес вызова</div>
+            <div class="toolbar-right"></div>
+          </div>
+          <app-full-address
+            [form]="form"
+            [valueBuilding]="callItem.call.houseNum"
+            [valueStreet]="callItem.call.address"
+          ></app-full-address>
+          <app-simple-view
+            [descriptions]="getBlockDescriptions('address')"
+            [item]="callItem.call"
+            [preprocessed]="true"
+            [row]="true"
+            [form]="form"></app-simple-view>
+          <div class="toolbar justify-content-between">
+            <div class="toolbar-left"></div>
+            <div class="card-subtitle">Заявитель</div>
+            <div class="toolbar-right">
+            </div>
+          </div>
+          <app-simple-view
+            [descriptions]="getBlockDescriptions('declarant')"
+            [item]="callItem.call"
+            [preprocessed]="true"
+            [row]="true"
+            [form]="form"
+          ></app-simple-view>
         </div>
       </div>
-      <div class="card-body">
-        \Карта\
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="brigades-map-block" rightResizable fixed="500" resizable="vertical" (onResize)="resize($event)"
+         saveName="brigades-map">
+      <div class="card brigades-block" upResizable>
+        <div class="card-header">
+          <div class="card-title">Бригады</div>
+        </div>
+        <app-call-item-brigades></app-call-item-brigades>
+      </div>
+      <div class="horizontal-resizer" resizer="2px"></div>
+      <div class="card map-block" fixed="400px" bottomResizable>
+        <div class="card-header">
+          <div class="card-title">
+            Карта
+          </div>
+        </div>
+        <app-call-item-map [changeSub]="mapChange"></app-call-item-map>
       </div>
     </div>
   </div>

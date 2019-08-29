@@ -2,37 +2,36 @@ import {Injectable} from '@angular/core';
 import {getDictInfo} from '../models/dictionary-structure';
 import {MedApi} from '../../../../swagger/med-api.service';
 import {map} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {UserService} from '../../services/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class DictionaryService {
+  nodeParentId: number;
+  childrenTreeAmountService: number;
   constructor(private api: MedApi, private user: UserService) {
   }
 
-  // получение содержимого словаря
+  // получение описания словаря (dict) и источника его содержимого (source)
   getDictionaryInfo(name) {
-    let dict = getDictInfo(name);
-    let params = [];
-    if (dict.paramsOrder && dict.paramsOrder.length > 0){
-      dict.paramsOrder.forEach(
-        param => {
-          if (param === 'subId'){
-            params.push(this.user.subdivisionId)
-          } else {
-            params.push(dict.params[param]);
-          }
-        }
-      );
-    }
-    let met: Observable<any> = this.api[dict.method](...params);
-    return met.pipe(map(
-      res => {
-        return { dict: dict, list: res };
-      }
-    ));
+    return of(getDictInfo(name));
+    // let dict = getDictInfo(name);
+    // let params = [];
+    // if (dict.paramsOrder && dict.paramsOrder.length > 0){
+    //   dict.paramsOrder.forEach(
+    //     param => {
+    //       if (param === 'subId'){
+    //         params.push(this.user.subdivisionId)
+    //       } else {
+    //         params.push(dict.params[param]);
+    //       }
+    //     }
+    //   );
+    // }
+    // return of({dict: dict, source: this.api[dict.method](...params)});
   }
 
   getDictionaryItem(dictName, itemId) {

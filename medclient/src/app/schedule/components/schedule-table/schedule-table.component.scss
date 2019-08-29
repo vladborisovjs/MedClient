@@ -13,3 +13,13 @@ th {
   color: white;
   cursor: pointer;
 }
+.selected-row {
+  background-color: #bde2e5 !important;
+  //color: white;
+  cursor: pointer;
+}
+.selected-row:hover {
+  background-color: #bde2e5;
+  //color: white;
+  cursor: pointer;
+}

@@ -31,7 +31,7 @@ const routes: Routes = [
         path: 'schedule',
         loadChildren: '../schedule/schedule.module#ScheduleModule',
         data: {
-          title: 'Управление сотрудниками',
+          title: 'Управление сотрудниками и бригадами',
         },
       },
       {

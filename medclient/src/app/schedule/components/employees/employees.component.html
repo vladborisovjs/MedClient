@@ -27,7 +27,7 @@
         </form>
       </div>
       <div class="toolbar-right">
-        <button class="btn btn-primary" (click)="prolongation()">
+        <button class="btn btn-primary" [disabled]="selectedPerformers.length == 0" (click)="prolongation()">
           Пролонгация
         </button>
       </div>
@@ -37,6 +37,7 @@
   <div class="card-body p-0 sch-table">
     <app-schedule-table *ngIf="scheduleDatesColumns.length"
                         (clickDateEvent)="openSchedule($event)"
+                        (selectRowEvent)="selectPerformerRow($event)"
                         [rows]="scheduleList"
                         [mode]="'performers'"
                         [dates]="scheduleDatesColumns"

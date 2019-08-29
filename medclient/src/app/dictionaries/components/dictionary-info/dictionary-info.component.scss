@@ -7,3 +7,16 @@
     border: 1px solid;
   }
 }
+
+.to-right-side{
+  float: right;
+}
+.btn-dark {
+  background-color: white;
+  position: relative;
+  right: 23px;
+}
+.btn-dark:hover {
+  color: black;
+  text-decoration: none;
+}

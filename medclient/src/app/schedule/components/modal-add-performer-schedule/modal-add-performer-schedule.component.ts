@@ -1,99 +1,41 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
-import {PerformerScheduleDto2, PerformerScheduller, PeriodDetails, ScheduleType} from '../../../../../swagger/med-api.service';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
+import {
+  PerformerBean,
+  PerformerScheduleDto2,
+  PerformerScheduller,
+  PerformerShiftBean,
+  PeriodDetails,
+  ScheduleType, ScheduleTypeBean
+} from '../../../../../swagger/med-api.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {ScheduleService} from '../../services/schedule.service';
 import {NotificationsService} from 'angular2-notifications';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-modal-add-performer-schedule',
   templateUrl: './modal-add-performer-schedule.component.html',
   styleUrls: ['./modal-add-performer-schedule.component.scss']
 })
-export class ModalAddPerformerScheduleComponent implements OnInit {
+export class ModalAddPerformerScheduleComponent implements OnInit, OnDestroy {
   @Input() performer: any;
+  @Input() performerFK: any;
   @Input() date: any;
-  @Input() duty = null;
+  @Input() duty = null; // наличие расписания
   mode: string; // new, edit
   constructor(private sds: SimpleDescriptionService,
               private modalInstance: NgbActiveModal,
               private schs: ScheduleService,
-              private  ns: NotificationsService) { }
+              private  ns: NotificationsService) {
+  }
+
   form: FormGroup;
-  description: ISimpleDescription[] = [
-    // type
-    {
-      label: 'По графику',
-      type: 'checkbox',
-      key: 'onSchedule',
-      additional: {
-        block: 'type'
-      }
-    },
-    // add
-    {
-      label: 'Начало',
-      key: 'addStart',
-      type: 'date',
-      styleClass:'line-form col-12',
-      additional: {
-        block: 'additional'
-      }
-    },
-    {
-      label: 'Окончание',
-      key: 'addEnd',
-      type: 'date',
-      styleClass:'line-form col-12',
-      additional: {
-        block: 'additional'
-      }
-    },
-    // schedule
-    {
-      label: 'Тип',
-      key:'type',
-      type: 'dict',
-      shortDict: true,
-      dictFilters: {subId: -1000},
-      dictFiltersOrder: ['subId'],
-      bindLabel: 'name',
-      styleClass: 'col-12',
-      dict: 'readAllScheduleTypeUsingGET',
-      additional: {
-        block: 'schedule'
-      }
-    },
-    {
-      label: 'Начало',
-      key: 'schStart',
-      type: 'date',
-      showTime: false,
-      styleClass:'line-form col-12',
-      additional: {
-        block: 'schedule'
-      }
-    },
-    {
-      label: 'Окончание',
-      key: 'schEnd',
-      type: 'date',
-      showTime: false,
-      styleClass:'line-form col-12',
-      additional: {
-        block: 'schedule'
-      }
-    },
-    {
-      label: 'Основной график',
-      type: 'checkbox',
-      key: 'basic',
-      additional: {
-        block: 'schedule'
-      }
-    },
-  ];
+  description: ISimpleDescription[] = [];
   onSchedule: boolean; // по графику/ вне графика
   item: {
     onSchedule: null,
@@ -104,55 +46,122 @@ export class ModalAddPerformerScheduleComponent implements OnInit {
     schEnd: null,
     basic: null
   };
-  schItem = PerformerScheduleDto2.fromJS({});
-
+  schItem = PerformerShiftBean.fromJS({});
+  sbscs: Subscription[] = [];
   ngOnInit() {
+    this.description = [
+      // type
+      {
+        label: 'По графику',
+        type: 'checkbox',
+        key: 'onSchedule',
+        additional: {
+          block: 'type'
+        }
+      },
+      // add
+      {
+        label: 'Начало',
+        key: 'dateFrom',
+        type: 'date',
+        timeOnlyWithDate: this.date,
+        styleClass:'line-form col-12',
+        additional: {
+          block: 'additional'
+        }
+      },
+      {
+        label: 'Окончание',
+        key: 'dateTo',
+        type: 'date',
+        timeOnlyWithDate: this.date,
+        styleClass:'line-form col-12',
+        additional: {
+          block: 'additional'
+        }
+      },
+      // schedule
+      {
+        label: 'Тип',
+        key: 'type',
+        type: 'dict',
+        styleClass: 'col-12',
+        // bindValue: 'scheduleTypeFK',
+        dict: 'getScheduleTypeListUsingGET',
+        additional: {
+          block: 'schedule'
+        }
+      },
+      {
+        label: 'Начало',
+        key: 'dateFrom',
+        type: 'date',
+        timeOnlyWithDate: this.date,
+        styleClass:'line-form col-12',
+        additional: {
+          block: 'schedule'
+        }
+      },
+      {
+        label: 'Окончание',
+        key: 'dateTo',
+        type: 'date',
+        timeOnlyWithDate: this.date,
+        styleClass:'line-form col-12',
+        additional: {
+          block: 'schedule'
+        }
+      },
+    ];
     this.mode = this.duty ? 'edit' : 'new';
 
-    if (this.mode === 'edit'){
-      this.duty = this.duty[0];
+    if (this.mode === 'edit') {
+      // this.duty = this.duty[0];
       console.log('duty', this.duty);
     }
     this.form = this.sds.makeForm(this.description);
-    this.form.valueChanges.subscribe(
-      ch => {
-        this.onSchedule = ch.onSchedule;
-      }
+    if (!this.duty) {
+      this.form.get('dateTo').setValue(this.date);
+      this.form.get('dateFrom').setValue(this.date);
+    } else {
+      this.form.get('dateTo').setValue(new Date(this.duty.dateTo));
+      this.form.get('dateFrom').setValue(new Date(this.duty.dateFrom));
+    }
+    this.sbscs.push(
+      this.form.valueChanges.subscribe(
+        ch => {
+          this.onSchedule = ch.onSchedule;
+        }
+      )
     );
   }
 
-  save(){
-    let d = this.form.getRawValue();
-    console.log(d);
-    const defaultPeriodType = ScheduleType.fromJS({
-     days_off: 0,
-      days_working: 0,
-      id: " ",
-      name: " ",
-      time_from: "",
-      time_to: ""
-    });
-    this.schItem.performer_id = this.performer.id;
-    this.schItem.period_details =  PeriodDetails.fromJS(
-      {
-        date_from: d.onSchedule ? d.schStart: d.addStart,
-        date_to: d.onSchedule ? d.schEnd: d.addEnd,
-      }
-    );
-    this.schItem.period_id = d.type ? d.type.id : null;
-    this.schItem.period_type =  d.type ? d.type:  defaultPeriodType;
-    this.schItem.scheduller_info = PerformerScheduller.fromJS(
-      {basic: d.basic}
-    );
-    this.schs.createPerformerSchedule(this.performer.id, this.schItem).subscribe(
-      ans => {
-        console.log('ans', ans);
-        this.ns.success('Успешно', 'График сотрудника обновлен!')
-        this.modalInstance.close();
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
 
-      }
+  save() {
+    let d = this.form.getRawValue();
+    console.log(d.type);
+    if (this.duty) {
+      this.schItem.id = this.duty.id;
+    }
+    this.schItem.dateFrom = d.dateFrom;
+    this.schItem.dateTo = d.dateTo;
+    this.schItem.isBasic = true;
+    this.schItem.isDeleted = false;
+    this.schItem.performerFK = PerformerBean.fromJS(this.performer);
+    this.schItem.scheduleTypeFK = ScheduleTypeBean.fromJS(d.type);
+    console.log('OOOOOOOOOOOOOOOOO', this.schItem);
+    this.sbscs.push(
+      this.schs.createPerformerSchedule(this.schItem).subscribe(
+        ans => {
+          this.ns.success('Успешно', 'График сотрудника обновлен!');
+          this.modalInstance.close();
+          console.log('ans', ans);
+        }
+      )
     );
-    console.log(this.schItem);
   }
 
   back() {

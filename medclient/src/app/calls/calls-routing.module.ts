@@ -11,8 +11,7 @@ import {CardProtocolComponent} from './components/card-protocol/card-protocol.co
 import {CardItemResolverService} from './services/resolvers/card-item-resolver.service';
 import {CardSideOnePatientComponent} from './components/card-side-one-patient/card-side-one-patient.component';
 import {CardAnamnesisComponent} from './components/card-anamnesis/card-anamnesis.component';
-import {ModalAddTherapyComponent} from './components/modal-add-therapy/modal-add-therapy.component';
-import {TherapyDto} from '../../../swagger/med-api.service';
+
 
 const routes: Routes = [
   {
@@ -54,52 +53,34 @@ const routes: Routes = [
                 path: ':cardId',
                 component: F110Component,
                 data: {
-                  title: 'Ф-100'
+                  title: 'Ф-110'
+                },
+                resolve: {
+                  card: CardItemResolverService
                 },
                 children: [
                   {
                     path: '',
                     pathMatch: 'full',
                     redirectTo: 'side-one',
-
                   },
                   {
                     path: 'side-one',
-                    resolve: {
-                      cardInfo: CardItemResolverService
-                    },
                     data: {
                       title: 'Первая сторона'
                     },
-                    children: [
-                      {
-                        path: '',
-                        component: CardSideOneComponent,
-                        data: {
-                          title: null
-                        },
-                      },
-
-                      {
-                        path: 'patient',
-                        component: CardSideOnePatientComponent,
-                        data: {
-                          title: 'Пациент'
-                        },
-                        resolve: {
-                          patient: CardItemResolverService
-                        }
-                      }
-                    ],
+                    component: CardSideOneComponent,
+                  },
+                  {
+                    path: 'patient',
+                    component: CardSideOnePatientComponent,
+                    data: {
+                      title: 'Пациент'
+                    },
                   },
                   {
                     path: 'side-two',
-
                     component: CardSideTwoComponent,
-                    resolve:
-                      {
-                        cardInfo: CardItemResolverService
-                      },
                     data: {
                       title: 'Объективные данные'
                     },
@@ -108,10 +89,10 @@ const routes: Routes = [
                     path: 'anamnesis',
 
                     component: CardAnamnesisComponent,
-                    resolve:
-                      {
-                        anamnesis: CardItemResolverService
-                      },
+                    // resolve:
+                    //   {
+                    //     anamnesis: CardItemResolverService
+                    //   },
                     data: {
                       title: 'Анамнез'
                     },
@@ -119,10 +100,10 @@ const routes: Routes = [
                   {
                     path: 'result',
                     component: CardResultComponent,
-                    resolve:
-                      {
-                        cardResult: CardItemResolverService
-                      },
+                    // resolve:
+                    //   {
+                    //     cardResult: CardItemResolverService
+                    //   },
                     data: {
                       title: 'Результат'
                     },

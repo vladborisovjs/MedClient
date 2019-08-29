@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {ColDef} from 'ag-grid-community';
-import {ArchiveService, ICallFilter} from '../../services/archive.service';
+import {ArchiveService} from '../../services/archive.service';
 import {DatePipe} from '@angular/common';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-f110-archive',
@@ -31,13 +32,14 @@ export class F110ArchiveComponent implements OnInit {
     },
     {
       headerName: 'Бригада',
-      field: 'brigade_name',
       sortable: true,
-      filter: true
+      filter: true,
+      valueGetter: params => params.data.brigadeFK.name
+      ,
     },
     {
       headerName: 'Повод',
-      field: 'reason_name',
+      valueGetter: params => params.data.callFK.reasonFK.answer,
       sortable: true,
       filter: true
     },
@@ -55,13 +57,13 @@ export class F110ArchiveComponent implements OnInit {
     },
     {
       headerName: 'Источник',
-      field: 'declarant_name',
+      field: 'declarantName',
       sortable: true,
       filter: true
     },
     {
       headerName: 'Исполнитель',
-      field: 'performer_name',
+      valueGetter: params => params.data.performerFK.surname + ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
       sortable: true,
       filter: true
     },
@@ -73,7 +75,7 @@ export class F110ArchiveComponent implements OnInit {
     },
     {
       headerName: 'Результат',
-      field: 'result_name',
+      valueGetter: params => params.data.cardResultBean.resultFK.name,
       sortable: true,
       filter: true
     },
@@ -85,22 +87,19 @@ export class F110ArchiveComponent implements OnInit {
       key: 'number',
       label: 'Номер',
       type: 'number',
-      styleClass: 'col-3',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-12',
       additional: {
         block: 'callInfo'
       }
     },
     {
-      key: 'callTypeId',
+      key: 'callFK',
       label: 'Тип',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'CALL'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
-      styleClass: 'col-9',
+      dict: 'getReferenceTypeListCallUsingGET',
+      styleClass: 'col-12',
       additional: {
         block: 'callInfo'
       }
@@ -124,18 +123,20 @@ export class F110ArchiveComponent implements OnInit {
       }
     },
     {
-      key: 'subdivisionId',
+      key: 'subdivisionFK',
       label: 'Подразделение',
-      type: 'text', // dict
+      type: 'dict',
+      dict: 'getSubdivisionTypeListUsingGET',
       styleClass: 'col-6',
       additional: {
         block: 'callInfo'
       }
     },
     {
-      key: 'performer',
+      key: 'performerFK',
       label: 'Сотрудник',
-      type: 'text',
+      type: 'dict',
+      dict: 'getPerformerListUsingGET',
       styleClass: 'col-6',
       additional: {
         block: 'callInfo'
@@ -145,6 +146,8 @@ export class F110ArchiveComponent implements OnInit {
       key: 'patientName',
       label: 'ФИО',
       type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-9',
       additional: {
         block: 'patient'
@@ -164,13 +167,10 @@ export class F110ArchiveComponent implements OnInit {
       }
     },
     {
-      key: 'reasonTypeId',
+      key: 'reasonFK',
       label: 'Повод',
-      type: 'dict',
-      shortDict: true,
-      dict: 'readBasicReasonsUsingGET',
-      bindLabel: 'title',
-      bindValue: 'id',
+      type: 'tree',
+      dict: 'getFullNodeUsingGET',
       additional: {
         block: 'patient'
       }
@@ -179,11 +179,9 @@ export class F110ArchiveComponent implements OnInit {
       key: 'districtId',
       label: 'Район',
       type: 'dict',
-      shortDict: true,
       dict: 'readAllUsingGET_10',
-      bindLabel: 'name',
       bindValue: 'id',
-      styleClass: 'col-12',
+      styleClass: 'col-6',
       additional: {
         block: 'address'
       }
@@ -191,7 +189,7 @@ export class F110ArchiveComponent implements OnInit {
     {
       key: 'aoName',
       label: 'Улица',
-      styleClass: 'col-12',
+      styleClass: 'col-6',
       type: 'text', //dict
       additional: {
         block: 'address'
@@ -201,6 +199,8 @@ export class F110ArchiveComponent implements OnInit {
       key: 'declarantName',
       label: 'ФИО',
       type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-7',
       additional: {
         block: 'declarant'
@@ -210,27 +210,17 @@ export class F110ArchiveComponent implements OnInit {
       key: 'declarantTypeId',
       label: 'Тип заявителя',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'DECLARANT'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListDeclarantUsingGET',
       styleClass: 'col-5',
       additional: {
         block: 'declarant'
       }
     },
     {
-      key: 'callPlaceTypeId',
+      key: 'typeFK',
       label: 'Место вызова',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'CALL_PLACE'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListCallPlaceUsingGET',
       styleClass: 'col-6',
       additional: {
         block: 'declarant'
@@ -239,35 +229,22 @@ export class F110ArchiveComponent implements OnInit {
     {
       key: 'declarantPhone',
       label: 'Телефон',
-      type: 'text', //dict
+      type: 'number', //dict
+      pattern: '^[0-9]*',
+      errorText: 'Некорректный номер',
       styleClass: 'col-6',
       additional: {
         block: 'declarant'
       }
     },
   ];
-  listSource: any[] = [];
-  filters: ICallFilter = {
-    subdivisionId: null,
-    dateFrom: null,
-    dateTo: null,
-    number: null,
-    declarantName: null,
-    declarantPhone: null,
-    patientName: null,
-    patientSex: null,
-    patientAgeYears: null,
-    patientAgeMonths: null,
-    patientAgeDays: null,
-    aoName: null,
-    districtId: null,
-    performer: null,
-    callTypeId: null,
-    declarantTypeId: null,
-    phone: null,
-    callPlaceTypeId: null,
-    reasonTypeId: null
+  dataSource = {
+    get: (filter, offset, count) => {
+      this.loading = true;
+      return this.arch.searchCard(offset, count).pipe(tap( () => this.loading = false));
+    }
   };
+  filters: any = {};
   constructor(
     private arch: ArchiveService,
     private sds: SimpleDescriptionService,
@@ -278,21 +255,13 @@ export class F110ArchiveComponent implements OnInit {
     this.searchCards();
   }
 
+  selectedTable(e) {
+    console.log(e);
+  }
+
   searchCards() {
-    this.loading = true;
     this.filters = this.form.getRawValue();
-    Object.keys(this.filters).forEach(
-      key => {
-        this.filters[key] = this.filters[key] ? this.filters[key] : undefined;
-      }
-    );
-    this.arch.searchCard(this.filters).subscribe(
-      card => {
-        this.listSource = card;
-        this.loading = false;
-      },
-      err => this.loading = false
-    );
+
   }
 
   fitCol(e) {
@@ -313,9 +282,11 @@ export class F110ArchiveComponent implements OnInit {
   }
 
   goToCard(card) {
-    this.router.navigate(['calls/' + card.data.call_id + '/card/' + card.data.card_id + '/side-one']);
+    console.log(card);
+    this.router.navigate(['calls/' + card.data.call + '/card/' + card.data.id + '/side-one']);
   }
   eraseFilters() {
+    this.filters = {};
     this.form.reset({});
   }
 }

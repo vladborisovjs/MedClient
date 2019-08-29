@@ -2,12 +2,11 @@
   <h3>Справочники</h3>
 </div>
 <div class="card-body dict-list">
-  <div class="row">
-    <div class="col-4">
-      <div class="card">
-        <!--<div class="card-header">-->
-          <!--<div class="card-title">Общие</div>-->
-        <!--</div>-->
+  <div class="row d-flex">
+      <div class="card flex-fill align-self-start mr-2">
+        <div class="card-header">
+          <div class="card-title">Общие</div>
+        </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
             <li class="nav-item" *ngFor="let el of commonList">
@@ -16,26 +15,20 @@
           </ul>
         </div>
       </div>
-    </div>
-    <div class="col-4">
-      <div class="card">
-        <!--<div class="card-header">-->
-          <!--<div class="card-title">Общие</div>-->
-        <!--</div>-->
+      <div class="card flex-fill align-self-start mr-2">
+        <div class="card-header">
+          <div class="card-title">Бригады</div>
+        </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of typeList">
+            <li class="nav-item" *ngFor="let el of brigadesList">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>
         </div>
-      </div>
-    </div>
-    <div class="col-4">
-      <div class="card">
-        <!--<div class="card-header">-->
-          <!--<div class="card-title">Общие</div>-->
-        <!--</div>-->
+        <div class="card-header">
+          <div class="card-title">Вызовы</div>
+        </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
             <li class="nav-item" *ngFor="let el of callsList">
@@ -44,18 +37,17 @@
           </ul>
         </div>
       </div>
-      <div class="card">
-        <!--<div class="card-header">-->
-        <!--<div class="card-title">Общие</div>-->
-        <!--</div>-->
+      <div class="card flex-fill">
+        <div class="card-header">
+          <div class="card-title">Объективные данные</div>
+        </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of drugList">
+            <li class="nav-item" *ngFor="let el of objectivesList">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>
         </div>
       </div>
-    </div>
   </div>
 </div>

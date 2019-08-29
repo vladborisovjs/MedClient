@@ -36,7 +36,7 @@ const routes: Routes = [
               title: null,
             },
             resolve: {
-              itemWithList: DictionaryInfoResolverService
+              dict: DictionaryInfoResolverService
             }
           },
           {

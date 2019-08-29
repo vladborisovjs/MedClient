@@ -8,8 +8,22 @@
     </div>
   </div>
   <div class="card-body">
-    <div *ngFor="let p of duty.performers">
-      {{p.second_name}} {{p.first_name}} {{p.patronymic}} - {{p.type_name}}
+    <div class="card-header d-flex">Время работы</div>
+    <div class="card-body">
+      <div class="flex-fill"> <b>Начало смены:</b>  {{duty.dateFrom | date : 'dd.MM HH:mm'}}</div>
+      <div class="flex-fill"> <b>Окончание смены:</b> {{duty.dateTo | date : 'dd.MM HH:mm'}}</div>
+    </div>
+    <div class="card-header d-flex">Сотрудники</div>
+    <div class="card-body flex-fill">
+      <div *ngFor="let performers of performerList">
+          {{performers.performerFK.surname}} {{performers.performerFK.name}} {{performers.performerFK.patronymic}}
+      </div>
+    </div>
+    <div class="card-header d-flex">Транспортное средство</div>
+    <div class="card-body flex-fill">
+      <div *ngFor="let transports of transportList">
+        {{transports.transportFK.name}}
+      </div>
     </div>
   </div>
   <div class="card-footer toolbar">

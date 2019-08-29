@@ -8,6 +8,7 @@ import {GridTableModule} from '../shared/grid-table/grid-table.module';
 import {SimpleControlModule} from '../shared/simple-control/simple-control.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TreeTableModule} from 'primeng/primeng';
+import {ModalModule} from '../shared/modal/modal.module';
 
 @NgModule({
   declarations: [DictionariesComponent, DictionaryInfoComponent, DictionaryItemComponent],
@@ -18,7 +19,8 @@ import {TreeTableModule} from 'primeng/primeng';
     SimpleControlModule,
     FormsModule,
     ReactiveFormsModule,
-    TreeTableModule
+    TreeTableModule,
+    ModalModule
   ]
 })
 export class DictionariesModule { }

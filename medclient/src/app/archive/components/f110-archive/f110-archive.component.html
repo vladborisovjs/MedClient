@@ -4,8 +4,9 @@
       Поиск карты вызова
     </h5>
   </div>
-  <div class="card-body p-0 full-height flexible">
-    <div class="card col-3 p-0">
+  <div class="card-body">
+    <div class="flexible full-height" resizable="horizontal" saveName="cards-archive">
+    <div class="card filter-cards-block" leftResizable>
       <div class="scrollable full-height">
         <div class="card">
           <div class="card-header">
@@ -72,7 +73,7 @@
           </div>
         </div>
         <div class="btn-group w-100 p-1">
-          <button class="btn btn-success" [disabled]="loading" (click)="searchCards()">
+          <button class="btn btn-success" [disabled]="loading || form.invalid" (click)="searchCards()">
             <i class="fas fa-search" *ngIf="!loading"></i>
             <i class="fas fa-cog fa-spin" *ngIf="loading"></i>
             Найти
@@ -83,13 +84,17 @@
         </div>
       </div>
     </div>
-    <div class="card col-9 p-0 full-height">
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="card table-cards-block" rightResizable fixed="1000">
       <app-grid-table
-        [listSource]="listSource"
+        [dataSource]="dataSource"
         [columnDefs]="colDefs"
+        (onRowSelect)="selectedTable($event)"
+        [filter]="filters"
         (onGridReady)="fitCol($event)"
         (onRowDblClick)="goToCard($event)">
       </app-grid-table>
     </div>
+  </div>
   </div>
 </div>

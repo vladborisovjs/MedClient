@@ -1,18 +1,20 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ColDef} from 'ag-grid-community';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {ScheduleService} from '../../services/schedule.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-modal-add-transport-to-brigade',
   templateUrl: './modal-add-transport-to-brigade.component.html',
   styleUrls: ['./modal-add-transport-to-brigade.component.scss']
 })
-export class ModalAddTransportToBrigadeComponent implements OnInit {
+export class ModalAddTransportToBrigadeComponent implements OnInit, OnDestroy {
   @Input() bFrom: any;
   @Input() bTo: any;
+  @Input() brigade: any;
   selectedTransport: any;
   transportItem: any;
 
@@ -34,18 +36,18 @@ export class ModalAddTransportToBrigadeComponent implements OnInit {
   tColDef: ColDef[] = [
     {
       headerName: 'Машина',
-      field: 'brand',
+      field: 'first.name',
       width: 250
     },
     {
       headerName: 'Номер',
-      field: 'statemark',
+      field: 'first.code',
       width: 250
     }
   ];
   tSource = [];
   form: FormGroup;
-
+  sbscs: Subscription[] = [];
 
   constructor(private sds: SimpleDescriptionService,
               private schs: ScheduleService,
@@ -60,22 +62,30 @@ export class ModalAddTransportToBrigadeComponent implements OnInit {
     this.updateTransport();
     this.form = this.sds.makeForm(this.desc);
     this.form.reset(this.transportItem);
-    this.form.valueChanges.subscribe(
-      ch => {
-        this.transportItem.from = ch.from;
-        this.transportItem.to = ch.to;
-        this.updateTransport();
-      }
+    this.sbscs.push(
+      this.form.valueChanges.subscribe(
+        ch => {
+          this.transportItem.from = ch.from;
+          this.transportItem.to = ch.to;
+          this.updateTransport();
+        }
+      )
     );
   }
 
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe())
+  }
+
   updateTransport(){
-    this.schs.getAvailableTranspots(this.transportItem.from.toISOString(), this.transportItem.to.toISOString()).subscribe(
-      t => {
-        console.log(t);
-        this.tSource = t;
-      }
-    )
+    this.sbscs.push(
+      this.schs.getAvailableTranspots(this.transportItem.from.toISOString(), this.transportItem.to.toISOString()).subscribe(
+        t => {
+          // console.log(t);
+          this.tSource = t;
+        }
+      )
+    );
   }
 
   selectTransport(e){
@@ -83,10 +93,7 @@ export class ModalAddTransportToBrigadeComponent implements OnInit {
   }
 
   addTransport(){
-    this.selectedTransport.period_details = {
-      date_from: this.transportItem.from,
-      date_to: this.transportItem.to
-    };
+    this.selectedTransport.second[0].transportFK= this.selectedTransport.first;
     this.modalInstance.close(this.selectedTransport);
   }
 

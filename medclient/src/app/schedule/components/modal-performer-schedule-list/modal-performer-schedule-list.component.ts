@@ -9,7 +9,7 @@ import {NotificationsService} from 'angular2-notifications';
   styleUrls: ['./modal-performer-schedule-list.component.scss']
 })
 export class ModalPerformerScheduleListComponent implements OnInit {
-@Input() duty: any[];
+@Input() duty: any;
 @Input() performer: any;
 @Input() date: any;
   constructor(private modalInstance: NgbActiveModal,
@@ -34,13 +34,8 @@ export class ModalPerformerScheduleListComponent implements OnInit {
 
   deleteDuty(duty){
     console.log(duty);
-    this.schs.deletePerformerSchedule(duty.performer_id, duty.period_id).subscribe(
+    this.schs.deletePerformerSchedule(this.duty.id).subscribe(
       (res) => {
-        if (this.duty.length === 1){
-          this.duty = [];
-        } else {
-          this.duty.splice(this.duty.findIndex(val => val === duty), 1);
-        }
         this.modalInstance.close('delete');
         this.ns.success('Успешно', 'Смена сотрудника удалена!')
       }

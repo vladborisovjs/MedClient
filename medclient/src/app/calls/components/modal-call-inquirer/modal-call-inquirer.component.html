@@ -1,0 +1,28 @@
+<div class="card full-height">
+  <div class="card-header">
+    <div class="card-title">
+      Опрос повода к вызову
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="!loading" class="card-body">
+
+    <h4>{{currentNodes[0].data.query}}</h4>
+    <div class="m-1 w-100" *ngFor="let n of currentNodes;let ind = index">
+      <button class="btn btn-info w-75 toolbar-left"  (click)="makeAns(n)">
+        {{ind + 1}}. {{n.data.answer}}
+      </button>
+    </div>
+  </div>
+  <div class="patch full-height" *ngIf="loading">
+    <h3><i class="fas fa-spinner fa-pulse"></i> Загрузка...</h3>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group ">
+      <button class="btn btn-success" *ngIf="answer" (click)="submit()">Применить</button>
+      <button class="btn btn-secondary" (click)="back()">Отменить</button>
+    </div>
+  </div>
+</div>

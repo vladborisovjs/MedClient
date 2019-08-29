@@ -4,7 +4,7 @@ import {CallsComponent} from './components/calls/calls.component';
 import {CallsRoutingModule} from './calls-routing.module';
 import {MatExpansionModule} from '@angular/material';
 import {GridTableModule} from '../shared/grid-table/grid-table.module';
-import {AccordionModule} from 'primeng/primeng';
+import {AccordionModule, TreeTableModule} from 'primeng/primeng';
 import {CallsListComponent} from './components/calls-list/calls-list.component';
 import {BrigagesListComponent} from './components/brigages-list/brigages-list.component';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
@@ -13,14 +13,11 @@ import {CallItemService} from './services/call-item.service';
 import {CallsService} from './services/calls.service';
 import {SimpleControlModule} from '../shared/simple-control/simple-control.module';
 import {InfoPlateModule} from '../shared/info-plate/info-plate.module';
-import {ModalCallUpdateGeneralComponent} from './components/modal-call-update-general/modal-call-update-general.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {ModalDeclarantUpdateComponent} from './components/modal-declarant-update/modal-declarant-update.component';
 import {SimpleNotificationsModule} from 'angular2-notifications';
 import {ModalCallPatientsUpdateComponent} from './components/modal-call-patients-update/modal-call-patients-update.component';
 import {ModalModule} from '../shared/modal/modal.module';
 import { ModalPatientChronologyComponent } from './components/modal-patient-chronology/modal-patient-chronology.component';
-import {ModalAddressUpdateComponent} from './components/modal-address-update/modal-address-update.component';
 import { ModalCallAppointBrigadeComponent } from './components/modal-call-appoint-brigade/modal-call-appoint-brigade.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { ModalCallConfirmBrigadeComponent } from './components/modal-call-confirm-brigade/modal-call-confirm-brigade.component';
@@ -46,6 +43,14 @@ import { ModalCallTransferComponent } from './components/modal-call-transfer/mod
 import { ModalCallTransferAvailableComponent } from './components/modal-call-transfer-available/modal-call-transfer-available.component';
 import { ModalCreateCallComponent } from './components/modal-create-call/modal-create-call.component';
 import { ModalSimilarCallsComponent } from './components/modal-similar-calls/modal-similar-calls.component';
+import { ModalCallInquirerComponent } from './components/modal-call-inquirer/modal-call-inquirer.component';
+import {BestMapModule} from '../shared/best-map/best-map.module';
+import { CardListComponent } from './components/card-list/card-list.component';
+import { CallItemBrigadesComponent } from './components/call-item-brigades/call-item-brigades.component';
+import { CallItemMapComponent } from './components/call-item-map/call-item-map.component';
+import {LightResizerModule} from '../shared/light-resizer/light-resizer.module';
+import {FullAddressModule} from '../shared/full-address/full-address.module';
+import { ModalMkb10DiagnosisComponent } from './components/modal-mkb10-diagnosis/modal-mkb10-diagnosis.component';
 
 @NgModule({
   declarations: [
@@ -53,9 +58,6 @@ import { ModalSimilarCallsComponent } from './components/modal-similar-calls/mod
     CallsListComponent,
     BrigagesListComponent,
     CallItemComponent,
-    ModalCallUpdateGeneralComponent,
-    ModalDeclarantUpdateComponent,
-    ModalAddressUpdateComponent,
     ModalCallPatientsUpdateComponent,
     ModalPatientChronologyComponent,
     ModalCallAppointBrigadeComponent,
@@ -78,6 +80,12 @@ import { ModalSimilarCallsComponent } from './components/modal-similar-calls/mod
     ModalCallTransferAvailableComponent,
     ModalCreateCallComponent,
     ModalSimilarCallsComponent,
+    ModalCallInquirerComponent,
+    CardListComponent,
+    CallItemBrigadesComponent,
+    CallItemMapComponent,
+    ModalMkb10DiagnosisComponent,
+
   ],
   imports: [
     CommonModule,
@@ -92,7 +100,12 @@ import { ModalSimilarCallsComponent } from './components/modal-similar-calls/mod
     ModalModule,
     SimpleNotificationsModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    BestMapModule,
+    LightResizerModule,
+    FullAddressModule,
+    BestMapModule,
+    TreeTableModule,
   ],
   providers: [
     CallsService,
@@ -104,10 +117,7 @@ import { ModalSimilarCallsComponent } from './components/modal-similar-calls/mod
     BrigadeDutyService
   ],
   entryComponents: [
-    ModalCallUpdateGeneralComponent,
-    ModalDeclarantUpdateComponent,
     ModalCallPatientsUpdateComponent,
-    ModalAddressUpdateComponent,
     ModalCallPatientsUpdateComponent,
     ModalPatientChronologyComponent,
     ModalCallAppointBrigadeComponent,
@@ -123,7 +133,9 @@ import { ModalSimilarCallsComponent } from './components/modal-similar-calls/mod
     ModalCallTransferComponent,
     ModalCallTransferAvailableComponent,
     ModalCreateCallComponent,
-    ModalSimilarCallsComponent
+    ModalSimilarCallsComponent,
+    ModalCallInquirerComponent,
+    ModalMkb10DiagnosisComponent
   ]
 })
 export class CallsModule {

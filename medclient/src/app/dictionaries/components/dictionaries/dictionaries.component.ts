@@ -8,16 +8,18 @@ import {getListOfDictionaries, IDictionaryInfo} from '../../models/dictionary-st
 })
 export class DictionariesComponent implements OnInit {
 commonList: IDictionaryInfo[];
-typeList: IDictionaryInfo[];
+brigadesList: IDictionaryInfo[];
 callsList: IDictionaryInfo[];
 drugList: IDictionaryInfo[];
+objectivesList: IDictionaryInfo[]; // справочники объективных данных
   constructor() { }
 
   ngOnInit() {
     this.commonList = getListOfDictionaries('common');
-    this.typeList = getListOfDictionaries('types');
+    this.brigadesList = getListOfDictionaries('brigades');
     this.callsList = getListOfDictionaries('calls');
     this.drugList = getListOfDictionaries('drugs');
+    this.objectivesList = getListOfDictionaries('objectives');
   }
 
 }

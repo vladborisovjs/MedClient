@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import {ColDef} from 'ag-grid-community';
-import {ArchiveService, ICallFilter} from '../../services/archive.service';
+import {ArchiveService} from '../../services/archive.service';
 import {DatePipe} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import { FormGroup} from '@angular/forms';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-calls-archive',
@@ -21,35 +23,6 @@ export class CallsArchiveComponent implements OnInit {
       width: 90,
     },
     {
-      headerName: 'Статус',
-      field: 'call_status_name',
-      sortable: true,
-      filter: true,
-      width: 200,
-      // cellRenderer: (p) => {
-      //   let val = p.value;
-      //   switch (p.data.call_status) {
-      //     case 0:
-      //       val = '<i class="fas fa-exclamation-circle blinking text-danger"></i> ' +  p.value;
-      //       break;
-      //     case 1:
-      //       val = '<i class="fas fa-exclamation-circle text-warning"></i> ' +  p.value;
-      //       break;
-      //     case 2:
-      //       val = '<i class="fas fa-cog text-primary fa-spin"></i> ' +  p.value;
-      //       break;
-      //     case 3:
-      //       val = '<i class="fas fa-check-circle text-success"></i> ' +  p.value;
-      //       break;
-      //     case 4:
-      //       val = '<i class="fas fa-ban text-secondary"></i>  ' +  p.value;
-      //       break;
-      //   }
-      //   return val;
-      //
-      // },
-    },
-    {
       headerName: 'Дата',
       field: 'date',
       sortable: true,
@@ -61,14 +34,14 @@ export class CallsArchiveComponent implements OnInit {
     },
     {
       headerName: 'Заявитель',
-      field: 'declarant_name',
+      field: 'declarantName',
       sortable: true,
       filter: true,
       width: 200,
     },
     {
       headerName: 'Повод к вызову',
-      field: 'reason_name',
+      field: 'reasonFK.reason',
       sortable: true,
       filter: true,
       width: 220,
@@ -82,10 +55,27 @@ export class CallsArchiveComponent implements OnInit {
     },
     {
       headerName: 'Пациенты',
-      field: 'patients',
+      field: 'callPatientList',
       sortable: true,
       filter: true,
       width: 200,
+      valueGetter: params => {
+        if (params.data.callPatientList && params.data.callPatientList.length) {
+          let pat = '';
+          if (!params.data.callPatientList[0].call) {
+            return ' ';
+          }
+          params.data.callPatientList.forEach(
+            p => {
+              pat = pat + p.patientFK.surname + ' ' + p.patientFK.name + ', ';
+            }
+          );
+          pat = pat.slice(0, -2);
+          return pat;
+        } else {
+          return ' ';
+        }
+      },
     },
     {
       headerName: 'Бригады',
@@ -93,59 +83,49 @@ export class CallsArchiveComponent implements OnInit {
       sortable: true,
       filter: true,
       width: 180,
+      valueGetter: params => {
+        if (!params.data.assignedBrigadeList[0].call) {
+          return ' ';
+        }
+        let bris = '';
+        params.data.assignedBrigadeList.forEach(
+          b => {
+            bris = bris + b.brigadeFK.name + ', ';
+          }
+        );
+        bris = bris.slice(0, -2);
+        return bris;
+      },
     },
     {
       headerName: 'Сотрудник',
-      field: 'performer_accept_name',
+      field: 'performerFK.name',
+      valueGetter: params => params.data.performerFK.surname + ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
       sortable: true,
       filter: true,
       width: 180,
     },
   ];
-  listSource: any[] = [];
-  filters: ICallFilter = {
-    subdivisionId: undefined,
-    dateFrom: undefined,
-    dateTo: undefined,
-    number: undefined,
-    declarantName: undefined,
-    declarantPhone: undefined,
-    patientName: undefined,
-    patientSex: undefined,
-    patientAgeYears: undefined,
-    patientAgeMonths: undefined,
-    patientAgeDays: undefined,
-    aoName: undefined,
-    districtId: undefined,
-    performer: undefined,
-    callTypeId: undefined,
-    declarantTypeId: undefined,
-    phone: undefined,
-    callPlaceTypeId: undefined,
-    reasonTypeId: undefined
-  };
+  filters: any = {};
   form: FormGroup;
   descriptions: ISimpleDescription[] = [
     {
-      key: 'number',
+      key: 'id',
       label: 'Номер',
       type: 'number',
-      styleClass: 'col-3',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-12',
       additional:{
         block: 'callInfo'
       }
     },
     {
-      key: 'callTypeId',
+      key: 'typeFK',
       label: 'Тип',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'CALL'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
-      styleClass: 'col-9',
+      dict: 'getReferenceTypeListCallUsingGET',
+      styleClass: 'col-12',
       additional:{
         block: 'callInfo'
       }
@@ -178,11 +158,12 @@ export class CallsArchiveComponent implements OnInit {
       }
     },
     {
-      key: 'performer',
+      key: 'performerFK',
       label: 'Сотрудник',
-      type: 'text',
+      type: 'dict',
+      dict: 'getPerformerListUsingGET',
       styleClass: 'col-6',
-      additional:{
+      additional: {
         block: 'callInfo'
       }
     },
@@ -190,6 +171,8 @@ export class CallsArchiveComponent implements OnInit {
       key: 'patientName',
       label: 'ФИО',
       type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-8',
       additional:{
         block: 'patient'
@@ -209,13 +192,9 @@ export class CallsArchiveComponent implements OnInit {
       }
     },
     {
-      key: 'reasonTypeId',
+      key: 'reason',
       label: 'Повод',
-      type: 'dict',
-      shortDict: true,
-      dict: 'readBasicReasonsUsingGET',
-      bindLabel: 'title',
-      bindValue: 'id',
+      type: 'text',
       additional:{
         block: 'patient'
       }
@@ -242,36 +221,28 @@ export class CallsArchiveComponent implements OnInit {
       key: 'declarantName',
       label: 'ФИО',
       type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-7',
       additional:{
         block: 'declarant'
       }
     },
     {
-      key: 'declarantTypeId',
+      key: 'declarantTypeFK',
       label: 'Тип заявителя',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'DECLARANT'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListDeclarantUsingGET',
       styleClass: 'col-5',
       additional:{
         block: 'declarant'
       }
     },
     {
-      key: 'callPlaceTypeId',
+      key: 'typeFK',
       label: 'Место вызова',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'CALL_PLACE'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListCallPlaceUsingGET',
       styleClass: 'col-6',
       additional:{
         block: 'declarant'
@@ -280,7 +251,9 @@ export class CallsArchiveComponent implements OnInit {
     {
       key: 'declarantPhone',
       label: 'Телефон',
-      type: 'text',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Некорректный номер',
       styleClass: 'col-6',
       additional:{
         block: 'declarant'
@@ -288,9 +261,15 @@ export class CallsArchiveComponent implements OnInit {
     },
   ];
   loading: boolean;
-
   datePipe = new DatePipe('ru');
-
+  dataSource = {
+    get: (filter, offset, count) => {
+      this.loading = true;
+      filter.dateFrom = filter.dateFrom ? filter.dateFrom.toISOString() : undefined;
+      filter.dateTo = filter.dateTo ? filter.dateTo.toISOString() : undefined;
+      return this.arch.searchCall(offset, count, filter, filter.dateFrom, filter.dateTo).pipe(tap(() => this.loading = false));
+    }
+  };
   dateFormatter(params) {
     return params.value ? this.datePipe.transform(params.value, 'dd.MM.yyyy HH:mm') : '-';
   }
@@ -304,32 +283,18 @@ export class CallsArchiveComponent implements OnInit {
     this.searchCalls();
   }
 
+
   fitCol(e) {
     e.api.sizeColumnsToFit();
   }
 
   goToCall(call) {
-    console.log(call.data);
+    console.log(call);
     this.router.navigate([ 'calls/'+ call.data.id]);
   }
 
   searchCalls(){
-    this.loading = true;
     this.filters = this.form.getRawValue();
-    Object.keys(this.filters).forEach(
-      key => {
-        this.filters[key] = this.filters[key] ? this.filters[key] : undefined;
-      }
-    );
-    this.arch.searchCall(this.filters).subscribe(
-      l => {
-        this.listSource = l;
-        this.loading = false;
-      },
-      error => {
-        this.loading = false;
-      }
-    )
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {
@@ -342,6 +307,7 @@ export class CallsArchiveComponent implements OnInit {
   }
 
   eraseFilters(){
+    this.filters = {};
     this.form.reset({});
   }
 

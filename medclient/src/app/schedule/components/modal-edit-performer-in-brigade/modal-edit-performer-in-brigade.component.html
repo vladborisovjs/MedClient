@@ -9,7 +9,7 @@
   </div>
   <div class="card-body">
     <div class="card-subtitle">
-      {{performerInfo.second_name}} {{performerInfo.first_name}} - {{performerInfo.type_name}}
+      {{performerInfo.performerFK.surname}} {{performerInfo.performerFK.name}} - {{performerInfo.performerFK.typeFK.name}}
     </div>
     <app-simple-view
     [descriptions]="desc"

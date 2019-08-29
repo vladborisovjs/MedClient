@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
-import {CallDtoFLAT, MedApi, Mode3} from '../../../../swagger/med-api.service';
+import {CallStatusList, MedApi} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -9,16 +10,18 @@ export class CallsService {
   constructor(private api: MedApi, private user: UserService) {
   }
 
-  getCallsList() {
-    return this.api.readAllUsingGET_6(this.user.subdivisionId, Mode3.ACTIVE);
+  getCallsList(from, count, orderBy, isAsc) {
+    return this.api.getCallListUsingGET(
+      from,
+      count,
+      orderBy ? orderBy : 'date',
+      isAsc,
+      [CallStatusList.UNDONE, CallStatusList.ACTIVE, CallStatusList.CONFIRM, CallStatusList.UNCONFIRM, CallStatusList.UNFOUNDED]
+    );
   }
 
-  getCallCardsList(callId) {
-    return this.api.readCardsByCallAndSubdivisionUsingGET(this.user.subdivisionId, callId, false);
-  }
-
-  getActiveCardsList() {
-    return this.api.readAllUsingGET_7(Mode3.ACTIVE, this.user.subdivisionId, false);
+  getActiveCardsList(from, count) {
+    return this.api.getCardListUsingGET(from, count, 'date', false);
   }
 
   getSimilarCalls(similarCall) {
@@ -26,6 +29,10 @@ export class CallsService {
   }
 
   createCall(callItem) {
-    return this.api.createUsingPOST_5(this.user.subdivisionId, callItem);
+    return this.api.updateCallContainerUsingPOST(callItem);
+  }
+
+  getCallCardsList(callId){
+    return this.api.getCardListUsingGET(0, 100, undefined, undefined, undefined, callId);
   }
 }

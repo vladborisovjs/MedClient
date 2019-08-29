@@ -1,36 +1,37 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ColDef} from 'ag-grid-community';
-import {BrigadeDutyRequestDto, BrigadeScheduleDto, MedApi, Mode} from '../../../../../swagger/med-api.service';
+import {BrigadeContainer, Pair, PerformerBean, TransportBean} from '../../../../../swagger/med-api.service';
 import {HttpClient} from '@angular/common/http';
 import {DatePipe} from '@angular/common';
 import {BrigadeDutyService} from '../../services/brigade-duty.service';
 import {NotificationsService} from 'angular2-notifications';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-brigages-list',
   templateUrl: './brigages-list.component.html',
   styleUrls: ['./brigages-list.component.scss']
 })
-export class BrigagesListComponent implements OnInit {
+export class BrigagesListComponent implements OnInit, OnDestroy {
   listSource = [];
   colDefs: ColDef[] = [
     {
       headerName: 'Бригада',
-      field: 'brigade_name',
+      field: 'first.name',
       sortable: true,
       filter: true,
       width: 150
     },
     {
       headerName: 'Тип',
-      field: 'brigade_type_name',
+      field: 'first.brigadeTypeFK.name',
       sortable: true,
       filter: true,
       width: 300
     },
     {
       headerName: 'Статус',
-      field: 'brigade_status_name',
+      field: 'first.brigadeStatusFK.name',
       sortable: true,
       filter: true,
       width: 150
@@ -61,23 +62,35 @@ export class BrigagesListComponent implements OnInit {
     }
   ];
   listSourceLog: any[] = [];
-  modes = Mode;
+  modes = {
+    'OFFLINE': 'OFFLINE',
+    'ONLINE': 'ONLINE',
+    'UPCOMING': 'UPCOMING',
+  };
   mode = this.modes.ONLINE;
-  selectedBrigade: BrigadeScheduleDto;
+  selectedBrigade: Pair;
   doings: any[];
+  crew: PerformerBean[];
+  transport: TransportBean;
   datePipe = new DatePipe('ru');
-
-  constructor( private http: HttpClient,
-               private bs: BrigadeDutyService,
-               private ns: NotificationsService) {
+  sbscs: Subscription[] = [];
+  constructor(private http: HttpClient,
+              private bs: BrigadeDutyService,
+              private ns: NotificationsService) {
   }
 
   ngOnInit() {
     this.updateBrigades();
   }
 
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
+
   updateBrigades() {
-    this.bs.getBrigadesOnDuty(this.mode).subscribe(bri => this.listSource = bri);
+    this.sbscs.push(
+      this.bs.getBrigadesOnDuty(this.mode).subscribe(bri => this.listSource = bri)
+    )
   }
 
   fitCol(e) {
@@ -87,59 +100,127 @@ export class BrigagesListComponent implements OnInit {
   changeMode(mode) {
     this.selectedBrigade = null;
     this.listSourceLog = null;
+    this.crew = [];
+    this.transport = null;
     this.mode = mode;
     this.updateBrigades();
   }
 
+
   selectBri(bri) {
     console.log(bri.data);
     this.selectedBrigade = bri.data;
-    this.bs.getBrigdeProtocol(this.selectedBrigade.id).subscribe(
-      (hist) => this.listSourceLog = hist
-    );
-    this.bs.getBrigadeDoings( this.selectedBrigade.brigade_id, this.selectedBrigade.id).subscribe(
-      (doings) => this.doings = doings
+    this.sbscs.push(
+      this.bs.getBriCrew(this.selectedBrigade.first.id).subscribe(
+        (crew) => {
+          console.log('crew', crew);
+          this.crew = crew.performerList;
+          this.transport = crew.transportBean;
+        }
+      ),
+    this.bs.getBrigadeDoings(this.selectedBrigade.first.id, this.selectedBrigade.second[0].dateFrom).subscribe(
+      (doings) => {
+        console.log(doings);
+        this.doings = doings.list;
+      }
+    )
     );
   }
 
-  endDuty(){
-    let d = new Date();
-    // d.setHours(d.getHours() + 3);
-    let dutyResult: any = {
-      pharmacy_package_id: this.selectedBrigade.pharmacy_package_id,
-      comment: '',
-      date: d
-    };
-    dutyResult = BrigadeDutyRequestDto.fromJS(dutyResult);
+  statusFormatter(status: number) {
+    switch (status) {
+      case 0:
+        return 'Бригада не назначениа';
+      case 1:
+        return 'Не принят бригадой';
+      case 2:
+        return 'Принят бригадой';
+      case 3:
+        return 'В работе';
+      case 4:
+        return 'Завершен';
+      case 5:
+        return 'Отменен';
+    }
+    return status;
+  }
+
+  endDuty() {
     console.log('endDuty', this.selectedBrigade);
-    this.bs.endDuty(this.selectedBrigade.id, dutyResult).subscribe(
-      res =>{
-        console.log(res);
-        this.updateBrigades();
-      },
-      error1 => {
-        console.log('end duty error');
-        this.ns.warn('Ошибка', 'Возможно у бригады есть незавершенные вызовы. \n Проверьте занятость!');
-        console.log(error1);
-      }
-    )
+    this.sbscs.push(
+      this.bs.endDuty(this.selectedBrigade.second[0].id).subscribe(
+        res => {
+          this.ns.success('Успешно', `Бригада ${this.selectedBrigade.first.name} завершила смену.`);
+          this.updateBrigades();
+        },
+        error1 => {
+          console.log('end duty error');
+          this.ns.warn('Ошибка', 'Возможно у бригады есть незавершенные вызовы. \n Проверьте занятость!');
+          console.log(error1);
+        }
+      )
+    );
   }
 
-  startDuty(){
-    let d = new Date();
-    let dutyResult: any = {
-      pharmacy_package_id: this.selectedBrigade.pharmacy_package_id,
-      comment: '',
-      date: d
-    };
-    dutyResult = BrigadeDutyRequestDto.fromJS(dutyResult);
-    console.log('startDuty', this.selectedBrigade, dutyResult);
-    this.bs.startDuty(this.selectedBrigade.id, dutyResult).subscribe(
-      res =>{
-        console.log(res);
-        this.updateBrigades();
-      }
-    )
+  startDuty() {
+    this.sbscs.push(
+      this.bs.startDuty(this.selectedBrigade.second[0].id).subscribe(
+        res => {
+          console.log(res);
+          this.ns.success('Успешно', `Бригада ${this.selectedBrigade.first.name} выведена на линию.`);
+          this.updateBrigades();
+        },
+        error1 => this.ns.error('Ошибка сервера!')
+      )
+    );
   }
+
+  sendAlarm() {
+    this.sbscs.push(
+      this.bs.brigadeAlarm(this.selectedBrigade.first.id).subscribe(
+        res=>{
+          console.log(res);
+          this.ns.success('Успешно', `Подан сигнал тревоги бригады ${this.selectedBrigade.first.name}`);
+          this.updateBrigades();
+        },
+        err => {
+          console.log(err);
+          this.ns.error('Ошибка', 'Не удалось установить статус');
+        }
+      )
+    );
+  }
+
+  sendOnBase() {
+    this.sbscs.push(
+      this.bs.brigadeOnBase(this.selectedBrigade.first.id).subscribe(
+        res=>{
+          console.log(res);
+          this.ns.success('Успешно', `Бригаде ${this.selectedBrigade.first.name} установлен статус "Свободна на станции"`);
+          this.updateBrigades();
+        },
+        err => {
+          console.log(err);
+          this.ns.error('Ошибка', 'Не удалось установить статус');
+        }
+      )
+    );
+  }
+
+
+
+  // setBrigadeStatus(briStatus) {
+  //   this.bs.setBrigadeStatus(briStatus).subscribe(
+  //     res=>{
+  //       console.log(res);
+  //       this.ns.success('Успешно', `Бригаде ${this.selectedBrigade.first.name} установлен статус ${briStatus.name}`)
+  //       this.updateBrigades();
+  //     },
+  //     err => {
+  //       console.log(err);
+  //       this.ns.error('Ошибка', 'Не удалось установить статус');
+  //     }
+  //   );
+  // }
 
 }

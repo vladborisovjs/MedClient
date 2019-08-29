@@ -14,6 +14,7 @@ import {UserService} from './services/user.service';
 import {SimpleNotificationsModule} from 'angular2-notifications';
 import {SocketService} from './services/socket.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {CheckConditionService} from "./shared/services/check-condition.service";
 
 const LOCATION_REF = new InjectionToken('LOCATION_REF');
 registerLocaleData(localeRu);
@@ -55,7 +56,8 @@ registerLocaleData(localeRu);
     UserService,
     SocketService,
     MedApi,
-    NgbActiveModal
+    NgbActiveModal,
+    CheckConditionService
   ],
   bootstrap: [AppComponent]
 })

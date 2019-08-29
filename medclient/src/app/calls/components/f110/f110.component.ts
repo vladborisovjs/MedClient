@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
@@ -11,7 +11,7 @@ import {CallDto, CardSideOneDto} from '../../../../../swagger/med-api.service';
   templateUrl: './f110.component.html',
   styleUrls: ['./f110.component.scss']
 })
-export class F110Component implements OnInit {
+export class F110Component implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
   cardInfoSideOne: any;
   constructor(
@@ -31,6 +31,25 @@ export class F110Component implements OnInit {
     );
   // console.log('cardId', this.route.snapshot.url[0].path);
   // console.log('callId', this.route.parent.parent.snapshot.url[0].path);
+  }
+
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
+
+  saveCard(){
+    if (this.cas.formResult || this.cas.formTypeResult) {
+      this.ns.error('Ошибка заполнения формы результата', 'Данные не сохранены');
+    }
+    if(this.cas.formObjectives) {
+      this.ns.error('Ошибка заполнения формы объективных данных', 'Данные не сохранены');
+    }
+    if (this.cas.formPatient) {
+      this.ns.error('Ошибка заполнения формы пациента', 'Данные не сохранены');
+    }
+    if (!this.cas.formResult && !this.cas.formObjectives && !this.cas.formPatient && !this.cas.formTypeResult) {
+      this.cas.saveCard();
+    }
   }
 
   requestToCheck() {

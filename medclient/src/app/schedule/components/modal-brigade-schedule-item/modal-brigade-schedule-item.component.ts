@@ -3,6 +3,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
 import {ScheduleService} from '../../services/schedule.service';
 import {NotificationsService} from 'angular2-notifications';
+import {ModalAddBrigadeScheduleComponent} from '../modal-add-brigade-schedule/modal-add-brigade-schedule.component';
 
 @Component({
   selector: 'app-modal-brigade-schedule-item',
@@ -13,13 +14,12 @@ export class ModalBrigadeScheduleItemComponent implements OnInit {
   @Input() duty: any;
   @Input() brigade: any;
   @Input() date: any;
-  constructor(private modalInstance: NgbActiveModal,
-              private schs: ScheduleService,
-              private ns: NotificationsService,
-              private cmodal: CustomModalService) { }
+  @Input() performerList: any[];
+  @Input() transportList: any[];
+  constructor(private modalInstance: NgbActiveModal) { }
 
   ngOnInit() {
-    console.log(this);
+    console.log(this)
   }
 
   goToEdit(){
@@ -28,26 +28,5 @@ export class ModalBrigadeScheduleItemComponent implements OnInit {
 
   back(){
     this.modalInstance.dismiss();
-  }
-
-  deleteDuty() {
-    this.cmodal.confirm('Удаление смены', 'Вы уверены, что хотите удалить смену ?').then(
-      res => {
-        if (res) {
-          console.log(res);
-          this.schs.deleteBrigadeSchedule(this.brigade.brigadeId, this.duty.id).subscribe(
-            res => {
-              this.modalInstance.close();
-              this.ns.success('Успешно', 'Смена бригады удалена')
-            },
-            error => {
-              this.modalInstance.dismiss();
-              this.ns.error('Ошибка', '')
-            }
-          );
-
-        }
-      }
-    );
   }
 }

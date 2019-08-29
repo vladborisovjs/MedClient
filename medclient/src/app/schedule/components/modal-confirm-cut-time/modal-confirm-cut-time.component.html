@@ -1,0 +1,16 @@
+<div class="card">
+  <div class="card-header">
+    Подтверждение
+  </div>
+  <div class="card-body">
+    <p>Бригада может работать c </p>
+    <p><b>{{dates.dateFrom | date: 'dd.MM.yyyy HH:mm'}} - {{dates.dateTo | date: 'dd.MM.yyyy HH:mm'}}</b></p>
+    Переназначить время?
+  </div>
+  <div class="card-footer">
+    <div class="btn-group float-right">
+      <button class="btn btn-success" (click)="confirm(true)">Применить</button>
+      <button class="btn btn-danger" (click)="dismiss()">Отмена</button>
+    </div>
+  </div>
+</div>

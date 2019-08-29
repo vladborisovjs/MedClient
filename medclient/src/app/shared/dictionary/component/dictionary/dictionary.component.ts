@@ -23,12 +23,14 @@ export class DictionaryComponent implements OnInit {
   @Input() showCross = true;
   @Input() short = true;
   @Input() disabled = false;
+  @Input() readonly: boolean = false;
   @Input() placeholder = '';
   @Input() filters: any = {};
   @Input() filtersOrder: string[] = [];
   @Input() dropdownPosition = 'auto';
   @Input() styleClass: string;
   @Input() searchField: string;
+  @Input() addLabel: string;
   @Output() blur = new EventEmitter();
   @Output() dictSelect = new EventEmitter();
   @HostBinding('class') cls;
@@ -86,7 +88,7 @@ export class DictionaryComponent implements OnInit {
         });
       } else {
         this.scrollable = true;
-        method(this.from, this.count, true, ...orderedFilters).toPromise().then(el => {
+        method(this.from, this.count, false, ...orderedFilters).toPromise().then(el => {
           this.loading = false;
           this.list = el.list;
         });
@@ -105,7 +107,7 @@ export class DictionaryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.setList(); // подгружаем варианты при открытии формы
+    // this.setList(); // подгружаем варианты при открытии формы
     if (this._value) {
       this.title = this._value[this.bindLabel];
     }
@@ -184,6 +186,7 @@ export class DictionaryComponent implements OnInit {
       if (this.scrollable) {
         let orderedFilters = [];
         this.filtersOrder.forEach(el => {
+
           orderedFilters.push(this.filters[el]);
         });
         this.from += 50;

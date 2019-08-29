@@ -1,12 +1,12 @@
-<div class="card m-0" >
-  <div class="card-header toolbar">
-    <div class="toolbar-left">
-      <button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>
-    </div>
-    <div class="card-subtitle">Объективные данные</div>
-    <div class="toolbar-right"></div>
-  </div>
-</div>
+<!--<div class="card m-0" >-->
+  <!--<div class="card-header toolbar">-->
+    <!--<div class="toolbar-left">-->
+      <!--<button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>-->
+    <!--</div>-->
+    <!--<div class="card-subtitle">Объективные данные</div>-->
+    <!--<div class="toolbar-right"></div>-->
+  <!--</div>-->
+<!--</div>-->
 <div class="flexible">
   <div class="col-4 full-width">
     <div class="card">
@@ -16,9 +16,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('general_state')"
-          [item]="objective.general_state"
+          [item]="objective.cardObjectiveBean"
+          [preprocessed]="true"
           [row]="true"
-          [form]="getBlockForm('general_state')">
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -27,17 +28,12 @@
         GLASGOW Coma
       </div>
       <div class="card-body">
-        <app-simple-view *ngIf="patientYear<=3"
-          [descriptions]="getBlockDescriptions('glasgowChild')"
-          [item]="objective.glasgow"
-          [row]="true"
-          [form]="getBlockForm('glasgow')">
-          ></app-simple-view>
-        <app-simple-view *ngIf="patientYear > 3"
+        <app-simple-view
           [descriptions]="getBlockDescriptions('glasgow')"
-          [item]="objective.glasgow"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('glasgow')">
+          [preprocessed]="true"
+          [form]="form">
         </app-simple-view>
       </div>
     </div>
@@ -48,9 +44,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('addition')"
-          [item]="objective.addition"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('addition')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
       </div>
@@ -61,9 +58,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('reflexes')"
-          [item]="objective.reflexes"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('reflexes')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -74,9 +72,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('pupils')"
-          [item]="objective.pupils"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('pupils')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -87,9 +86,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('lymph')"
-          [item]="objective.lymph"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('lymph')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -102,9 +102,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('edema')"
-          [item]="objective.edema"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('edema')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -115,9 +116,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('skin')"
-          [item]="objective.skin"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('skin')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -128,9 +130,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('heart')"
-          [item]="objective.heart"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('heart')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div><div class="card">
@@ -140,9 +143,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('other')"
-          [item]="objective.other"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('other')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div><div class="card">
@@ -152,9 +156,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('breath')"
-          [item]="objective.breath"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('breath')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div><div class="card">
@@ -164,9 +169,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('wheezing')"
-          [item]="objective.wheezing"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('wheezing')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div><div class="card">
@@ -176,9 +182,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('excreta')"
-          [item]="objective.excreta"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('excreta')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -191,9 +198,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('throat')"
-          [item]="objective.throat"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('throat')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -204,9 +212,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('tonsils')"
-          [item]="objective.tonsils"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('tonsils')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -217,9 +226,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('perc')"
-          [item]="objective.perc"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('perc')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -230,9 +240,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('tongue')"
-          [item]="objective.tongue"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('tongue')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -243,9 +254,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('stomach')"
-          [item]="objective.stomach"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('stomach')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -256,9 +268,17 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('liver')"
-          [item]="objective.liver"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('liver')">
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+        <app-simple-view *ngIf="this.liverLarge"
+          [descriptions]="getBlockDescriptions('liverLarge')"
+          [item]="objective.cardObjectiveBean"
+                         [preprocessed]="true"
+          [row]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -269,9 +289,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('dyspeptic')"
-          [item]="objective.dyspeptic"
+          [item]="objective.cardObjectiveBean"
+          [preprocessed]="true"
           [row]="true"
-          [form]="getBlockForm('dyspeptic')">
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -282,9 +303,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('diuresis')"
-          [item]="objective.diuresis"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('diuresis')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>
@@ -295,9 +317,10 @@
       <div class="card-body">
         <app-simple-view
           [descriptions]="getBlockDescriptions('alcohol')"
-          [item]="objective.alcohol"
+          [item]="objective.cardObjectiveBean"
           [row]="true"
-          [form]="getBlockForm('alcohol')">
+          [preprocessed]="true"
+          [form]="form">
         ></app-simple-view>
       </div>
     </div>

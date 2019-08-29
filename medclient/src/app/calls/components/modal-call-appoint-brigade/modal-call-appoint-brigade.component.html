@@ -2,51 +2,47 @@
   <div class="card-header center-me">
     <div class="card-title">
       Назначение бригады
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
   </div>
   <div class="card-body null-padding">
-    <div class="row">
-      <div class="col-3">
-        \Карта\
-      </div>
-      <div class="col-9">
-        <div class="card null-margin">
-          <div class="card-header toolbar">
-            <div class="toolbar-left">
-            </div>
-            <div class="toolbar-right">
-              <form [formGroup]="findBriControls">
-                <div class="flexible">
-                  <div class="rad">
-                    <input type="number" formControlName="radius" [placeholder]="'В радиусе'" title="В радиусе"
-                           class="form-control">
-                  </div>
-                  <button class="btn btn-primary" (click)="findBri()">Найти</button>
-                </div>
-              </form>
-            </div>
-
-          </div>
-          <div class="card-body bri-deck ">
-            <app-grid-table
-              [columnDefs]="colDefs"
-              [multiSelect]="true"
-              (onRowSelect)="selectBri($event)"
-              [sizeColumnsToFit]="true"
-              [pagination]="false"
-              (onGridReady)="fitCol($event)"
-              [listSource]="listSource">
-            </app-grid-table>
-          </div>
-          <div class="card-footer">
-            <div class="toolbar-right">
-              <div class="btn-group">
-                <button class="btn btn-primary" (click)="appoint()" [disabled]="!selectedBris.length">
-                  Выбрать
-                </button>
-                <button class="btn btn-secondary" (click)="back()">Отмена</button>
+    <div class="card null-margin">
+      <div class="card-header toolbar">
+        <div class="toolbar-left">
+        </div>
+        <div class="toolbar-right">
+          <form [formGroup]="findBriControls">
+            <div class="flexible">
+              <div class="rad">
+                <input type="number" formControlName="radius" [placeholder]="'В радиусе'" title="В радиусе"
+                       class="form-control">
               </div>
+              <button class="btn btn-primary" (click)="findBri()">Найти</button>
             </div>
+          </form>
+        </div>
+
+      </div>
+      <div class="card-body bri-deck ">
+        <app-grid-table
+          [columnDefs]="colDefs"
+          [multiSelect]="true"
+          (onRowSelect)="selectBri($event)"
+          [sizeColumnsToFit]="true"
+          [pagination]="false"
+          (onGridReady)="fitCol($event)"
+          [listSource]="listSource">
+        </app-grid-table>
+      </div>
+      <div class="card-footer">
+        <div class="toolbar-right">
+          <div class="btn-group">
+            <button class="btn btn-primary" (click)="appoint()" [disabled]="!selectedBris.length">
+              Выбрать
+            </button>
+            <button class="btn btn-secondary" (click)="back()">Отмена</button>
           </div>
         </div>
       </div>

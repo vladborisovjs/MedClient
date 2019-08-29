@@ -1,4 +1,16 @@
-import {Component, ElementRef, EventEmitter, forwardRef, HostBinding, Input, OnInit, Output, Renderer2, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  HostBinding,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  Renderer2,
+  ViewChild
+} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
@@ -21,6 +33,9 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder = '';
   @Input() rows = 2;
   @Input() showTime: boolean = true;
+  @Input() timeOnlyWithDate: Date;
+  @Input() minDate: Date;
+  @Input() maxDate: Date;
   @Input() dict;
   @Input() dictFilters: any = {};
   @Input() dictFiltersOrder: any = [];
@@ -32,9 +47,14 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() styleClass = '';
   @Input() additional: any;
   @Input() alwaysDisabled = false;
+  @Input() readonly: boolean = false;
   @Input() dropdownPosition;
   @Input() templateField = 'name';
   @Input() selectList: any[];
+  @Input() presetValue: any;
+  @Input() btnClass: string;
+  @Input() action: any;
+  @Input() addLabel: string;
   @Output() dictSelect = new EventEmitter();
   @HostBinding('class') hostClass;
   @ViewChild('ctrl', { read: ElementRef }) ctrl: ElementRef;
@@ -102,4 +122,5 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
       key: this.formControlName
     });
   }
+
 }

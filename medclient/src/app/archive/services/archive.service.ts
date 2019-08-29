@@ -2,27 +2,6 @@ import {Injectable} from '@angular/core';
 import {MedApi, Mode3} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 
-export interface ICallFilter {
-  subdivisionId?: number,
-  dateFrom?: Date,
-  dateTo?: Date,
-  number?: string,
-  declarantName?: string,
-  declarantPhone?: string,
-  patientName?: string,
-  patientSex?: number,
-  patientAgeYears?: number,
-  patientAgeMonths?: number,
-  patientAgeDays?: number,
-  aoName?: string,
-  districtId?: number,
-  performer?: string,
-  callTypeId?: number,
-  declarantTypeId?: number,
-  phone?: string,
-  callPlaceTypeId?: number,
-  reasonTypeId?: number
-}
 
 @Injectable({
   providedIn: 'root'
@@ -32,51 +11,28 @@ export class ArchiveService {
   constructor(private api: MedApi, private user: UserService) {
   }
 
-  searchCall(filters: ICallFilter) {
-    console.log('filk', filters);
-    return this.api.readAllUsingPOST(
-      this.user.subdivisionId,
-      filters.subdivisionId,
-      filters.dateFrom,
-      filters.dateTo,
-      filters.number,
-      filters.declarantName,
-      filters.declarantPhone,
-      filters.patientName,
-      filters.patientSex,
-      filters.patientAgeYears,
-      filters.patientAgeMonths,
-      filters.patientAgeDays,
-      filters.aoName,
-      filters.districtId,
-      filters.performer,
-      filters.callTypeId,
-      filters.declarantTypeId,
-      filters.phone,
-      filters.callPlaceTypeId,
-      filters.reasonTypeId,
-    );
-    // return this.api.readAllUsingGET_6(this.user.subdivisionId, Mode3.ALL);
+  searchCall(from, count, filter, dateFrom, dateTo) {
+    //console.log('filk', filters);
+
+    return this.api.getCallListUsingGET(
+      from, count, 'date', false,
+      undefined, undefined,
+      filter.number ? filter.number : undefined,
+      filter.declarantName ? filter.declarantName : undefined,
+      filter.reason ? filter.reason : undefined,
+      undefined, dateFrom, dateTo);
   }
 
-  searchCard(filters: ICallFilter) {
-    return this.api.readAllUsingPOST_1(
-      filters.subdivisionId,
-      filters.number,
-      filters.declarantName,
-      filters.declarantPhone,
-      filters.patientName,
-      filters.patientSex,
-      filters.patientAgeYears,
-      filters.patientAgeMonths,
-      filters.patientAgeDays,
-      filters.aoName,
-      filters.districtId,
-      filters.performer,
-      filters.callTypeId,
-      filters.declarantTypeId,
-      filters.callPlaceTypeId,
-      filters.reasonTypeId,
-    );
+  searchCard(from, count) {
+    return this.api.getCardListUsingGET(from, count, 'date', false);
+  }
+
+  searchPatient(from, count, filter){
+    return this.api.getPatientListUsingGET(
+      from,
+      count,
+      false,
+      filter.patientType ? filter.patientType : undefined,
+      filter.surname ? filter.surname : undefined );
   }
 }

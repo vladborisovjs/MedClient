@@ -19,12 +19,10 @@ export class ModalAddDrugsComponent implements OnInit {
       label: 'Наименование',
       key: 'name',
       type: 'dict',
-      shortDict: true,
       dictFilters: {type: ''},
       dictFiltersOrder: ['type'],
-      bindLabel: 'name',
       bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListUsingGET',
     },
     {
       label: 'Количество',

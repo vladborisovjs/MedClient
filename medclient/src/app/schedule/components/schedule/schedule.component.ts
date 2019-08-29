@@ -16,12 +16,12 @@ export class ScheduleComponent implements OnInit {
     {
       label: 'Смены бригад',
       routerLink: 'brigades',
-      iconClass: 'fas fa-user-friends'
+      iconClass: 'fas fa-ambulance'
     },
     {
       label: 'Управление бригадами',
       routerLink: 'brigades-control',
-      iconClass: 'fas fa-ambulance'
+      iconClass: 'fas fa-cog'
     },
   ];
   constructor() { }

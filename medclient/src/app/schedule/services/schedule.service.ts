@@ -1,5 +1,12 @@
 import {Injectable} from '@angular/core';
-import {BrigadeScheduleCreateDto, BrigadeScheduleUpdateDto, MedApi, PerformerScheduleDto2} from '../../../../swagger/med-api.service';
+import {
+  BrigadeScheduleBean,
+  BrigadeScheduleCreateDto,
+  BrigadeScheduleUpdateDto,
+  MedApi,
+  PerformerScheduleDto2,
+  PerformerShiftBean
+} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 
 @Injectable({
@@ -26,84 +33,85 @@ export class ScheduleService {
 
   // получение графика работы сотрудников
   getCalendarSchedulePerfomers(from, to) {
-    return this.api.readPerformersCalendarUsingGET_1(this.user.subdivisionId, from, to, this.user.subdivisionId);
+    return this.api.getPerformerShiftTableUsingGET(false, false, from, to);
   }
 
   // получение графика работы бригад
   getCalendarScheduleBrigades(from, to) {
-    return this.api.readPerformersCalendarUsingGET(this.user.subdivisionId, from, to);
+    return this.api.getBrigadeScheduleMapUsingGET(from, to, false);
   }
 
   // добавление смены сотруднику
-  createPerformerSchedule(performerId, schItem: PerformerScheduleDto2){
-    return this.api.createPerformerScheduleUsingPOST(this.user.subdivisionId, performerId, schItem)
+  createPerformerSchedule(schItem) {
+    return this.api.updatePerformerShiftUsingPOST(schItem);
   }
 
   // пролонгация рабочего графика
-  prolongationGet(from, to){
-    return this.api.generatePerformerScheduleCalendarUsingGET(this.user.subdivisionId, from, to)
+  prolongation(ids, performanceTypeId, from, to){
+    return this.api.scheduleProlongationUsingPOST(ids, performanceTypeId, from, to, undefined)
   }
 
-  prolongationPost(map){
-    return this.api.createPerformersCalendarUsingPOST(map, this.user.subdivisionId);
-  }
 
 
   // получение списка сотрудников для назначения в смену бригады
-  getAvailablePerformers(from, to, gCode){
+  getAvailablePerformers(type, from, to){
     // костыль для таймзон
-    from = this.moveTimeZoneIso(from);
-    to = this.moveTimeZoneIso(to);
-    return this.api.readAllAvailablePerformersUsingGET(this.user.subdivisionId, from, gCode, to)
+    // from = this.moveTimeZoneIso(from);
+    // to = this.moveTimeZoneIso(to);
+    return this.api.getAvailablePerformersUsingGET(from, to, type);
   }
 
   // получение списка транспорта для назначения в смену бригады
-  getAvailableTranspots(from, to){
+  getAvailableTranspots(from, to) {
     // костыль для таймзон
-    from = this.moveTimeZoneIso(from);
-    to = this.moveTimeZoneIso(to);
-    return this.api.readAllAvailableTranspotsUsingGET(this.user.subdivisionId, from, to)
+    // from = this.moveTimeZoneIso(from);
+    // to = this.moveTimeZoneIso(to);
+    return this.api.getAvailableTransportsUsingGET(from, to);
   }
 
   // добавление смены бригады
 
-  createBrigadeSchedule(briId, briItem){
-    briItem = BrigadeScheduleCreateDto.fromJS(briItem);
-    console.log(briItem);
-    briItem.cars.forEach(
-      car => {
-        car.period_details.date_from = this.moveTimeZone(car.period_details.date_from);
-        car.period_details.date_to = this.moveTimeZone(car.period_details.date_to);
-      }
-    );
-    briItem.performers.forEach(
-      per => {
-        per.period_details.date_from = this.moveTimeZone(per.period_details.date_from);
-        per.period_details.date_to = this.moveTimeZone(per.period_details.date_to);
-      }
-    );
-    briItem.period_details.date_from = this.moveTimeZone(briItem.period_details.date_from);
-    briItem.period_details.date_to = this.moveTimeZone(briItem.period_details.date_to);
-    return this.api.createBrigadeScheduleUsingPOST(this.user.subdivisionId, briId, briItem)
+  createBrigadeSchedule(briItem: BrigadeScheduleBean) {
+    briItem.isAvailable = false;
+    // briItem = BrigadeScheduleCreateDto.fromJS(briItem);
+    // console.log(briItem);
+    // briItem.cars.forEach(
+    //   car => {
+    //     car.period_details.date_from = this.moveTimeZone(car.period_details.date_from);
+    //     car.period_details.date_to = this.moveTimeZone(car.period_details.date_to);
+    //   }
+    // );
+    // briItem.performers.forEach(
+    //   per => {
+    //     per.period_details.date_from = this.moveTimeZone(per.period_details.date_from);
+    //     per.period_details.date_to = this.moveTimeZone(per.period_details.date_to);
+    //   }
+    // );
+    // briItem.period_details.date_from = this.moveTimeZone(briItem.period_details.date_from);
+    // briItem.period_details.date_to = this.moveTimeZone(briItem.period_details.date_to);
+    return this.api.updateBrigadeScheduleUsingPOST(briItem)
   }
 
   // Редактирование смены бригады
 
   editBrigadeSchedule(briId, scheduleId, briItem){
-    briItem = BrigadeScheduleUpdateDto.fromJS(briItem);
-    return this.api.updateBrigadeScheduleUsingPUT(this.user.subdivisionId, briId, scheduleId, briItem)
+    // briItem = BrigadeScheduleUpdateDto.fromJS(briItem);
+    return this.api.updateBrigadeScheduleUsingPOST(briItem)
   }
 
   // Удаление смены бригады
 
-  deleteBrigadeSchedule(briId, scheduleId){
-    return this.api.updateBrigadeScheduleUsingDELETE(this.user.subdivisionId, briId, scheduleId);
-  }
+  // deleteBrigadeSchedule(id){
+  //   return this.api.deleteBrigadeScheduleUsingDELETE(id);
+  // }
 
   // Удаление смены сотрудника
+  deletePerformerSchedule(performerId){
+    return this.api.deletePerformerShiftUsingDELETE(performerId);
+  }
 
-  deletePerformerSchedule(performerId, scheduleId){
-    return this.api.deletePerformersScheduleUsingDELETE(this.user.subdivisionId, performerId, scheduleId);
+  getBrigadeScheduleById(id) {
+    return this.api.getBrigadeScheduleUsingGET(id)
   }
 
 

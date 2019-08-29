@@ -34,7 +34,7 @@ export class SocketService {
       this.rxStomp.configure(
         {
           // brokerURL: 'ws://172.16.6.166/tcmk/api/stomp',
-          brokerURL: 'ws://' + this.baseURL+ '/tcmk/api/stomp',
+          brokerURL: 'ws://' + this.baseURL+ '/api/stomp',
           heartbeatIncoming: 0,
           heartbeatOutgoing: 20000,
           reconnectDelay: 500,

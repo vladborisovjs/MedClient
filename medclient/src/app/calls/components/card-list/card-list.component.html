@@ -1,0 +1,17 @@
+<div class="card full-height">
+  <div class="card-header toolbar">
+    <div class="toolbar-left">
+    </div>
+    <h5>Актуальные карты</h5>
+    <div class="toolbar-right"></div>
+  </div>
+  <div class="card-body full-height p-0">
+    <app-grid-table [dataSource]="dataSource"
+                    [columnDefs]="colDefs"
+                    [pagination]="true"
+                    (onRowSelect)="selectCard($event)"
+                    (onGridReady)="fitCol($event)"
+                    (onRowDblClick)="goToCard($event)">
+    </app-grid-table>
+  </div>
+</div>

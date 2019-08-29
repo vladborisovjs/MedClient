@@ -22,7 +22,7 @@ export class MainComponent implements OnInit {
       iconClass: 'fas fa-archive'
     },
     {
-      label: 'Управление сотрудниками',
+      label: 'Управление сотрудниками и бригадами',
       routerLink: '/schedule',
       iconClass: 'far fa-calendar-alt'
     },

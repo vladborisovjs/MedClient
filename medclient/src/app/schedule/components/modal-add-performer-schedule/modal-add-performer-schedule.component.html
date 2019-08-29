@@ -9,7 +9,7 @@
   </div>
   <div class="card-body">
     <div class="card-subtitle">
-      {{performer.second_name}} {{performer.first_name}} {{performer.patronymic}} - {{performer.position}}
+      {{performer.surname}} {{performer.name}} {{performer.patronymic}} - {{performer.typeFK? performer.typeFK.name : ''}}
     </div>
     <app-simple-view
 
@@ -26,7 +26,7 @@
   </div>
   <div class="card-footer toolbar-right">
     <div class="btn-group">
-      <button class="btn btn-success" (click)="save()">Добавить</button>
+      <button class="btn btn-success" (click)="save()">Применить</button>
       <button class="btn btn-secondary" (click)="back()">Отменить</button>
     </div>
   </div>

@@ -2,25 +2,23 @@
 @import "../styles/variables";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 //@import 'ag-grid-variables';
-
-
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~ag-grid-community/dist/styles/ag-grid.css";
 @import "~ag-grid-community/dist/styles/ag-theme-bootstrap.css";
-
 @import "../../node_modules/primeicons/primeicons.css";
 //@import "../../node_modules/primeng/resources/themes/bootstrap/theme.css";
 @import "../../node_modules/primeng/resources/primeng.min.css";
-
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
-.ui-state-active{
+.ui-state-active {
   background-color: lighten($blue, 80%);
 }
+
 .ui-accordion .ui-accordion-content {
   padding: 0;
   height: 300px;
 }
+
 html, body, main {
   display: flex;
   flex-direction: column;
@@ -71,6 +69,7 @@ main {
 .btn-wide {
   width: 75px;
 }
+
 .ic-small {
   cursor: pointer;
   padding: 0;
@@ -116,7 +115,7 @@ main {
     border-right: 1px solid $gray-500;
     box-sizing: border-box;
   }
-  .ag-ltr{
+  .ag-ltr {
     border-right: 1px solid $gray-500;
   }
   .ag-root {
@@ -163,6 +162,14 @@ main {
     }
     .sc-control-checkbox {
       margin-right: 2px;
+      width: 1rem;
+      vertical-align: text-bottom;
+    }
+
+    .sc-control-tricheckbox {
+      margin-right: 2px;
+      width: 1rem;
+      vertical-align: text-bottom;
     }
     .sc-control-calendar {
       width: 100%;
@@ -202,7 +209,7 @@ main {
       }
     }
     .archive-dictionary {
-       width: 100%;
+      width: 100%;
       .ng-select-container {
         transition: background-color 0.25s ease;
       }
@@ -351,7 +358,7 @@ main {
   }
 }
 
-.btn-tiny{ // take from badge
+.btn-tiny { // take from badge
   display: inline-block;
   padding: 0.25em 0.4em;
   font-size: 75%;
@@ -370,8 +377,7 @@ main {
   flex-direction: column;
 }
 
-
-ngb-tabset.flex-ngb-tabs{
+ngb-tabset.flex-ngb-tabs {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -380,35 +386,94 @@ ngb-tabset.flex-ngb-tabs{
     overflow: auto;
   }
   .tab-pane {
-    height:100%;
+    height: 100%;
   }
 }
 
-.patch{
+.patch {
   background-color: rgba($black, .03);
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  h1,h2,h3,h4{
+  h1, h2, h3, h4 {
     color: $gray-500;
     width: 100%;
     text-align: center;
   }
 }
 
-.scrollable{
+.scrollable {
   height: 100%;
   overflow: auto;
 }
 
-.blinking{
+.blinking {
   animation: blink 1s infinite;
 }
 
 @keyframes blink {
-  0% {opacity: 0.2}
-  50% {opacity: 1}
-  100% {opacity: 0.2}
+  0% {
+    opacity: 0.2
+  }
+  50% {
+    opacity: 1
+  }
+  100% {
+    opacity: 0.2
+  }
 }
+
+.vertical-resizer {
+  width: 8px;
+  padding: 0 2px;
+  margin-left: -2px;
+  margin-right: -2px;
+  z-index: 4;
+  &::after {
+    content: " ";
+    display: block;
+    width: 4px;
+    background-color: $gray-500;
+    height: 100%;
+  }
+}
+
+.horizontal-resizer {
+  height: 8px;
+  padding: 2px 0;
+  margin-bottom: -2px;
+  margin-top: -2px;
+  z-index: 4;
+  &::after {
+    content: " ";
+    display: block;
+    height: 4px;
+    background-color: $gray-500;
+    width: 100%;
+  }
+}
+
+::-webkit-scrollbar-track
+{
+  //-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+
+}
+
+::-webkit-scrollbar
+{
+  height: 8px;
+  width: 8px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: $gray-500;
+}
+
 

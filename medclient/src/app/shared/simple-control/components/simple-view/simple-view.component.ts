@@ -38,6 +38,11 @@ export class SimpleViewComponent implements OnInit, OnChanges, OnDestroy, AfterV
   necParents: string[];
   // descriptions of dependent ctrls
   depDescs: ISimpleDescription[];
+  // max and min dates for prop TimeOnly
+  maxDate: any;
+  minDate: any;
+  // preseted values
+  presetValues: any = {};
 
   constructor(private sd: SimpleDescriptionService, private cdRef: ChangeDetectorRef) {
   }
@@ -164,6 +169,13 @@ export class SimpleViewComponent implements OnInit, OnChanges, OnDestroy, AfterV
         }
       });
     }
+    this.createDates();
+    this.descriptions.forEach(el => {
+      if (el.presetValue) {
+        Object.assign(this.presetValues, {[el.key]: el.presetValue})
+      }
+    })
+    // this.setValuesFromDescription();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -189,6 +201,12 @@ export class SimpleViewComponent implements OnInit, OnChanges, OnDestroy, AfterV
     if (this.form) {
       if (!this.preprocessed) {
         this.sd.makeForm(this.descriptions, this.form, this.sort);
+      } else {
+        // console.log('aaa')
+        if (Object.keys(this.presetValues).length !== 0) {
+          this.form.reset(Object.assign({}, this.presetValues, this.item));
+          this.presetValues = {};
+        }
       }
     } else {
       this.form = this.sd.makeForm(this.descriptions, undefined, this.sort);
@@ -210,5 +228,15 @@ export class SimpleViewComponent implements OnInit, OnChanges, OnDestroy, AfterV
 
   ngAfterViewChecked(): void {
     this.cdRef.detectChanges();
+  }
+
+  createDates() {
+    this.showDescs.filter(el => el.type === 'date').forEach(el => {
+      if (el.timeOnlyWithDate) {
+        this.maxDate = new Date(el.timeOnlyWithDate.setHours(23, 59, 0));
+        this.minDate = new Date(el.timeOnlyWithDate.setHours(0, 0, 0));
+        console.log('min max dates', this.minDate, this.maxDate);
+      }
+    })
   }
 }

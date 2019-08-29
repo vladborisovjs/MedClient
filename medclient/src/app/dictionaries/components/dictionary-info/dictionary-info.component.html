@@ -1,36 +1,89 @@
-<div class="card full-height w-50">
+<div class="card full-height">
   <div class="card-header toolbar">
+    <div class="toolbar-left">
+      <button *ngIf="dict.type === 'list'" class="btn btn-primary" (click)="showDelete()">Показать {{showDeleted? 'активные':'удаленные'}}</button>
+      <button *ngIf="dict.type === 'tree'" class="btn btn-primary" (click)="showFullTree()">Показать {{showDeleted? 'активные':'все'}}</button>
+    </div>
     <div class="card-title">
       Справочник «{{dict.title}}»
     </div>
     <div class="toolbar-right">
-      <button class="btn btn-success" *ngIf="dict.type === 'list'" (click)="createItem()">
-        <i class="fas fa-plus"></i> Новая запись
-      </button>
+      <div class="btn-group">
+        <button class="btn btn-danger" *ngIf="selectedItem && !selectedItem.isDeleted" (click)="deleteItem()">
+          <i class="fas fa-trash-alt"></i> Удалить
+        </button>
+        <button class="btn btn-warning" *ngIf="selectedItem && selectedItem.isDeleted" (click)="restoreItem()">
+          <i class="fas fa-trash-restore"></i> Восстановить
+        </button>
+        <button class="btn btn-success" *ngIf="dict.type === 'list'" (click)="createItem()">
+          <i class="fas fa-plus"></i> Добавить
+        </button>
+      </div>
     </div>
   </div>
   <div class="card-body p-0 full-height">
     <app-grid-table *ngIf="dict.type === 'list'"
-    [columnDefs]="dict.colDef"
-    [listSource]="dList"
-    (onRowDblClick)="goToItem($event)"
+                    [columnDefs]="dict.colDef"
+                    [dataSource]="dataSource"
+                    [filter]="filter"
+                    [sorting]="false"
+                    (onRowSelect)="selectItem($event)"
+                    (onRowDblClick)="goToItem($event)"
     ></app-grid-table>
 
     <p-treeTable [value]="tree" *ngIf="dict.type === 'tree'" class="subdev-tree">
-      <!--<ng-template pTemplate="header">-->
-        <!--<tr>-->
-          <!--<th>Наименование</th>-->
-        <!--</tr>-->
-      <!--</ng-template>-->
+      <ng-template pTemplate="header">
+        <tr style="visibility: collapse">
+          <th *ngFor="let el of dict.headers" style="visibility: hidden"
+              [ngStyle]="{'width': el.width ? el.width : ''}">
+            {{el.header}}
+          </th>
+          <th style="visibility: hidden"></th>
+        </tr>
+      </ng-template>
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-        <tr>
+        <tr [ttSelectableRow]="rowNode" >
           <td>
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            <a [routerLink]="rowData.id">{{rowData.name}}</a>
+            <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny" *ngIf="rowNode.node.children.length === 0 && rowNode.node.data.nodeCount !==0 && dict.name === 'mkb10'">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <a *ngIf="rowData.name ? rowData.name : rowData.shortName" [routerLink]="rowData.id">
+              {{rowData.code ? '(' + rowData.code + ') - ' : ''}} {{rowData.shortName? rowData.shortName : rowData.name ? rowData.name : 'Нет имени'}}
+            </a>
+
+            <a *ngIf="rowData.query" [routerLink]="rowData.id" (click)="getTreeChildrenAmount(rowNode.node.children.length)">
+              {{rowData.query + '? : ' + rowData.answer}}
+            </a>
+          </td>
+          <td *ngIf="dict.name === 'inquirer'">
+            <span *ngIf="rowNode.node.children.length === 0"><b>{{rowData.reason}}</b></span>
+          </td>
+          <td>
+            <div class="btn-group to-right-side">
+              <button *ngIf="!rowData.isDeleted && rowNode.node.children.length !== 0 && dict.name === 'inquirer'" class="btn btn-tiny btn-outline-success border-0"
+                      (click)="createItem(rowData.id)">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button *ngIf="!rowData.isDeleted && rowData.subdivisionTypeCode !=='POINT' && dict.name === 'subdivisions'" class="btn btn-tiny btn-outline-success border-0"
+                      (click)="createItem(rowData.id)">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button *ngIf="!rowData.isDeleted && dict.name !== 'mkb10'" class="btn btn-tiny btn-outline-danger border-0"
+                      (click)="deleteItemTree(rowData)">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button *ngIf="rowData.isDeleted" class="btn btn-tiny btn-outline-warning border-0"
+                      (click)="restoreItemTree(rowData)">
+                <i class="fas fa-trash-restore"></i>
+              </button>
+            </div>
           </td>
         </tr>
       </ng-template>
     </p-treeTable>
-
+    <div *ngIf="dict.type === 'tree' && !this.tree" class="patch" >
+      <h2>Загрузка...</h2>
+    </div>
   </div>
 </div>

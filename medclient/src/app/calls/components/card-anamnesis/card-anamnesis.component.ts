@@ -3,7 +3,7 @@ import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simp
 import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {CardItemService} from '../../services/card-item.service';
-import {CardAnamnesisPartDto} from '../../../../../swagger/med-api.service';
+import {CardAnamnesisPartDto, CardBean} from '../../../../../swagger/med-api.service';
 import {FormGroup} from '@angular/forms';
 import {NotificationsService} from 'angular2-notifications';
 
@@ -14,107 +14,106 @@ import {NotificationsService} from 'angular2-notifications';
 })
 export class CardAnamnesisComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
-  anamnesis: CardAnamnesisPartDto;
-  cardId: any;
-  forms: {
-    block: string,
-    descriptions: ISimpleDescription[],
-    form?: FormGroup
-  }[] =
-    [
+  form: FormGroup;
+  card: CardBean;
+  descriptions: ISimpleDescription[] = [
+    // epidemic
     {
-      block: 'epidemic',
-      descriptions: [
-        {
-          label: 'Контакт с инф. больными',
-          type: 'textarea',
-          key: 'infect_contacts',
-        },
-        {
-          label: 'Карантин: ',
-          type: 'text',
-          key: 'quarantine',
-          styleClass: 'line-form col-12'
-        },
-        {
-          label: 'Вакцинация: ',
-          type: 'text',
-          key: 'vaccination',
-          additional: {
-            block: 'epidemic'
-          },
-          styleClass: 'line-form col-12'
-          // allergic
-        },
-      ]
+      label: 'Контакт с инф. больными',
+      type: 'textarea',
+      key: 'infectContacts',
+      additional: {
+        block: 'epidemic'
+      }
     },
     {
-      block: 'allergic',
-      descriptions: [
-        {
-          label: 'Аллергии: ',
-          type: 'select',
-          key: 'allergic_anamnesis',
-          selectList: [
-            {
-              name: 'Не указано', id: 0
-            },
-            {
-              name: 'Не отягощен', id: 1
-            },
-            {
-              name: 'Отягощен', id: 0
-            },
-          ],
-          styleClass: 'line-form col-12'
-        },
-        {
-          label: 'Не переносит',
-          type: 'textarea',
-          key: 'allergic_anamnesis_text',
-        },
-      ]
+      label: 'Карантин: ',
+      type: 'text',
+      key: 'quarantine',
+      styleClass: 'line-form col-12',
+      additional: {
+        block: 'epidemic'
+      },
     },
     {
-      block: 'gynecologic',
-      descriptions: [
+      label: 'Вакцинация: ',
+      type: 'text',
+      key: 'vaccination',
+      additional: {
+        block: 'epidemic'
+      },
+      styleClass: 'line-form col-12'
+    },
+    // allergic
+    {
+      label: 'Аллергии: ',
+      type: 'select',
+      key: 'allergicAnamnesis',
+      selectList: [
         {
-          label: '',
-          key: 'gynecologic_anamnesis',
-          rows: 3,
-          type: 'textarea',
+          name: 'Не указано', id: null
         },
-      ]
+        {
+          name: 'Не отягощен', id: true
+        },
+        {
+          name: 'Отягощен', id: false
+        },
+      ],
+      additional: {
+        block: 'allergic'
+      },
+      styleClass: 'line-form col-12',
     },
     {
-      block: 'complaints',
-      descriptions: [
-        {
-          label: '',
-          key: 'complaints_anamnesis',
-          rows: 3,
-          type: 'textarea',
-        },
-      ]
+      label: 'Не переносит',
+      type: 'textarea',
+      key: 'allergicAnamnesisText',
+      additional: {
+        block: 'allergic'
+      },
+    },
+
+    {
+      label: '',
+      key: 'gynecologicAnamnesis',
+      rows: 3,
+      type: 'textarea',
+      additional: {
+        block: 'gynecologic'
+      },
+    },
+
+    {
+      label: '',
+      key: 'complaintsAnamnesis',
+      rows: 3,
+      type: 'textarea',
+      additional: {
+        block: 'complaints'
+      },
+    },
+    //illnes
+    {
+      label: 'Анемнез',
+      key: 'illnessAnamnesis',
+      rows: 3,
+      type: 'textarea',
+      additional: {
+        block: 'illnes'
+      },
     },
     {
-      block: 'illnes',
-      descriptions: [
-        {
-          label: 'Анемнез',
-          key: 'illnes_anamnesis',
-          rows: 3,
-          type: 'textarea',
-        },
-        {
-          label: 'Перенесенные (кратко)',
-          key: 'past_illneses',
-          rows: 3,
-          type: 'textarea',
-        },
-      ]
+      label: 'Перенесенные (кратко)',
+      key: 'pastIllnesses',
+      rows: 3,
+      type: 'textarea',
+      additional: {
+        block: 'illnes'
+      },
     },
   ];
+
   constructor(private route: ActivatedRoute,
               private cas: CardItemService,
               private sds: SimpleDescriptionService,
@@ -122,18 +121,10 @@ export class CardAnamnesisComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.forms.forEach(
-      f => {
-        f.form = this.sds.makeForm(f.descriptions);
-      }
-    );
+    this.form = this.sds.makeForm(this.descriptions);
     this.sbscs.push(
-      this.route.data.subscribe(data => {
-        this.anamnesis = data.anamnesis;
-      }),
-      this.route.parent.paramMap.subscribe(data => {
-        this.cardId = data.get('cardId');
-      })
+      this.cas.cardItemSub.subscribe(card => this.card = card),
+      this.form.valueChanges.subscribe(ch => Object.assign(this.card.cardObjectiveBean, ch))
     );
   }
 
@@ -142,58 +133,12 @@ export class CardAnamnesisComponent implements OnInit, OnDestroy {
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {
-    let desc: ISimpleDescription[];
-    this.forms.forEach(
-      f => {
-        if (f.block === block) {
-          desc = f.descriptions;
-        }
+    return this.descriptions.filter(el => {
+      if (el.additional) {
+        return el.additional.block === block;
       }
-    );
-    return desc;
-  }
-
-  getBlockForm(block: string): FormGroup {
-    let form: FormGroup;
-    this.forms.forEach(
-      f => {
-        if (f.block == block) {
-          form =  f.form;
-        }
-      }
-    );
-    return form;
-  }
-
-  getBlockFormValues(block: string) {
-    let values;
-    this.forms.forEach(
-      f => {
-        if (f.block === block) {
-          values = f.form.getRawValue();
-        }
-      }
-    );
-    return values;
-  }
-
-  save() {
-    let anam = {};
-    Object.keys(this.anamnesis).forEach(
-      key => {
-        Object.assign(anam, this.getBlockFormValues(key));
-      }
-    );
-    this.anamnesis.header.is_created = true;
-    this.cas.saveAnamnesis(this.cardId, anam).subscribe(
-      res => {
-        this.ns.success('Успешно', 'Изменения успешно сохранены');
-        this.anamnesis = res;
-      },
-      error =>{
-        this.ns.error('Ошибка', 'Не удалось сохранить изменения')
-      }
-    );
+      return false;
+    });
   }
 
 }

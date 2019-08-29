@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CallItemService} from '../../services/call-item.service';
 import {ColDef} from 'ag-grid-community';
@@ -11,7 +11,7 @@ import {DatePipe} from '@angular/common';
   templateUrl: './modal-f110.component.html',
   styleUrls: ['./modal-f110.component.scss']
 })
-export class ModalF110Component implements OnInit {
+export class ModalF110Component implements OnInit, OnDestroy {
   callId: any;
   sbscs: Subscription[] = [];
   datePipe = new DatePipe('ru');
@@ -43,14 +43,20 @@ export class ModalF110Component implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.cs.getF110(this.callId, undefined).subscribe(
+    this.sbscs.push(
+      this.cs.getF110(this.callId, undefined).subscribe(
       list => {
         this.listSource = list;
       }
+    ),
+      this.route.paramMap.subscribe(() => {
+        this.callId = this.router.url;
+      })
     );
-    this.route.paramMap.subscribe(() => {
-      this.callId = this.router.url;
-    });
+  }
+
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
   }
 
   fitCol(e) {

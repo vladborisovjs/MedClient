@@ -78,33 +78,37 @@ export class BrigadesComponent implements OnInit {
     this.form.valueChanges.pipe( debounce(() => interval(300))).subscribe(
       changes => {
         console.log(changes);
-        this.updateTable(changes.year, changes.month)
+        this.updateTable(changes.year, changes.month);
       }
     );
     this.form.reset({year: new Date().getFullYear(), month: new Date().getMonth()});
   }
 
-  updateTable(year: number, month: number){
-    let f = new Date(year, month, 1, 3);
-    let t = new Date(year, month+1, 1, 3);
-    t.setDate(t.getDate() - 1);
+  updateTable(year: number, month: number) {
+    let from = new Date(year, month, 1, 0);
+    let to = new Date(year, month + 1, 1, 0);
+    // to.setDate(to.getDate() - 1);
     this.scheduleDatesColumns = [];
     this.dateLabels = [];
     this.scheduleList = [];
-    this.schs.getCalendarScheduleBrigades(f.toISOString(), t.toISOString()).subscribe(
+    this.schs.getCalendarScheduleBrigades(from.toISOString(), to.toISOString()).subscribe(
       res => {
-        this.scheduleDatesColumns = res.columns;
-        this.scheduleList = res.list;
-        res.columns.forEach(
-          col => {
-            this.dateLabels.push(new Date(col).getDate());
-          }
-        );
+        console.log('TO and FROM', to, from);
+        to.setDate(to.getDate() - 1);
+        for (let i = from.getDate(); i <= to.getDate(); i++) {
+          this.dateLabels.push(i);
+          this.scheduleDatesColumns.push(new Date(year, month, i));
+        }
+        for (let i = 0; i < res.length; i++) {
+          this.scheduleList.push(res[i]);
+        }
+        console.log(this.scheduleList);
       }
     );
   }
 
   openSchedule(e){
+    console.log('OpenSchedule',e);
     if (e.duty){
       this.showScheduleList(e.brigade, e.date, e.duty);
     } else {
@@ -127,17 +131,20 @@ export class BrigadesComponent implements OnInit {
   }
 
   editSchedule(brigade, date, duty){
-    console.log('add schedule', brigade, date);
-    const addSch = this.modal.open(ModalAddBrigadeScheduleComponent, {size: 'lg'});
-    addSch.componentInstance.brigade = brigade;
-    addSch.componentInstance.date = date;
-    addSch.componentInstance.duty = duty;
-    addSch.result.then(
-      res => {
-        let v = this.form.getRawValue();
-        this.updateTable(v.year, v.month)
-      }
-    );
+    this.schs.getBrigadeScheduleById(duty.id).subscribe(res => {
+      console.log('editSchedule', res);
+      duty = res;
+      const addSch = this.modal.open(ModalAddBrigadeScheduleComponent, {size: 'lg'});
+      addSch.componentInstance.brigade = brigade;
+      addSch.componentInstance.date = date;
+      addSch.componentInstance.duty = duty;
+      addSch.result.then(
+        res => {
+          let v = this.form.getRawValue();
+          this.updateTable(v.year, v.month)
+        }
+      );
+    })
   }
 
   showScheduleList(brigade, date, duty){
@@ -145,6 +152,11 @@ export class BrigadesComponent implements OnInit {
     schItem.componentInstance.brigade = brigade;
     schItem.componentInstance.duty = duty;
     schItem.componentInstance.date = date;
+    this.schs.getBrigadeScheduleById(duty.id).subscribe(res => {
+      schItem.componentInstance.performerList = res.performerScheduleList;
+      schItem.componentInstance.transportList = res.transportScheduleList;
+    });
+    console.log('showScheduleList',duty);
     schItem.result.then(
       res => {
         if (res === 'edit'){
@@ -153,7 +165,7 @@ export class BrigadesComponent implements OnInit {
           let v = this.form.getRawValue();
           this.updateTable(v.year, v.month)
         }
-      }
+      }, err => {}
     );
   }
 

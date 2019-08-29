@@ -1,20 +1,30 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {ColDef} from 'ag-grid-community';
 import {CallItemService} from '../../services/call-item.service';
 import {NotificationsService} from 'angular2-notifications';
 import {DatePipe} from '@angular/common';
+import {BrigadeBean} from '../../../../../swagger/med-api.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-modal-call-f110',
   templateUrl: './modal-call-f110.component.html',
   styleUrls: ['./modal-call-f110.component.scss']
 })
-export class ModalCallF110Component implements OnInit {
-  @Input() brigade: any;
+export class ModalCallF110Component implements OnInit, OnDestroy {
+  @Input() brigade: BrigadeBean;
+  @Input() callId: number;
   datePipe = new DatePipe('ru');
   colDefs: ColDef[] = [
+    {
+      headerName: 'id',
+      field: 'id',
+      sortable: true,
+      filter: true,
+      width: 80
+    },
     {
       headerName: '№',
       field: 'number',
@@ -31,13 +41,13 @@ export class ModalCallF110Component implements OnInit {
     {
       headerName: 'Дата',
       field: 'date',
-      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
+      // valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       sortable: true,
       filter: true
     }
   ];
-  listSource: any[] = [];
-
+  listSource = [];
+  sbscs: Subscription[] = [];
   constructor(private router: Router,
               private route: ActivatedRoute,
               private ns: NotificationsService,
@@ -46,28 +56,39 @@ export class ModalCallF110Component implements OnInit {
   }
 
   ngOnInit() {
-    this.cs.getBrigadesCards(this.brigade.brigade_schedule_id, this.brigade.call_id).subscribe(
-      list => {
-        console.log(list);
-        this.listSource = list;
-      }
+    this.sbscs.push(
+      this.cs.getBrigadesCards(this.brigade.id, this.callId).subscribe(
+        list => {
+          console.log(list);
+          this.listSource = list.list;
+        }
+      )
     );
   }
 
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
+
   gotoCard(card = null) {
-    const cardId = card ? card.data.card_id : 0;
-    this.router.navigateByUrl('calls/' + this.brigade.call_id + '/card/' + cardId);
+    console.log(card);
+    const cardId = card ? card.data.id : 0;
+    const callId = card ? card.data.call : 0;
+    this.router.navigateByUrl('calls/' + callId + '/card/' + cardId);
     this.modalInstance.dismiss();
   }
 
   createCard() {
-    this.cs.createCallCard(this.brigade.brigade_schedule_id, this.brigade.call_id).subscribe(
-      card => {
-        this.ns.success('Успешно', 'Создана Ф-100 № ' + card.side_one.general.number);
-        this.router.navigateByUrl('calls/' + this.brigade.call_id + '/brigade/' + this.brigade.brigade_schedule_id + '/'
-          + card.side_one.general.card_id);
-        this.modalInstance.dismiss();
-      }
+    console.log(this);
+    this.sbscs.push(
+      this.cs.createCallCard(this.brigade, this.callId).subscribe(
+        card => {
+          console.log(card);
+          this.ns.success('Успешно', 'Создана Ф-110 № ');
+          this.router.navigateByUrl('calls/' + this.callId + '/card/' + card.id);
+          this.modalInstance.dismiss();
+        }
+      )
     );
   }
 

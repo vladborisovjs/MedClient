@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -8,18 +8,18 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './modal-edit-transport-in-brigade.component.html',
   styleUrls: ['./modal-edit-transport-in-brigade.component.scss']
 })
-export class ModalEditTransportInBrigadeComponent implements OnInit {
+export class ModalEditTransportInBrigadeComponent implements OnInit, AfterViewInit {
   @Input() transportInfo: any;
   desc: ISimpleDescription[] = [
     {
       label: 'c: ',
-      key: 'date_from',
+      key: 'dateFrom',
       type: 'date',
       styleClass: 'line-form col-12'
     },
     {
       label: 'по: ',
-      key: 'date_to',
+      key: 'dateTo',
       type: 'date',
       styleClass: 'line-form col-12'
     },
@@ -29,7 +29,12 @@ export class ModalEditTransportInBrigadeComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.desc);
-    this.form.reset(this.transportInfo.period_details);
+    // this.form.reset(this.transportInfo.period_details);
+  }
+
+  ngAfterViewInit() {
+    this.form.get('dateFrom').setValue(this.transportInfo.dateFrom);
+    this.form.get('dateTo').setValue(this.transportInfo.dateTo)
   }
 
   back() {
@@ -37,7 +42,7 @@ export class ModalEditTransportInBrigadeComponent implements OnInit {
   }
 
   save() {
-    this.transportInfo.period_details = this.form.getRawValue();
+    Object.assign(this.transportInfo, this.form.getRawValue());
     this.modalInstance.close(this.transportInfo);
   }
 

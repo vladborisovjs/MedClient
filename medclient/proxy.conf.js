@@ -1,14 +1,15 @@
 const protocol = 'http:',
   host = '172.16.6.166:8080'; // стэнд телда
+  // host = '172.16.5.54:8080'; // стэнд нечай
   hostWs = '172.16.6.166'; // стэнд телда
 
 const PROXY_CONFIG = {
-  "/": {
+  "/api/": {
     "target": `${protocol}//${host}`,
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {
-      '/': '/tcmk/'
+      '/api/': '/tcmk/api/'
     },
     "bypass": function (req, res) {
       req.headers["origin"] = this.target;
@@ -28,6 +29,11 @@ const PROXY_CONFIG = {
     "target": `ws://${hostWs}`,
     "secure": false,
     "ws": true,
+    "logLevel": "debug",
+  },
+  "/geoserver": {
+    "target": `http://172.16.6.166:8080`,
+    "secure": false,
     "logLevel": "debug",
   }
 };

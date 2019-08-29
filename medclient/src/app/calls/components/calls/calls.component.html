@@ -1,6 +1,10 @@
-    <div class="calls-lst">
-      <app-calls-list></app-calls-list>
-    </div>
-    <div class="brigades-lst">
-      <app-brigages-list></app-brigages-list>
-    </div>
+<div class="calls-wrapper" resizable="vertical" saveName="calls-brigades">
+  <div class="calls-lst" upResizable>
+    <app-calls-list></app-calls-list>
+  </div>
+  <div class="horizontal-resizer" resizer="2px"></div>
+  <div class="brigades-lst" bottomResizable fixed="280px">
+    <app-brigages-list></app-brigages-list>
+  </div>
+</div>
+

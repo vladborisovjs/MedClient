@@ -1,67 +1,81 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {CallsService} from '../../services/calls.service';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {ModalSimilarCallsComponent} from '../modal-similar-calls/modal-similar-calls.component';
-import {CallPatientPartDto} from '../../../../../swagger/med-api.service';
+import {CallContainer, CallPatientPartDto} from '../../../../../swagger/med-api.service';
 import {NotificationsService} from 'angular2-notifications';
-import {interval} from 'rxjs';
+import {interval, Subscription} from 'rxjs';
 import {debounce} from 'rxjs/operators';
+import {ModalCallInquirerComponent} from '../modal-call-inquirer/modal-call-inquirer.component';
 
 @Component({
   selector: 'app-modal-create-call',
   templateUrl: './modal-create-call.component.html',
   styleUrls: ['./modal-create-call.component.scss']
 })
-export class ModalCreateCallComponent implements OnInit {
+export class ModalCreateCallComponent implements OnInit, OnDestroy {
   form: FormGroup;
   descriptions: ISimpleDescription[] = [
     {
-      label: 'Тип',
-      key: 'call_type_id',
+      label: 'Тип*',
+      key: 'typeFK',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'CALL'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListCallUsingGET',
+      styleClass: 'col-4',
+      required: true,
+      errorText: 'Поле не может быть пустым',
+      additional: {
+        block: 'general'
+      },
+    },
+    {
+      label: 'Повод*',
+      key: 'reasonFK',
+      type: 'dict',
+      readonly: true,
+      required: true,
+      errorText: 'Поле не может быть пустым',
+      bindLabel: 'reason',
       styleClass: 'col-4',
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'Повод',
-      key: 'reason_id',
-      type: 'dict',
-      shortDict: true,
-      dict: 'readBasicReasonsUsingGET',
-      bindLabel: 'title',
-      bindValue: 'id',
-      styleClass: 'col-4',
+      label: '',
+      placeholder: 'Опросить',
+      key: '',
+      type: 'btn',
+      action: this.ask.bind(this),
+      btnClass: 'mt-4  btn btn-info',
+      styleClass: 'col-1',
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'Приоритет',
-      key: 'call_priority',
+      label: 'Приоритет*',
+      key: 'priority',
       type: 'select',
+      required: true,
+      errorText: 'Поле не может быть пустым',
       selectList: [
         {name: 'Экстренный', id: 1},
         {name: 'Неотложный', id: 0},
       ],
-      styleClass: 'col-4',
+      styleClass: 'col-3',
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'Описание',
-      key: 'reason_comment',
+      label: 'Описание*',
+      key: 'reasonComment',
       type: 'textarea',
+      errorText: 'Поле не может быть пустым',
+      required: true,
       additional: {
         block: 'general'
       }
@@ -75,33 +89,36 @@ export class ModalCreateCallComponent implements OnInit {
       }
     },
     {
-      label: 'ФИО',
-      key: 'declarant_name',
+      label: 'ФИО*',
+      key: 'declarantName',
       type: 'text',
+      required: true,
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-4',
       additional: {
         block: 'declarant'
       }
     },
     {
-      label: 'Телефон',
-      key: 'declarant_phone',
-      type: 'text',
+      label: 'Телефон*',
+      key: 'declarantPhone',
+      type: 'number',
+      required: true,
+      pattern: '^[0-9]*',
+      errorText: 'Некорректный номер',
       styleClass: 'col-4',
       additional: {
         block: 'declarant'
       }
     },
     {
-      label: 'Тип',
-      key: 'declarant_type_id',
+      label: 'Тип*',
+      key: 'declarantTypeFK',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'DECLARANT'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      required: true,
+      errorText: 'Поле не может быть пустым',
+      dict: 'getReferenceTypeListDeclarantUsingGET',
       styleClass: 'col-4',
       additional: {
         block: 'declarant'
@@ -109,8 +126,10 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Фамилия',
-      key: 'patient_secondname',
+      key: 'surname',
       type: 'text',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      errorText: 'Только кириллица',
       styleClass: 'col-4',
       additional: {
         block: 'patient'
@@ -118,8 +137,10 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Имя',
-      key: 'patient_firstname',
+      key: 'name',
       type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-4',
       additional: {
         block: 'patient'
@@ -127,7 +148,9 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Отчество',
-      key: 'patient_patronymic',
+      key: 'patronymic',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       type: 'text',
       styleClass: 'col-4',
       additional: {
@@ -136,7 +159,7 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Пол',
-      key: 'patient_sex',
+      key: 'gender',
       type: 'select',
       selectList: [
         {name: 'Не указан', id: 0},
@@ -150,8 +173,10 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Возраст: лет',
-      key: 'patient_age_years',
+      key: 'ageYears',
       type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-3',
       additional: {
         block: 'patient'
@@ -160,8 +185,10 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Месяцев',
-      key: 'patient_age_months',
+      key: 'ageMonths',
       type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-3',
       additional: {
         block: 'patient'
@@ -169,8 +196,10 @@ export class ModalCreateCallComponent implements OnInit {
     },
     {
       label: 'Дней',
-      key: 'patient_age_days',
+      key: 'ageDays',
       type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-3',
       additional: {
         block: 'patient'
@@ -207,7 +236,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Улица',
       key: 'street',
       type: 'text',
-      styleClass: 'col-6',
+      styleClass: 'col-4',
       additional: {
         block: 'address'
       }
@@ -216,7 +245,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Дом',
       key: 'house',
       type: 'text',
-      styleClass: 'col-6',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -225,7 +254,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Корпус',
       key: 'building',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -234,7 +263,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Лит./Стр.',
       key: 'structure',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -243,7 +272,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Подъезд',
       key: 'entrance',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -252,7 +281,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Домофон',
       key: 'entrance_code',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -261,7 +290,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Этаж',
       key: 'floor',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -270,7 +299,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Квартира',
       key: 'flat',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -279,7 +308,7 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Комната',
       key: 'room',
       type: 'text',
-      styleClass: 'col-3',
+      styleClass: 'col-2',
       additional: {
         block: 'address'
       }
@@ -288,21 +317,18 @@ export class ModalCreateCallComponent implements OnInit {
       label: 'Место вызова',
       key: 'call_place_name',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'CALL_PLACE'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'name',
-      dict: 'readAllUsingGET_34',
-      styleClass: 'col-3',
+      bindValue: 'id',
+      dict: 'getReferenceTypeListCallPlaceUsingGET',
+      styleClass: 'col-4',
       additional: {
         block: 'address'
       }
     }
   ];
-  callItem: any;
+  callItem: any = {};
   patients: any[] = [];
   similarCalls: any[] = [];
+  sbscs: Subscription[] = [];
   constructor(
     private calls: CallsService,
     private modal: NgbModal,
@@ -315,47 +341,65 @@ export class ModalCreateCallComponent implements OnInit {
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
     this.checkPatientsLength();
-    this.callItem = this.form.getRawValue();
-    this.callItem.patients = [];
-    console.log(this.callItem);
-    this.form.valueChanges.pipe( debounce(() => interval(300))).subscribe(
-      res => {
-          this.calls.getSimilarCalls(this.form.getRawValue()).subscribe(
+    this.callItem.patientList = [];
+    this.sbscs.push(
+      this.form.valueChanges.pipe( debounce(() => interval(300))).subscribe(
+        res => {
+          Object.assign(this.callItem, this.form.getRawValue());
+          this.calls.getSimilarCalls(this.callItem).subscribe(
             filtered => {
               this.similarCalls = filtered;
-              console.log(this.similarCalls);
             }
           );
-      }
+        }
+      )
     );
+  }
+
+  ngOnDestroy() {
+    this.sbscs.forEach( el => el.unsubscribe());
+  }
+  // опрос повода к вызову
+  ask(){
+    const askWin = this.modal.open(ModalCallInquirerComponent);
+    askWin.result.then(res=> {
+      if (res){
+        console.log('опросили', res);
+        this.form.controls['reasonFK'].setValue(res);
+      }
+    });
   }
 
   addPatient() {
     this.patients.push(
       {
-        item: new CallPatientPartDto,
+        item: [],
         form: this.sds.makeForm(this.getBlockDescriptions('patient')),
       }
     );
+
     for (let i = 0; i < this.patients.length; i++) {
-      this.patients[i].form.valueChanges
-        .pipe( debounce(() => interval(300)))
-        .subscribe(
-        res => {
-          this.calls.getSimilarCalls(this.patients[i].form.getRawValue()).subscribe(
-            filtered => {
-              this.similarCalls = filtered;
-              console.log(this.similarCalls);
+      this.sbscs.push(
+        this.patients[i].form.valueChanges
+          .pipe( debounce(() => interval(300)))
+          .subscribe(
+            res => {
+              Object.assign(this.callItem, this.form.getRawValue());
+              this.callItem.patientList[i] = this.patients[i].form.getRawValue();
+              this.calls.getSimilarCalls(this.callItem).subscribe(
+                filtered => {
+                  this.similarCalls = filtered;
+                }
+              );
             }
-          );
-        }
+          )
       );
     }
   }
 
   deletePatient(i) {
-    console.log(i);
     this.patients.splice(i, 1);
+    this.callItem.patientList.splice(i, 1);
     this.checkPatientsLength();
   }
 
@@ -365,20 +409,23 @@ export class ModalCreateCallComponent implements OnInit {
     }
   }
   create() {
-    for (let i = 0; i < this.patients.length; i++) {
-      this.callItem.patients.push(this.patients[i].form.getRawValue());
-    }
-    console.log(this.callItem.patients);
-    Object.assign(this.callItem, this.form.getRawValue());
-    this.calls.createCall(this.callItem).subscribe(
-      res => {
-        this.ns.success('Успешно', 'Данные сохранены');
-        this.cancel();
-      },
-      err => {
-        this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-        console.log('Save new call', err);
-      }
+    this.callItem.call = this.form.getRawValue();
+    this.callItem.brigadeList = [];
+    this.callItem.call.date = new Date();
+    this.callItem.call.status = null;
+    //this.callItem.patientList = [];
+    console.log(this.callItem);
+    this.sbscs.push(
+      this.calls.createCall(CallContainer.fromJS(this.callItem)).subscribe(
+        res => {
+          this.ns.success('Успешно', 'Данные сохранены');
+          this.modalInstance.close(res);
+        },
+        err => {
+          this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
+          console.log('Save new call', err);
+        }
+      )
     );
   }
 

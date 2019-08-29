@@ -13,12 +13,12 @@
            [bindValue]="bindValue"
            (open)="onOpen()"
            [dropdownPosition]="dropdownPosition"
-           [disabled]="disabled"
+           [disabled]="disabled || readonly"
            (blur)="onBlur($event)"
            loadingText="Загрузка..."
            notFoundText="Ничего не найдено"
            (change)="onSelectChange($event)">
   <ng-template ng-option-tmp let-item="item" let-index="index">
-    <span [title]="item[bindLabel]">{{item[bindLabel]}}</span>
+    <span [title]="item[bindLabel]">{{item[bindLabel]}} {{item[addLabel] ? ' ' + item[addLabel] : ''}}</span>
   </ng-template>
 </ng-select>

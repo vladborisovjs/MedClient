@@ -5,6 +5,12 @@
       <button *ngIf="similarCalls.length > 0" class="btn btn-success blinking" (click)="showSimilarCalls()"><i class="fas fa-search blinking"></i>
         Похожих вызовов:{{similarCalls.length}}
       </button>
+      <button *ngIf="!similarCalls.length" class="btn btn-light" [disabled]="!similarCalls.length">
+        Похожих вызовов нет
+      </button>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
   </div>
   <div class="card-body p-0 full-height flexible">
@@ -73,7 +79,7 @@
   </div>
   <div class="card-footer toolbar-right">
     <div class="btn-group">
-      <button class="btn btn-success" (click)="create()">
+      <button class="btn btn-success" [disabled]="form.invalid" (click)="create()">
         Создать
       </button>
       <button class="btn btn-secondary" (click)="cancel()">

@@ -1,27 +1,18 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Subscription} from 'rxjs';
-import {CallDto, CallPatientPartDto, LogDto, MedApi} from '../../../../../swagger/med-api.service';
-import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
-import {ColDef} from 'ag-grid-community';
+import {interval, Subject, Subscription} from 'rxjs';
+import {CallContainer, CallPatientPartDto, MedApi, ReferenceTypeBean} from '../../../../../swagger/med-api.service';
 import {UserService} from '../../../services/user.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ModalCallUpdateGeneralComponent} from '../modal-call-update-general/modal-call-update-general.component';
-import {ModalDeclarantUpdateComponent} from '../modal-declarant-update/modal-declarant-update.component';
 import {ModalCallPatientsUpdateComponent} from '../modal-call-patients-update/modal-call-patients-update.component';
-import {ModalAddressUpdateComponent} from '../modal-address-update/modal-address-update.component';
 import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
 import {CallItemService} from '../../services/call-item.service';
 import {NotificationsService} from 'angular2-notifications';
-import {ModalPatientChronologyComponent} from '../modal-patient-chronology/modal-patient-chronology.component';
 import {ModalCallAppointBrigadeComponent} from '../modal-call-appoint-brigade/modal-call-appoint-brigade.component';
-import {ModalProtocolComponent} from '../modal-protocol/modal-protocol.component';
-import {ModalCallF110Component} from '../modal-call-f110/modal-call-f110.component';
-import {ModalCallBrigadeStatusesComponent} from '../modal-call-brigade-statuses/modal-call-brigade-statuses.component';
-import {ModalF110Component} from '../modal-f110/modal-f110.component';
-import {ModalCallJournalComponent} from '../modal-call-journal/modal-call-journal.component';
-import {ModalCallTransferComponent} from '../modal-call-transfer/modal-call-transfer.component';
-import {ModalCallTransferAvailableComponent} from '../modal-call-transfer-available/modal-call-transfer-available.component';
+import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {FormGroup} from '@angular/forms';
+import {IMapParams} from '../../../shared/best-map/models/map-manager';
+import {debounce} from 'rxjs/operators';
 
 @Component({
   selector: 'app-call-item',
@@ -29,76 +20,229 @@ import {ModalCallTransferAvailableComponent} from '../modal-call-transfer-availa
   styleUrls: ['./call-item.component.scss']
 })
 export class CallItemComponent implements OnInit, OnDestroy {
-  id: number;
   sbscs: Subscription[] = [];
-  callItem: CallDto;
-  callLog: LogDto;
-  callPlate: IPlateInfo[] = [
-    // general
+  callItem: CallContainer;
+  description: ISimpleDescription[] = [
     {
-      title: 'Номер: ', field: 'call_number', type: 'number', block: 'general'
+      label: 'Тип*',
+      key: 'typeFK',
+      type: 'dict',
+      dict: 'getReferenceTypeListCallUsingGET',
+      required: true,
+      errorText: 'Поле не может быть пустым',
+      styleClass: 'col-4',
+      additional: {
+        block: 'general'
+      },
     },
     {
-      title: 'Дата и время: ', field: 'date', type: 'date', block: 'general', datePipeFormat: 'dd.MM.yyyy HH:mm'
+      label: 'Повод',
+      key: 'reasonFK',
+      type: 'dict',
+      readonly: true,
+      bindLabel: 'reason',
+      styleClass: 'col-4',
+      additional: {
+        block: 'general'
+      },
     },
     {
-      title: 'Тип: ', field: 'call_type_name', type: 'text', block: 'general'
+      label: 'Приоритет*',
+      key: 'priority',
+      type: 'select',
+      required: true,
+      errorText: 'Поле не может быть пустым',
+      selectList: [
+        {name: 'Экстренный', id: 1},
+        {name: 'Неотложный', id: 0},
+      ],
+      styleClass: 'col-4',
+      additional: {
+        block: 'general'
+      },
     },
     {
-      title: 'Повод: ', field: 'reason_name', type: 'text', block: 'general'
+      label: 'Описание*',
+      key: 'reasonComment',
+      type: 'textarea',
+      errorText: 'Поле не может быть пустым',
+      required: true,
+      rows: 2,
+      additional: {
+        block: 'general'
+      },
     },
     {
-      title: 'Описание: ', field: 'reason_comment', type: 'text', block: 'general'
+      label: 'ФИО*',
+      key: 'declarantName',
+      type: 'text',
+      required: true,
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      styleClass: 'col-4',
+      additional: {
+        block: 'declarant'
+      }
     },
     {
-      title: 'Приоритет: ', field: 'call_priority_name', type: 'text', block: 'general'
+      label: 'Телефон*',
+      key: 'declarantPhone',
+      type: 'number',
+      errorText: 'Некорректный номер',
+      required: true,
+      styleClass: 'col-4',
+      additional: {
+        block: 'declarant'
+      }
     },
     {
-      title: 'Вызов принят: ', field: 'performer_accept_name', type: 'text', block: 'general'
+      label: 'Тип*',
+      key: 'declarantTypeFK',
+      type: 'dict',
+      required: true,
+      errorText: 'Поле не может быть пустым',
+      dict: 'getReferenceTypeListDeclarantUsingGET',
+      styleClass: 'col-4',
+      additional: {
+        block: 'declarant'
+      }
     },
     {
-      title: 'Район: ', field: 'district', subField: 'name',  type: 'bean', block: 'address'
+      label: 'Фамилия',
+      key: 'surname',
+      type: 'text',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      errorText: 'Только кириллица',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
     },
     {
-      title: 'Адрес: ', field: 'fullname', type: 'text', block: 'address'
+      label: 'Имя',
+      key: 'name',
+      type: 'text',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      errorText: 'Только кириллица',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
     },
     {
-      title: 'Место вызова: ', field: 'call_place_name', type: 'text', block: 'address'
+      label: 'Отчество',
+      key: 'patronymic',
+      type: 'text',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      errorText: 'Только кириллица',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
     },
-    // declarant
     {
-      title: 'Фио: ', field: 'declarant_name',   type: 'text', block: 'declarant'
+      label: 'Пол',
+      key: 'gender',
+      type: 'select',
+      selectList: [
+        {name: 'Не указан', id: 0},
+        {name: 'Мужской', id: 1},
+        {name: 'Женский', id: 2},
+      ],
+      styleClass: 'col-3',
+      additional: {
+        block: 'patient'
+      }
     },
     {
-      title: 'Телефон: ', field: 'declarant_phone',   type: 'text', block: 'declarant'
-    },
-    {
-      title: 'Тип: ', field: 'declarant_type_name',   type: 'text', block: 'declarant'
-    },
+      label: 'Возраст: лет',
+      key: 'ageYears',
+      type: 'number',
+      styleClass: 'col-3',
+      additional: {
+        block: 'patient'
+      }
 
+    },
+    {
+      label: 'Месяцев',
+      key: 'ageMonths',
+      type: 'number',
+      styleClass: 'col-3',
+      additional: {
+        block: 'patient'
+      }
+    },
+    {
+      label: 'Дней',
+      key: 'ageDays',
+      type: 'number',
+      styleClass: 'col-3',
+      additional: {
+        block: 'patient'
+      }
+    },
+    {
+      label: 'Подъезд',
+      key: 'entranceNum',
+      type: 'text',
+      styleClass: 'col-2',
+      additional: {
+        block: 'address'
+      }
+    },
+    {
+      label: 'Домофон',
+      key: 'entranceCode',
+      type: 'text',
+      styleClass: 'col-3',
+      additional: {
+        block: 'address'
+      }
+    },
+    // {
+    //   label: 'Этаж',
+    //   key: 'floor',
+    //   type: 'text',
+    //   styleClass: 'col-2',
+    //   additional: {
+    //     block: 'address'
+    //   }
+    // },
+    {
+      label: 'Квартира',
+      key: 'flatNum',
+      type: 'text',
+      styleClass: 'col-2',
+      additional: {
+        block: 'address'
+      }
+    },
+    // {
+    //   label: 'Комната',
+    //   key: 'room',
+    //   type: 'text',
+    //   styleClass: 'col-2',
+    //   additional: {
+    //     block: 'address'
+    //   }
+    // },
+    {
+      label: 'Место вызова',
+      key: 'placeTypeFK',
+      type: 'dict',
+      dict: 'getReferenceTypeListCallPlaceUsingGET',
+      styleClass: 'col-5',
+      additional: {
+        block: 'address'
+      }
+    }
   ];
-  briCallDefs: ColDef[] = [
-    {
-      headerName: 'Бригада',
-      field: 'brigade_name',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: 'Тип',
-      field: 'brigade_type_name',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: 'Статус',
-      field: 'state',
-      sortable: true,
-      filter: true
-    },
-  ];
-  briListSource = [];
-  selectedBri: any;
+  form: FormGroup;
+  isEdit: boolean = false;
+
+  // сюда пихать события для перерисовки карты, {type: resize, value: {}} resize - изменение размеров контейнера
+  mapChange: Subject<{ type: string, value: any }> = new Subject<{ type: string, value: any }>();
 
   constructor(private route: ActivatedRoute,
               private api: MedApi,
@@ -106,146 +250,62 @@ export class CallItemComponent implements OnInit, OnDestroy {
               private modal: NgbModal,
               private cmodal: CustomModalService,
               private ns: NotificationsService,
-              private cs: CallItemService,) {
+              private cs: CallItemService,
+              private sds: SimpleDescriptionService) {
   }
 
   ngOnInit() {
     this.sbscs.push(
-      this.route.data.subscribe(data => {
-        this.callItem = data.callItem;
-      }),
-      this.cs.callItemSub.subscribe(data => {
-        this.callItem = data;
-      }),
+      this.cs.callItemSub.subscribe(
+        call => {
+          this.callItem = call;
+          this.callItem.brigadeList = this.callItem.brigadeList ? this.callItem.brigadeList : [];
+          this.callItem.patientList = this.callItem.patientList ? this.callItem.patientList : [];
+        }
+      )
     );
-    this.updateBriListSource();
+    this.form = this.sds.makeForm(this.description);
+    this.form.reset(this.callItem.call);
+    this.form.disable();
   }
+
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
   }
 
-  updateBriListSource() {
-    this.cs.getCallsBrigades(this.callItem.general.call_id).subscribe(
-      bri => {
-        this.briListSource = bri;
-      }
-    );
-  }
-
-  editGeneral() {
-    const generalModal = this.modal.open(ModalCallUpdateGeneralComponent);
-    generalModal.componentInstance.callItem = this.callItem;
-  }
-
-  editDeclarant() {
-    const declarantModal = this.modal.open(ModalDeclarantUpdateComponent);
-    declarantModal.componentInstance.callItem = this.callItem;
-  }
-
-  editPatients(patient?: CallPatientPartDto) {
-    const patModal = this.modal.open(ModalCallPatientsUpdateComponent, {size: !patient? 'lg': null});
+  editPatients(patient?) {
+    const patModal = this.modal.open(ModalCallPatientsUpdateComponent, {size: !patient ? 'lg' : null});
     patModal.componentInstance.callItem = this.callItem;
     patModal.componentInstance.patient = patient;
+    patModal.result.then(
+      res => {
+        if (res)
+          res.forEach(el => this.callItem.patientList.push(el));
+      }
+    );
   }
 
   deletePatient(patient) {
     this.cmodal.confirm('Удаление пациента', 'Вы уверены, что хотите удалить пациента' + '?').then(
       res => {
-        if (res) {
-          this.cs.deletePatient(patient.patient_id, this.callItem.general.call_id).subscribe(
-            ans => {
-              this.ns.success('Успешно', 'Данные обновлены');
-            },
-            err => {
-              this.ns.error('Ошибка', 'Не удалось удалить пациента');
-            }
-
-          );
-        }
+        this.callItem.patientList.splice(patient, 1);
+        this.ns.success('Успешно', 'Пациент удален');
       },
-      () => {}
+      () => {
+      }
     );
   }
-
-  showChronology(patient) {
-    const chronModal = this.modal.open(ModalPatientChronologyComponent, {size: 'lg'});
-    chronModal.componentInstance.patientId = patient.patient_id;
-    chronModal.componentInstance.callId = this.callItem.general.call_id;
-  }
-
-  showProtocol() {
-    const protocolModal = this.modal.open(ModalProtocolComponent, {size: 'lg'});
-    protocolModal.componentInstance.callId = this.callItem.general.call_id;
-  }
-
-  showF110() {
-    const f110Modal = this.modal.open(ModalF110Component, {size: 'lg'});
-    f110Modal.componentInstance.callId = this.callItem.general.call_id;
-  }
-
-  editAddress() {
-    const addressModal = this.modal.open(ModalAddressUpdateComponent);
-    addressModal.componentInstance.callItem = this.callItem;
-  }
-
-  appointBrigade() {
-    const appointModal = this.modal.open(ModalCallAppointBrigadeComponent, {size: 'lg'});
-    appointModal.componentInstance.callItem = this.callItem;
-    appointModal.result.then(
-      () => this.updateBriListSource()
-    );
-  }
-
-  selectBri(e) {
-    this.selectedBri = e ? e.data : null;
-  }
-
-  openBri110() {
-    const cardsList = this.modal.open(ModalCallF110Component);
-    cardsList.componentInstance.brigade = this.selectedBri;
-
-  }
-
-  openJournal() {
-    const journal = this.modal.open(ModalCallJournalComponent, {size: 'lg'});
-    journal.componentInstance.brigade = this.selectedBri;
-  }
-
-  openTransfer() {
-    const transfer = this.modal.open(ModalCallTransferComponent, {size: 'lg'});
-    transfer.componentInstance.callId = this.callItem.general.call_id;
-  }
-
-  // openAvailable() {
-  //   const available = this.modal.open(ModalCallTransferAvailableComponent);
-  //   available.componentInstance.callId = this.callItem.general.call_id;
-  // }
-
-  openBriStatuses() {
-    const briStatuses = this.modal.open(ModalCallBrigadeStatusesComponent, {size: 'lg'});
-    briStatuses.componentInstance.brigade = this.selectedBri;
-  }
-
 
   /** метод для получения описания по
    * блоку в поле аддишнл,
    * чтобы все описания хранились
    * в одном массиве
    */
-  // getBlockDescriptions(block: string): ISimpleDescription[] {
-  //   return this.callDescription.filter(el => {
-  //     if (el.additional) {
-  //       return el.additional.block === block;
-  //     }
-  //     return false;
-  //   });
-  // }
-
-  getPlateDescriptions(block: string): IPlateInfo[] {
-    return this.callPlate.filter(el => {
-      if (el.block) {
-        return el.block === block;
+  getBlockDescriptions(block: string): ISimpleDescription[] {
+    return this.description.filter(el => {
+      if (el.additional) {
+        return el.additional.block === block;
       }
       return false;
     });
@@ -255,4 +315,42 @@ export class CallItemComponent implements OnInit, OnDestroy {
     e.api.sizeColumnsToFit();
   }
 
+  save() {
+    console.log(this.form.getRawValue());
+    Object.assign(this.callItem.call, this.form.getRawValue());
+    this.sbscs.push(
+      this.cs.saveCall().subscribe(
+        res => {
+          this.lockForm();
+          this.ns.success('Успешно', 'Данные сохранены');
+        },
+        err => {
+          this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
+          console.log('Save Call General', err);
+        }
+      )
+    );
+  }
+
+  unlockForm() {
+    this.form.enable();
+    this.isEdit = true;
+  }
+
+  lockForm() {
+    this.form.disable();
+    this.isEdit = false;
+  }
+
+  revertForm() {
+    this.form.reset(this.callItem.call);
+    this.lockForm();
+  }
+
+  resize(e) {
+    this.mapChange.next({
+      type: 'resize',
+      value: e,
+    });
+  }
 }

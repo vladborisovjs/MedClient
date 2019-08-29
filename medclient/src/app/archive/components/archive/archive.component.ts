@@ -18,6 +18,11 @@ export class ArchiveComponent implements OnInit {
       routerLink: 'f110',
       iconClass: 'fas fa-notes-medical'
     },
+    {
+      label: 'Пациенты',
+      routerLink: 'patients',
+      iconClass: 'fas fa-user-injured'
+    },
 
   ];
   constructor() { }

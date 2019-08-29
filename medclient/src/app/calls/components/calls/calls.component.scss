@@ -3,10 +3,16 @@
   height: 100%;
 }
 
+.calls-wrapper{
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
 .calls-lst{
-  height: 50%;
+  min-height: 300px;
 }
 
 .brigades-lst{
-  height: 50%;
+  min-height: 280px;
 }

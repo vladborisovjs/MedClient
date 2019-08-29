@@ -16,6 +16,13 @@
         [item]="item"
         [row]="true"
       ></app-simple-view>
+      <app-simple-view *ngIf="childrenTreeAmount === 0"
+        [descriptions]="getBlockDescriptions('reasonInquirer')"
+        [form]="form"
+        [preprocessed]="true"
+        [item]="item"
+        [row]="true"
+      ></app-simple-view>
     </div>
   </div>
   <div class="card-footer toolbar">
@@ -23,8 +30,12 @@
       <button class="btn btn-secondary" (click)="back()">Назад</button>
     </div>
     <div class="toolbar-right">
-      <button class="btn btn-success" (click)="save()" *ngIf="item.id !== 0">Сохранить</button>
-      <button class="btn btn-success" (click)="create()" *ngIf="item.id === 0">Создать</button>
+      <div class="btn-group">
+        <button class="btn btn-danger" (click)="delete()" *ngIf="item.id !== 0 && !item.isDeleted">Удалить</button>
+        <button class="btn btn-success" (click)="save()" [disabled]="form.pristine || form.invalid" *ngIf="item.id !== 0 && !item.isDeleted">Сохранить</button>
+        <button class="btn btn-success" (click)="restore()" *ngIf="item.id !== 0 && item.isDeleted">Восстановить</button>
+        <button class="btn btn-success" (click)="create()" [disabled]="form.pristine || form.invalid" *ngIf="item.id === 0">Создать</button>
+      </div>
     </div>
   </div>
 </div>

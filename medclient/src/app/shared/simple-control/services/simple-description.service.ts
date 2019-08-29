@@ -7,11 +7,13 @@ export interface ISimpleDescription {
   label?: string; // название
   postLabel?: string; // лэйбл после формы (например единицы измерения)
   showTime?: boolean // выбор времени на датапикере
+  timeOnlyWithDate?: Date;
   errorText?: string; // текст для вывода ошибки
   placeholder?: string;
   required?: boolean; // обязательность
   pattern?: RegExp | string ;// паттерн для ввода
   dict?: string; // наименование метода словаря
+  readonly?: boolean;
   alwaysDisabled?: boolean;
   dictFilters?: any; // объект фильтров
   dictFiltersOrder?: string[]; // порядок фильтров
@@ -20,10 +22,13 @@ export interface ISimpleDescription {
   dropdownPosition?: string;
   hide?: boolean; // скрыть
   bindLabel?: string; // поле для отображение
+  addLabel?: string; // Дополнительное поле для лэбла (чтобы составить из 2 полей)
   bindValue?: string; // поле для отображение
   templateField?: string; // поле принимаемое для подстановки из шаблона
   styleClass?: string;
   rows?: number; // строки Textarea
+  btnClass?: string; // класс кнопки
+  action?: any // функция для кнопки
   necessary?: { // обязательные поля для активации контрола
     key: string; // наименование поля требуемого объекта
     keyField?: string; // поле из родителя, нужное для фильтрации
@@ -34,6 +39,7 @@ export interface ISimpleDescription {
   additional?: any;
   order?: number;
   selectList?: any[];
+  presetValue?: any;
 }
 
 @Injectable()

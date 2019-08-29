@@ -16,9 +16,9 @@
     ></app-simple-view>
   </div>
   <div class="card-body pt-0" *ngIf="selectedPerformer">
-    <b>{{selectedPerformer.type_name}}</b> - {{selectedPerformer.second_name}} {{selectedPerformer.first_name}} {{selectedPerformer.patronymic}}<br>
-    <div *ngFor="let p of selectedPerformer.periods">
-      <b>Часы работы:</b> {{p.date_from | date: 'dd.MM.yyyy HH:mm' }} - {{p.date_to | date: 'dd.MM.yyyy HH:mm' }}
+    <b>{{selectedPerformer.first.typeFK.name}}</b> - {{selectedPerformer.first.surname}} {{selectedPerformer.first.name}} {{selectedPerformer.first.patronymic}}<br>
+    <div *ngFor="let p of selectedPerformer.second">
+      <b>Часы работы:</b> {{p.dateFrom | date: 'dd.MM.yyyy HH:mm' }} - {{p.dateTo | date: 'dd.MM.yyyy HH:mm' }}
     </div>
   </div>
   <div class="card-body pTable">

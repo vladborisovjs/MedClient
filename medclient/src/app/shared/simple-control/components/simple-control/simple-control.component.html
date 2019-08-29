@@ -1,18 +1,34 @@
 <form novalidate #ele class="sc-form form-group {{postLabel? 'input-group': ''}}">
-  <input [ngModelOptions]="{standalone: true}"
-         class="sc-control-checkbox"
-         [disabled]="alwaysDisabled ? true : disabled"
-         *ngIf="type === 'checkbox'" type="checkbox"
-         [(ngModel)]="value">
+  <p-checkbox
+    [ngModelOptions]="{standalone: true}"
+    class="sc-control-checkbox"
+    binary="true"
+    [disabled]="alwaysDisabled ? true : disabled"
+    *ngIf="type === 'checkbox'" type="checkbox"
+    [(ngModel)]="value"></p-checkbox>
 
-  <div *ngIf="label" class="sc-label" [ngClass]="{'label-after': type === 'checkbox'}">{{label}} <span *ngIf="isError"
-                                                                                                       style="color: red">{{errorText}}</span>
+  <p-triStateCheckbox
+    [ngModelOptions]="{standalone: true}"
+    class="sc-control-tricheckbox"
+    [disabled]="alwaysDisabled ? true : disabled"
+    *ngIf="type === 'tricheckbox'"
+    [(ngModel)]="value"></p-triStateCheckbox>
+
+  <div *ngIf="label" class="sc-label" [ngClass]="{'label-after': type === 'checkbox' || type === 'tricheckbox'}">
+    {{label}} <span *ngIf="isError" style="color: red">{{errorText}}</span>
   </div>
 
+
+  <button *ngIf="type === 'btn'"
+          [class]="btnClass"
+          (click)="action()"
+  >{{placeholder}}
+  </button>
 
   <input *ngIf="type === 'text' || type === 'number'" #ctrl
          [ngModelOptions]="{standalone: true}"
          class="sc-control form-control"
+         [readonly]="readonly"
          (blur)="onInputBlur($event)"
          [(ngModel)]="value"
          [title]="value ? value : ''"
@@ -35,10 +51,10 @@
          [tabIndex]="tabIndex">
 
 
-
   <textarea *ngIf="type === 'textarea'" #ctrl
             [ngModelOptions]="{standalone: true}"
             class="sc-control form-control"
+            [readonly]="readonly"
             [rows]="rows"
             (blur)="onInputBlur($event)"
             [(ngModel)]="value"
@@ -49,21 +65,21 @@
             [tabIndex]="tabIndex"></textarea>
 
   <!--<dictionary-template *ngIf="type === 'template'" #ctrl-->
-                       <!--[rows]="rows"-->
-                       <!--(blur)="onInputBlur($event)"-->
-                       <!--[(model)]="value"-->
-                       <!--[title]="value ? value : ''"-->
-                       <!--[short]="shortDict"-->
-                       <!--[field]="templateField"-->
-                       <!--[disabled]="alwaysDisabled ? true : disabled"-->
-                       <!--[searchField]="dictSearchField"-->
-                       <!--[dict]="dict"-->
-                       <!--[filters]="dictFilters"-->
-                       <!--[filtersOrder]="dictFiltersOrder"-->
-                       <!--[bindValue]="bindValue"-->
-                       <!--[bindLabel]="bindLabel"-->
-                       <!--[placeholder]="placeholder ? placeholder : label ? label : ''"-->
-                       <!--[tabIndex]="tabIndex"></dictionary-template>-->
+  <!--[rows]="rows"-->
+  <!--(blur)="onInputBlur($event)"-->
+  <!--[(model)]="value"-->
+  <!--[title]="value ? value : ''"-->
+  <!--[short]="shortDict"-->
+  <!--[field]="templateField"-->
+  <!--[disabled]="alwaysDisabled ? true : disabled"-->
+  <!--[searchField]="dictSearchField"-->
+  <!--[dict]="dict"-->
+  <!--[filters]="dictFilters"-->
+  <!--[filtersOrder]="dictFiltersOrder"-->
+  <!--[bindValue]="bindValue"-->
+  <!--[bindLabel]="bindLabel"-->
+  <!--[placeholder]="placeholder ? placeholder : label ? label : ''"-->
+  <!--[tabIndex]="tabIndex"></dictionary-template>-->
 
   <dictionary *ngIf="type ==='dict'" #ctrl
               [(model)]="value"
@@ -78,6 +94,8 @@
               (dictSelect)="onDictSelect($event)"
               [disabled]="alwaysDisabled ? true : disabled"
               [bindValue]="bindValue"
+              [readonly]="readonly"
+              [addLabel]="addLabel"
               [attr.aria-describedby]="'post-label'"
               [bindLabel]="bindLabel"></dictionary>
 
@@ -89,6 +107,9 @@
               class="sc-control-calendar"
               [(ngModel)]="value"
               [showTime]="showTime"
+              [timeOnly]="false"
+              [maxDate]="timeOnlyWithDate ? maxDate : null"
+              [minDate]="timeOnlyWithDate ? minDate : null"
               hourFormat="24"
               (onBlur)="onInputBlur($event)"
               [dateFormat]="dateFormat"></p-calendar>
@@ -99,14 +120,14 @@
              [(ngModel)]="value"
              [ngModelOptions]="{standalone: true}"
              [addTag]="false"
-             [disabled]="alwaysDisabled ? true : disabled"
+             [disabled]="alwaysDisabled ? true : disabled ? disabled : readonly"
              [bindLabel]="'name'"
              [bindValue]="bindValue? (bindValue ==='selfObject') ? null : bindValue : 'id'"
              [items]="selectList"></ng-select>
 
   <!--<div *ngIf="postLabel" class="sc-post-label">{{postLabel}}</div>-->
   <div *ngIf="postLabel" class="input-group-append">
-    <span class="input-group-text"  id="post-label">{{postLabel}}</span>
+    <span class="input-group-text" id="post-label">{{postLabel}}</span>
   </div>
 
 </form>

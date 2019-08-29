@@ -6,7 +6,7 @@
       </div>
       <div class="card-body">
         <app-info-plate
-          [item]="cardInfoSideOne.general"
+          [item]="card"
           [properties]="getPlateDescriptions('card')"></app-info-plate>
       </div>
     </div>
@@ -15,7 +15,7 @@
         <div class="toolbar justify-content-between">
           <div class="card-subtitle">Данные о вызове</div>
           <div class="toolbar-right">
-            <a href="/#/calls/{{cardInfoSideOne.general.call_id}}" target="_blank">
+            <a href="/#/calls/{{callContainer.call.id}}" target="_blank">
               <button class="btn btn-info btn-wide btn-sm" ><i class="fas fa-phone-square fa-lg"></i></button>
             </a>
           </div>
@@ -23,31 +23,41 @@
       </div>
       <div class="card-body">
         <app-info-plate
-          [item]="cardInfoSideOne.general"
+          [item]="callContainer.call"
           [properties]="getPlateDescriptions('call')"></app-info-plate>
+        <div class="plate-list">
+          <div class="gen-info-char">
+            <div class="plate-title">Приоритет:</div>
+            <div class="plate-value">{{callContainer.call.priority? 'Неотложный' : 'Экстренный'}}</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="card">
+    <div class="card" *ngIf="callContainer.patientList && callContainer.patientList[0]">
       <div class="card-header">
         <div class="toolbar justify-content-between">
-          <!--<div class="toolbar-left"></div>-->
           <div class="card-subtitle">Пациент</div>
           <div class="toolbar-right">
-            <button class="btn btn-info btn-wide btn-sm" (click)="goToPatient()"><i class="fas fa-pen"></i></button>
           </div>
         </div>
       </div>
       <div class="card-body">
         <div class="plate-list">
-          <div class="gen-info-char">
+          <div class="gen-info-char" >
             <div class="plate-title">Имя:</div>
-            <div class="plate-value">{{cardInfoSideOne.patient.patient_secondname}}</div>
-            <div class="plate-value">{{cardInfoSideOne.patient.patient_firstname}}</div>
-            <div class="plate-value">{{cardInfoSideOne.patient.patient_patronymic}}</div>
+            <div class="plate-value">{{callContainer.patientList[0].surname}}</div>
+            <div class="plate-value">{{callContainer.patientList[0].name}}</div>
+            <div class="plate-value">{{callContainer.patientList[0].patronymic}}</div>
+          </div>
+        </div>
+        <div class="plate-list">
+          <div class="gen-info-char">
+            <div class="plate-title">Пол:</div>
+            <div class="plate-value">{{callContainer.patientList[0].gender? 'Мужской' : 'Женский'}}</div>
           </div>
         </div>
         <app-info-plate
-          [item]="cardInfoSideOne.patient"
+          [item]="callContainer.patientList[0]"
           [properties]="getPlateDescriptions('patient')"></app-info-plate>
       </div>
     </div>
@@ -56,9 +66,9 @@
         Адресс вызова
       </div>
       <div class="card-body">
-        <app-info-plate
-          [item]="cardInfoSideOne.address"
-          [properties]="getPlateDescriptions('address')"></app-info-plate>
+        <!--<app-info-plate-->
+          <!--[item]="cardInfoSideOne.address"-->
+          <!--[properties]="getPlateDescriptions('address')"></app-info-plate>-->
       </div>
     </div>
     <div class="card">
@@ -67,27 +77,34 @@
       </div>
       <div class="card-body">
         <app-info-plate
-          [item]="cardInfoSideOne.declarant"
+          [item]="callContainer.call"
           [properties]="getPlateDescriptions('declarant')"></app-info-plate>
       </div>
     </div>
   </div>
   <div class="col-6 full-width">
-    <div class="card">
+    <div class="card" *ngIf="callContainer.brigadeList">
       <div class="card-header">
         Бригада
       </div>
       <div class="card-body">
         <app-info-plate
-          [item]="cardInfoSideOne.brigade"
+          [item]="callContainer.brigadeList[0].brigade"
           [properties]="getPlateDescriptions('brigade')"></app-info-plate>
-        Состав
-        <div *ngFor="let performer of cardInfoSideOne.brigade.performers">
-          <app-info-plate
-            [item]="performer"
-            [properties]="getPlateDescriptions('briPerformer')">
-          </app-info-plate>
+        <div *ngFor="let per of callContainer.brigadeList[0].performerList">
+          <div class="plate-list">
+            <div class="gen-info-char" >
+              <div class="plate-title">Состав:</div>
+              <div class="plate-value">{{per.surname}}</div>
+              <div class="plate-value">{{per.name}}</div>
+              <div class="plate-value">{{per.patronymic}}</div>
+            </div>
+          </div>
         </div>
+        <!--<app-info-plate-->
+            <!--[item]="callContainer.brigadeList[0].performerList[0]"-->
+            <!--[properties]="getPlateDescriptions('briPerformer')">-->
+        <!--</app-info-plate>-->
       </div>
     </div>
     <div class="card">
@@ -103,10 +120,10 @@
         <app-simple-view
           [descriptions]="descriptions"
           [row]="true"
-          [item]="cardInfoSideOne.general.basic_dates"
+          [item]="card"
           [form]="form"></app-simple-view>
         <app-info-plate
-          [item]="cardInfoSideOne.general.basic_dates"
+          [item]="card"
           [properties]="getPlateDescriptions('time')"></app-info-plate>
       </div>
     </div>
@@ -126,26 +143,27 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr *ngIf="card.brigadeDoctorFK">
             <td >Сотрудник бригады</td>
-            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_name}}</td>
-            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_signed}}</td>
-            <td>{{cardInfoSideOne.general.brigade_doctor.brigade_doctor_date | date: 'dd.MM.yyyy HH:mm'}}</td>
+            <td>{{card.brigadeDoctorFK.surname + ' ' + card.brigadeDoctorFK.name + ' ' + card.brigadeDoctorFK.patronymic}}</td>
+            <td>{{card.brigadeDoctorIsChecked}}</td>
+            <!--<td>{{card.brigadeDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
+            <td></td>
             <td></td>
           </tr>
-          <tr>
+          <tr *ngIf="card.shiftSeniorDoctorFK">
             <td >Старший фельдшер</td>
-            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_name}}</td>
-            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_checked}}</td>
-            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_date | date: 'dd.MM.yyyy HH:mm'}}</td>
-            <td>{{cardInfoSideOne.general.shift_senior_doctor.shift_senior_doctor_comment}}</td>
+            <td>{{card.shiftSeniorDoctorFK.surname + ' ' + card.shiftSeniorDoctorFK.name + ' ' + card.shiftSeniorDoctorFK.patronymic}}</td>
+            <td>{{card.shiftSeniorDoctorIsChecked}}</td>
+            <!--<td>{{card.shiftSeniorDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
+            <td>{{card.shiftSeniorDoctorComment}}</td>
           </tr>
-          <tr>
+          <tr *ngIf="card.subdivisionHeadDoctorFK">
             <td>Заведующий отделения</td>
-            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_name}}</td>
-            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_checked}}</td>
-            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_date | date: 'dd.MM.yyyy HH:mm'}}</td>
-            <td>{{cardInfoSideOne.general.subdivision_head_doctor.subdivision_head_doctor_comment}}</td>
+            <td>{{card.subdivisionHeadDoctorFK.surname + ' ' + card.subdivisionHeadDoctorFK.name + ' ' + card.subdivisionHeadDoctorFK.patronymic}}</td>
+            <td>{{card.subdivisionHeadDoctorIsChecked}}</td>
+            <!--<td>{{card.subdivisionHeadDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
+            <td>{{card.subdivisionHeadDoctorComment}}</td>
           </tr>
           </tbody>
         </table>

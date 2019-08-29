@@ -9,21 +9,21 @@
   </div>
   <div class="card-body">
     <div class="card-subtitle">
-      {{performer.second_name}} {{performer.first_name}} {{performer.patronymic}} - {{performer.position}}
+      {{performer.surname}} {{performer.name}} {{performer.patronymic}} - {{performer.typeFK? performer.typeFK.name : ''}}
     </div>
-    <div *ngFor="let d of duty" class="flex-column">
+    <div class="flex-column">
       <div>
-        <b>Смена {{d.period_type.name}}:</b> {{d.period_details.date_from | date: 'dd.MM HH:mm'}} - {{d.period_details.date_to | date: 'dd.MM HH:mm'}}
+        <b>Смена {{duty.scheduleTypeFK.name}}:</b> {{duty.dateFrom | date: 'dd.MM HH:mm'}} - {{duty.dateTo | date: 'dd.MM HH:mm'}}
       </div>
       <div class="btn-group">
-        <button class="btn btn-outline-info btn-tiny" (click)="editDuty()">Редактировать</button>
-        <button class="btn btn-outline-danger btn-tiny" (click)="deleteDuty(d)">Удалить</button>
+        <!--<button class="btn btn-outline-info btn-tiny" (click)="editDuty()">Редактировать</button>-->
+        <button class="btn btn-outline-danger btn-tiny" (click)="deleteDuty(duty)">Удалить</button>
       </div>
     </div>
   </div>
   <div class="card-footer toolbar toolbar-right">
     <div class="btn-group">
-      <button class="btn btn-success" (click)="addDuty()">Добавить смену</button>
+      <button class="btn btn-success" (click)="editDuty()">Редактировать смену</button>
       <button class="btn btn-secondary" (click)="back()">Назад</button>
     </div>
 

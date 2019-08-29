@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CallDto, CallPatientPartDto} from '../../../../../swagger/med-api.service';
+import {CallContainer, CallDto, CallPatientPartDto} from '../../../../../swagger/med-api.service';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -16,26 +16,26 @@ export class ModalCallPatientsUpdateComponent implements OnInit {
   @Input() edit: boolean; // признак режима нового пациента или редактируемого
   form: FormGroup;
   forms: FormGroup[] = [];
-  @Input() callItem: CallDto;
+  @Input() callItem: any;
   description: ISimpleDescription[] = [
     {
       label: 'Фамилия',
-      key: 'patient_secondname',
+      key: 'surname',
       type: 'text',
     },
     {
       label: 'Имя',
-      key: 'patient_firstname',
+      key: 'name',
       type: 'text',
     },
     {
       label: 'Отчество',
-      key: 'patient_patronymic',
+      key: 'patronymic',
       type: 'text',
     },
     {
       label: 'Пол',
-      key: 'patient_sex',
+      key: 'gender',
       type: 'select',
       selectList: [
         {name: 'Не указан', id: 0},
@@ -45,21 +45,21 @@ export class ModalCallPatientsUpdateComponent implements OnInit {
     },
     {
       label: 'Возраст: лет',
-      key: 'patient_age_years',
+      key: 'ageYears',
       type: 'number',
       styleClass: 'col-4',
 
     },
     {
       label: 'месяцев',
-      key: 'patient_age_months',
+      key: 'ageMonths',
       type: 'number',
       styleClass: 'col-4',
 
     },
     {
       label: 'дней',
-      key: 'patient_age_days',
+      key: 'ageDays',
       type: 'number',
       styleClass: 'col-4',
     },
@@ -67,25 +67,31 @@ export class ModalCallPatientsUpdateComponent implements OnInit {
   descriptionNew: ISimpleDescription[] = [
     {
       label: 'Фамилия:',
-      key: 'patient_secondname',
+      key: 'surname',
       type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass:'col-4',
     },
     {
       label: 'Имя',
-      key: 'patient_firstname',
+      key: 'name',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       type: 'text',
       styleClass:'col-4',
     },
     {
       label: 'Отчество',
-      key: 'patient_patronymic',
+      key: 'patronymic',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       type: 'text',
       styleClass:'col-4',
     },
     {
       label: 'Пол',
-      key: 'patient_sex',
+      key: 'gender',
       type: 'select',
       selectList: [
         {name: 'Не указан', id: 0},
@@ -96,21 +102,21 @@ export class ModalCallPatientsUpdateComponent implements OnInit {
     },
     {
       label: 'Возраст: лет',
-      key: 'patient_age_years',
+      key: 'ageYears',
       type: 'number',
       styleClass: 'col-3',
 
     },
     {
       label: 'месяцев',
-      key: 'patient_age_months',
+      key: 'ageMonths',
       type: 'number',
       styleClass: 'col-3',
 
     },
     {
       label: 'дней',
-      key: 'patient_age_days',
+      key: 'ageDays',
       type: 'number',
       styleClass: 'col-3',
     },
@@ -141,22 +147,24 @@ export class ModalCallPatientsUpdateComponent implements OnInit {
 
   save() {
     Object.assign(this.patient, this.form.getRawValue());
-    this.cs.savePatient(this.patient, this.callItem.general.call_id).subscribe(
-      res => {
-        this.ns.success('Успешно', 'Данные сохранены');
-        this.back();
-      },
-      err => {
-        this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-        console.log('Save patient', err);
-      }
-    );
+    console.log(this.patient);
+    this.modalInstance.close();
+    // this.cs.savePatient(this.patient, this.callItem.general.call_id).subscribe(
+    //   res => {
+    //     this.ns.success('Успешно', 'Данные сохранены');
+    //     this.back();
+    //   },
+    //   err => {
+    //     this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
+    //     console.log('Save patient', err);
+    //   }
+    // );
   }
 
   addPatient() {
     this.patients.push(
       {
-        item: new CallPatientPartDto,
+        item: [],
         form: this.sds.makeForm(this.description)
       }
     );
@@ -175,16 +183,8 @@ export class ModalCallPatientsUpdateComponent implements OnInit {
     this.patients.forEach(
       pat => newPatients.push(pat.form.getRawValue())
     );
-    this.cs.addPatients(newPatients ,this.callItem.general.call_id).subscribe(
-      res => {
-        this.ns.success('Успешно', 'Данные сохранены');
-        this.back();
-      },
-      err => {
-        this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-        console.log('Save patient', err);
-      }
-    );
+    console.log(newPatients);
+    this.modalInstance.close(newPatients);
   }
 
 }

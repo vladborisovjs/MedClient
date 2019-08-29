@@ -2,8 +2,7 @@
   "runtime": "Default",
   "swaggerGenerator": {
     "fromSwagger": {
-      "json": "./nswg.json",
-      "url": "http://172.16.6.206:8080/med/v2/api-docs",
+      "url": "http://172.16.6.166:8080/tcmk/v2/api-docs",
       "output": null
     }
   },

@@ -1,35 +1,27 @@
-<div class="card m-0" >
-  <div class="card-header toolbar">
-    <div class="toolbar-left">
-      <button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>
-    </div>
-    <div class="card-subtitle">Результат</div>
-    <div class="toolbar-right"></div>
-  </div>
-</div>
-
 <div class="flexible">
   <div class="col-6 full-width">
     <div class="card">
       <div class="card-body">
         <app-simple-view
-          [item]="cardResult['type']"
-          [form]="getBlockForm('type')"
-          [descriptions]="getBlockDescriptions('type')"
+          [item]="objective"
+          [form]="formType"
+
+          [descriptions]="descriptionsType"
           [row]="true"
         ></app-simple-view>
       </div>
     </div>
-    <div *ngFor="let block of blocks">
-      <div class="card" *ngIf="(mode !== 'undef' && getBlockForm(block.name)) && (!block.mode || block.mode === mode)">
+    <div *ngFor="let block of blocks[mode].arrBlock">
+      <div class="card">
         <div class="card-header">
           {{block.label}}
         </div>
         <div class="card-body">
           <app-simple-view
-            [item]="block.itemName ? cardResult[block.itemName] : cardResult"
-            [form]="getBlockForm(block.name)"
-            [descriptions]="getBlockDescriptions(block.name)"
+            [item]="objective.cardResultBean"
+            [form]="form"
+            [preprocessed]="true"
+            [descriptions]="getBlockDescriptions(block.block)"
             [row]="true"
           ></app-simple-view>
         </div>
@@ -38,8 +30,9 @@
     <div class="card">
       <div class="card-body">
         <app-simple-view
-          [item]="cardResult"
-          [form]="getBlockForm('comments')"
+          [item]="objective.cardResultBean"
+          [form]="form"
+          [preprocessed]="true"
           [descriptions]="getBlockDescriptions('comments')"
           [row]="true"
         ></app-simple-view>
@@ -76,8 +69,9 @@
                 </div>
                 <div class="card-body">
                   <app-simple-view
-                    [item]="cardResult.local_efficiency_assistance"
-                    [form]="getBlockForm('local_efficiency_assistance')"
+                    [item]="objective.cardResultBean"
+                    [form]="form"
+                    [preprocessed]="true"
                     [descriptions]="getBlockDescriptions('local_efficiency_assistance')"
                     [row]="true"
                   ></app-simple-view>
@@ -108,8 +102,9 @@
                 </div>
                 <div class="card-body">
                   <app-simple-view
-                    [item]="cardResult.transport_efficiency_assistance"
-                    [form]="getBlockForm('transport_efficiency_assistance')"
+                    [item]="objective.cardResultBean"
+                    [form]="form"
+                    [preprocessed]="true"
                     [descriptions]="getBlockDescriptions('transport_efficiency_assistance')"
                     [row]="true"
                   ></app-simple-view>
@@ -128,9 +123,10 @@
           </div>
           <div class="card-body">
             <app-simple-view
-              [item]="cardResult.ekg_after"
+              [item]="objective.cardResultBean"
               [descriptions]="getBlockDescriptions('ekg_after')"
-              [form]="getBlockForm('ekg_after')"
+              [form]="form"
+              [preprocessed]="true"
               [row]="true"
             ></app-simple-view>
           </div>
@@ -143,8 +139,9 @@
           </div>
           <div class="card-body">
             <app-simple-view
-              [item]="cardResult.assistance_result"
-              [form]="getBlockForm('assistance_result')"
+              [item]="objective.cardResultBean"
+              [form]="form"
+              [preprocessed]="true"
               [descriptions]="getBlockDescriptions('assistance_result')"
               [row]="true"
             ></app-simple-view>

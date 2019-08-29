@@ -1,9 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+/**
+ * @this.item.data - данные узлов дерева Subdivision
+ * @this.item - все остальные данные
+ */
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
-import {MedApi} from '../../../../../swagger/med-api.service';
+import {MedApi, PerformerBean, ReferenceTypeBean} from '../../../../../swagger/med-api.service';
 import {NotificationsService} from 'angular2-notifications';
+import {IDictItem} from '../../models/dictionary-structure';
+import {DictionaryService} from '../../services/dictionary.service';
+import {CheckConditionService} from "../../../shared/services/check-condition.service";
 
 @Component({
   selector: 'app-dictionary-item',
@@ -15,15 +25,19 @@ export class DictionaryItemComponent implements OnInit {
   item: any;
   title: string;
   form: FormGroup;
-  dictItem: any;
-
+  dictItem: IDictItem;
+  childrenTreeAmount: number;
   constructor(private route: ActivatedRoute,
               private router: Router,
               private api: MedApi,
               private ns: NotificationsService,
-              private sds: SimpleDescriptionService) { }
+              private sds: SimpleDescriptionService,
+              private dicService: DictionaryService,
+              private ccs: CheckConditionService) {
+  }
 
   ngOnInit() {
+    this.childrenTreeAmount = this.dicService.childrenTreeAmountService;
     this.route.data.subscribe(data => {
       this.desc = data.itemWithContent.item.descriptions;
       this.item = data.itemWithContent.content;
@@ -31,21 +45,78 @@ export class DictionaryItemComponent implements OnInit {
       this.dictItem = data.itemWithContent.item;
     });
     this.form = this.sds.makeForm(this.desc);
-    this.form.reset(this.item);
+    this.resetForms();
+    if (this.dictItem.conditions) {
+      this.checkConditions();
+    }
+
   }
 
+  resetForms() {
+    if (this.item.data) {
+      this.form.reset(this.item.data);
+    } else {
+      this.form.reset(this.item);
+    }
+  }
+
+  checkConditions() {
+    this.ccs.checkCondition(this.form, this.dictItem.conditions);
+  }
 
   back() {
     this.router.navigate(['../'], {relativeTo: this.route});
   }
 
   save() {
-    let savingItem =  Object.assign(this.item, this.form.getRawValue());
+    if (this.form.valid) {
+      let savingItem;
+      if (this.item.data) {
+        savingItem = Object.assign(this.item.data, this.form.getRawValue());
+        this.item.data.isDeleted = false;
+      } else {
+        savingItem = Object.assign(this.item, this.form.getRawValue());
+        savingItem.typeFK = PerformerBean.fromJS(savingItem.typeFK);
+        savingItem.subdivisionFK = PerformerBean.fromJS(savingItem.subdivisionFK);
+      }
+      this.api[this.dictItem.saveMethod](savingItem).subscribe(
+        res => {
+          console.log('saved:', res);
+          this.ns.success('Успешно', 'Справочник обновлен');
+        },
+        error => {
+          console.log('error', error);
+        }
+      );
+    } else {
+      for (const i in this.form.controls) {
+        if (this.form.controls.hasOwnProperty(i)) {
+          this.form.get(i).markAsTouched();
+        }
+      }
+    }
+  }
+
+  create() {
+    let savingItem;
+    if (this.item.data) {
+      savingItem = Object.assign(this.item.data, this.form.getRawValue());
+      this.item.data.isDeleted = false;
+    } else {
+      savingItem = Object.assign(this.item, this.form.getRawValue());
+      savingItem.typeFK = PerformerBean.fromJS(savingItem.typeFK);
+      savingItem.subdivisionFK = PerformerBean.fromJS(savingItem.subdivisionFK);
+    }
+    savingItem.deleted = false;
+    savingItem.parentId = this.dicService.nodeParentId; // Через сервис пробрасываем parentid для создания потомка
     console.log(savingItem);
     this.api[this.dictItem.saveMethod](savingItem).subscribe(
       res => {
         console.log('saved:', res);
+        this.item = res;
+        this.form.reset(res);
         this.ns.success('Успешно', 'Справочник обновлен');
+        this.router.navigate([`../${res.id}/`], {relativeTo: this.route})
       },
       error => {
         console.log('error', error);
@@ -53,13 +124,29 @@ export class DictionaryItemComponent implements OnInit {
     );
   }
 
-  create() {
-    let savingItem =  Object.assign(this.item, this.form.getRawValue());
-    console.log(savingItem);
-    this.api[this.dictItem.createMethod](savingItem).subscribe(
+  delete() {
+    let deleteItem = this.item.data ? this.item.data.id : this.item.id;
+    this.api[this.dictItem.deleteMethod](deleteItem).subscribe(
       res => {
-        console.log('saved:', res);
-        this.ns.success('Успешно', 'Справочник обновлен');
+        console.log('deleted:', res);
+        this.item = res;
+        this.form.reset(res);
+        this.ns.success('Успешно', 'Запись справочника удалена');
+      },
+      error => {
+        console.log('error', error);
+      }
+    );
+  }
+
+  restore() {
+    let restoreItem = this.item.data ? this.item.data.id : this.item.id;
+    this.api[this.dictItem.restoreMethod](restoreItem).subscribe(
+      res => {
+        console.log('restore:', res);
+        this.item = res;
+        this.form.reset(res);
+        this.ns.success('Успешно', 'Запись справочника восстановлена');
       },
       error => {
         console.log('error', error);
@@ -75,8 +162,6 @@ export class DictionaryItemComponent implements OnInit {
       return false;
     });
   }
-
-
 
 }
 

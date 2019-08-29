@@ -4,6 +4,7 @@ import {FormGroup} from '@angular/forms';
 import {ColDef} from 'ag-grid-community';
 import {ScheduleService} from '../../services/schedule.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: 'app-modal-add-performer-to-brigade',
@@ -13,6 +14,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class ModalAddPerformerToBrigadeComponent implements OnInit {
   @Input() bFrom: any;
   @Input() bTo: any;
+  @Input() brigade: any;
   selectedPerformer: any;
   performerItem: any;
 
@@ -23,8 +25,8 @@ export class ModalAddPerformerToBrigadeComponent implements OnInit {
       key: 'gCode',
       type: 'select',
       selectList: [
-        {name: 'Медик', id: 'MEDIC'},
-        {name: 'Водитель', id: 'DRIVER'},
+        {name: 'Медик', id: 0},
+        {name: 'Водитель', id: 1},
         ],
       styleClass: 'line-form col-12'
     },
@@ -45,12 +47,12 @@ export class ModalAddPerformerToBrigadeComponent implements OnInit {
   pColDef: ColDef[] = [
     {
       headerName: 'Сотрудник',
-      valueGetter: params => params.data.second_name + ' ' + params.data.first_name + ' ' + params.data.patronymic,
+      valueGetter: params => params.data.first.surname + ' ' + params.data.first.name + ' ' + params.data.first.patronymic,
       width: 300
     },
     {
       headerName: 'Должность',
-      field: 'type_name',
+      field: 'first.typeFK.name',
       width: 150
     }
   ];
@@ -64,12 +66,12 @@ export class ModalAddPerformerToBrigadeComponent implements OnInit {
     this.performerItem = {
       from: this.bFrom,
       to: this.bTo,
-      gCode: 'MEDIC'
+      gCode: 0
     };
     this.updatePerfomers();
     this.form = this.sds.makeForm(this.desc);
     this.form.reset(this.performerItem);
-    this.form.valueChanges.subscribe(
+    this.form.valueChanges.pipe(debounceTime(300)).subscribe(
       ch => {
         this.performerItem.from = ch.from;
         this.performerItem.to = ch.to;
@@ -80,7 +82,7 @@ export class ModalAddPerformerToBrigadeComponent implements OnInit {
   }
 
   updatePerfomers(){
-    this.schs.getAvailablePerformers(this.performerItem.from.toISOString(), this.performerItem.to.toISOString(), this.performerItem.gCode).subscribe(
+    this.schs.getAvailablePerformers(this.performerItem.gCode, this.performerItem.from.toISOString(), this.performerItem.to.toISOString()).subscribe(
       per => {
         this.pSource = per;
       }
@@ -92,11 +94,7 @@ export class ModalAddPerformerToBrigadeComponent implements OnInit {
   }
 
   addPerformer(){
-    this.selectedPerformer.period_details = {
-      date_from: this.performerItem.from,
-      date_to: this.performerItem.to
-    };
-    // console.log('sel', this.selectedPerformer);
+    this.selectedPerformer.second[0].performerFK = this.selectedPerformer.first;
     this.modalInstance.close(this.selectedPerformer);
   }
 

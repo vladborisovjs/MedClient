@@ -9,16 +9,19 @@ import { F110ArchiveComponent } from './components/f110-archive/f110-archive.com
 import {GridTableModule} from '../shared/grid-table/grid-table.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SimpleControlModule} from '../shared/simple-control/simple-control.module';
+import { PatientsArchiveComponent } from './components/patients-archive/patients-archive.component';
+import {LightResizerModule} from '../shared/light-resizer/light-resizer.module';
 
 @NgModule({
-  declarations: [ArchiveComponent, CallsArchiveComponent, F110ArchiveComponent],
+  declarations: [ArchiveComponent, CallsArchiveComponent, F110ArchiveComponent, PatientsArchiveComponent],
   imports: [
     CommonModule,
     ArchiveRoutingModule,
     NavigationModule,
     GridTableModule,
     ReactiveFormsModule,
-    SimpleControlModule
+    SimpleControlModule,
+    LightResizerModule
   ]
 })
 export class ArchiveModule { }

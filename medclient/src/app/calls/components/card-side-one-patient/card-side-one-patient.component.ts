@@ -5,81 +5,105 @@ import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simp
 import {FormGroup} from '@angular/forms';
 import {NotificationsService} from 'angular2-notifications';
 import {CardItemService} from '../../services/card-item.service';
-import {CardPatientPartDto} from '../../../../../swagger/med-api.service';
+import {CallBean, CallContainer, CardBean, CardPatientPartDto, PatientBean} from '../../../../../swagger/med-api.service';
+import {CallItemService} from '../../services/call-item.service';
 
 @Component({
   selector: 'app-card-side-one-patient',
   templateUrl: './card-side-one-patient.component.html',
   styleUrls: ['./card-side-one-patient.component.scss']
 })
-export class CardSideOnePatientComponent implements OnInit {
+export class CardSideOnePatientComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
-  cardId: any;
-  patient: CardPatientPartDto;
+  callContainer: CallContainer;
+  card: CardBean;
   formPatient: FormGroup;
+  pList: any[] = [];
   descriptionPatient: ISimpleDescription[] = [
     {
+      label: 'Пациент вызова',
+      key: '',
+      type: 'select',
+      selectList: this.pList,
+      styleClass: 'col-12',
+      additional: {
+        block: 'general'
+      }
+    },
+    {
       label: 'Фамилия',
-      key: 'patient_secondname',
+      key: 'surname',
       type: 'text',
-      styleClass: 'col-4',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      styleClass: 'col-12',
       additional: {
         block: 'general'
       }
     },
     {
       label: 'Имя',
-      key: 'patient_firstname',
+      key: 'name',
       type: 'text',
-      styleClass: 'col-4',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      styleClass: 'col-12',
       additional: {
         block: 'general'
       }
     },
     {
       label: 'Отчество',
-      key: 'patient_patronymic',
+      key: 'patronymic',
       type: 'text',
-      styleClass: 'col-4',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      styleClass: 'col-12',
       additional: {
         block: 'general'
       }
     },
     {
       label: 'Возраст лет',
-      key: 'patient_age_years',
-      type: 'text',
-      styleClass: 'col-4',
+      key: 'ageYears',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-12',
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'месяцев',
-      key: 'patient_age_months',
-      type: 'text',
-      styleClass: 'col-4',
+      label: 'Месяцев',
+      key: 'ageMonths',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-12',
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'дней',
-      key: 'patient_age_days',
-      type: 'text',
-      styleClass: 'col-4',
+      label: 'Дней',
+      key: 'ageDays',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-12',
       additional: {
         block: 'general'
       }
     },
     {
       label: 'Пол',
-      key: 'patient_sex',
+      key: 'gender',
       type: 'select',
       selectList: [
-        {name: 'не указан', id: 0},
-        {name: 'мужской', id: 1},
-        {name: 'женский', id: 2},
+        {name: 'не указан', id: null},
+        {name: 'мужской', id: true},
+        {name: 'женский', id: false},
       ],
       styleClass: 'col-4',
       additional: {
@@ -88,14 +112,9 @@ export class CardSideOnePatientComponent implements OnInit {
     },
     {
       label: 'Социальный статус',
-      key: 'social_type_name',
+      key: 'patientFK',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'PATIENT_SOCIAL_TYPE'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListPatientSocialTypeUsingGET',
       styleClass: 'col-4',
       additional: {
         block: 'general'
@@ -114,12 +133,8 @@ export class CardSideOnePatientComponent implements OnInit {
       label: 'Тип',
       key: 'source_type_name',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'PATIENT_SOURCE_TYPE'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
       bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListPatientSourceTypeUsingGET',
       additional: {
         block: 'personalDoc'
       }
@@ -127,7 +142,9 @@ export class CardSideOnePatientComponent implements OnInit {
     {
       label: 'Серия',
       key: 'document_serial',
-      type: 'text',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-6',
       additional: {
         block: 'personalDoc'
@@ -136,7 +153,9 @@ export class CardSideOnePatientComponent implements OnInit {
     {
       label: 'Номер',
       key: 'document_number',
-      type: 'text',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-6',
       additional: {
         block: 'personalDoc'
@@ -225,12 +244,7 @@ export class CardSideOnePatientComponent implements OnInit {
       label: 'Тип',
       key: 'patient_type_name',
       type: 'dict',
-      shortDict: true,
-      dictFilters: {type: 'PATIENT_TYPE'},
-      dictFiltersOrder: ['type'],
-      bindLabel: 'name',
-      bindValue: 'id',
-      dict: 'readAllUsingGET_34',
+      dict: 'getReferenceTypeListPatientTypeUsingGET',
       additional: {
         block: 'address'
       }
@@ -279,23 +293,40 @@ export class CardSideOnePatientComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router,
               private cas: CardItemService,
+              private cs: CallItemService,
               private ns: NotificationsService,
-              private sds: SimpleDescriptionService) { }
+              private sds: SimpleDescriptionService) {
+  }
 
   ngOnInit() {
     this.formPatient = this.sds.makeForm(this.descriptionPatient);
     this.sbscs.push(
-      this.route.data.subscribe(data => {
-        this.patient = data.patient;
-        console.log('->', this.patient);
+      this.cs.callItemSub.subscribe(call => {
+          this.callContainer = call;
+          if (this.callContainer.patientList) {
+            this.callContainer.patientList.forEach(
+              p => this.pList.push(
+                {name: p.surname + ' ' + p.name + ' ' + p.patronymic, id: p.id}
+              )
+            );
+          }
+        }
+      ),
+      this.cas.cardItemSub.subscribe(card => {
+          this.card = card;
+          this.card.patientFK = this.card.patientFK ? this.card.patientFK : PatientBean.fromJS({});
+        }
+      ),
+      this.formPatient.valueChanges.subscribe(ch => {
+        this.cas.formPatient = this.formPatient.invalid;
+        Object.assign(this.card.patientFK, ch);
       }),
-      this.route.parent.parent.paramMap.subscribe(data => {
-        this.cardId = data.get('cardId');
-      })
     );
-    this.formPatient.valueChanges.subscribe(
-      el => console.log(el)
-    );
+    this.formPatient.reset(this.card.patientFK)
+  }
+
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
   }
 
   back() {
@@ -310,21 +341,5 @@ export class CardSideOnePatientComponent implements OnInit {
       }
       return false;
     });
-  }
-
-  save() {
-    let patient = [];
-    Object.assign(patient, this.formPatient.getRawValue());
-    console.log('->>', patient);
-    this.cas.saveEditCardPatient(this.cardId, patient).subscribe(
-      res => {
-        this.ns.success('Успешно', 'Данные сохранены');
-        this.back();
-      },
-      err => {
-        this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-        console.log('Save Address', err);
-      }
-    );
   }
 }

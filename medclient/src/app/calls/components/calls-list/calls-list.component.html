@@ -17,29 +17,34 @@
       </button>
     </div>
   </div>
-  <div class="flexible full-height" *ngIf="mode === 'calls'">
-    <div class="card full-height w-75">
+  <div class="flexible full-height" resizable="horizontal" saveName="calls-cards" *ngIf="mode === 'calls'">
+    <div class="card full-height calls-block" leftResizable>
       <div class="card-header toolbar">
         <div class="toolbar-left">
         </div>
         <h5>Актуальные вызовы <span class="badge badge-pill badge-info">
-          {{this.firstLoaded ? listSourceCalls.length: ''}}
+          <!--{{this.firstLoaded ? listSourceCalls[0].size: ''}}-->
           <i *ngIf="!this.firstLoaded" class="fas fa-spinner fa-pulse"></i>
         </span></h5>
         <div class="toolbar-right"></div>
       </div>
       <div class="card-body full-height null-padding">
         <app-grid-table
-          [listSource]="listSourceCalls"
-          [columnDefs]="colDefsCalls"
-          [pagination]="false"
+          [dataSource]="dataSource"
+          [columnDefs]="colDefs"
+          [pagination]="true"
+          [filter]="filters"
           (onRowSelect)="selectCall($event)"
           (onGridReady)="fitCol($event)"
+          (onFilterChanged)="filterSource($event)"
+          (onSortChanged)="sortSource($event)"
           (onRowDblClick)="goToCall($event)">
+
         </app-grid-table>
       </div>
     </div>
-    <div class="card full-height w-25">
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="card full-height cards-block" rightResizable fixed="300">
       <div class="card-header toolbar">
         <div class="toolbar-left">
 
@@ -57,15 +62,15 @@
           <thead>
           <tr>
             <th scope="col">№</th>
-            <th scope="col">Статус</th>
+            <!--<th scope="col">Статус</th>-->
             <th scope="col">Бригада</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let card of callsCards" [routerLink]="card.call_id+'/card/'+card.card_id">
-            <td>{{card.number}}</td>
-            <td><a>{{card.card_status_name}}</a></td>
-            <td>{{card.brigade_name}}</td>
+          <tr *ngFor="let card of callsCards" [routerLink]="card.call+'/card/'+card.id">
+            <td>{{card.id}}</td>
+            <!--<td><a>{{card.card_status_name}}</a></td>-->
+            <td>{{card.brigadeFK.name}}</td>
           </tr>
           </tbody>
         </table>
@@ -81,21 +86,6 @@
       </div>
     </div>
   </div>
-  <div class="card full-height" *ngIf="mode === 'cards'">
-    <div class="card-header toolbar">
-      <div class="toolbar-left">
-      </div>
-      <h5>Актуальные карты</h5>
-      <div class="toolbar-right"></div>
-    </div>
-    <div class="card-body full-height p-0">
-      <app-grid-table [listSource]="listSourceCards"
-                      [columnDefs]="colDefsCards"
-                      [pagination]="false"
-                      (onGridReady)="fitCol($event)"
-                      (onRowDblClick)="goToCard($event)">
-      </app-grid-table>
-    </div>
-  </div>
+  <app-card-list *ngIf="mode === 'cards'"></app-card-list>
 </div>
 

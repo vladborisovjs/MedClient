@@ -44,7 +44,7 @@ const routes: Routes = [
             path: '',
             component: DictionaryInfoComponent,
             data: {
-              title: null,
+              title: '',
             },
             resolve: {
               // itemWithList: DictionaryInfoResolverService

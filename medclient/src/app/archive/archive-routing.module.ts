@@ -3,6 +3,7 @@ import {Routes, RouterModule} from '@angular/router';
 import {ArchiveComponent} from './components/archive/archive.component';
 import {CallsArchiveComponent} from './components/calls-archive/calls-archive.component';
 import {F110ArchiveComponent} from './components/f110-archive/f110-archive.component';
+import {PatientsArchiveComponent} from './components/patients-archive/patients-archive.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,13 @@ const routes: Routes = [
         component: F110ArchiveComponent,
         data: {
           title: 'Карты Ф110',
+        },
+      },
+      {
+        path: 'patients',
+        component: PatientsArchiveComponent,
+        data: {
+          title: 'Пациенты',
         },
       },
     ]
