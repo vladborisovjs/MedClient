@@ -1,5 +1,9 @@
 @import "../../../../styles/variables";
 
+:host{
+  height: 100%;
+}
+
 .title-box {
   &:hover,  &:focus {
     .title-box-header {

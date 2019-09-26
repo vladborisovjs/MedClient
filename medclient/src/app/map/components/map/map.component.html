@@ -1,1 +1,18 @@
-<app-best-map [mapParams]="mapParams" (onMapCreated)="catchMapM($event)"></app-best-map>
+<div class="card h-100">
+  <div class="card-header center-me">
+    <h3>Карта</h3>
+  </div>
+  <div class="flexible h-100 w-100" resizable="horizontal" (onResize)="resizeMap()">
+    <div class="map-wrapper" leftResizable>
+      <app-med-map (onMapReady)="initMapPoint()" (onClick)="mapClick($event)"></app-med-map>
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="toolbar-wrapper" rightResizable fixed="300px">
+      <div class="h-100 w-100 default-bg p-2">
+        <div><i class="fas fa-phone-alt" style="color: #841519;"></i> - Вызовы</div>
+        <div><i class="far fa-hospital" style="color: #125ec2;"></i> - Подразделения</div>
+      </div>
+    </div>
+  </div>
+</div>
+

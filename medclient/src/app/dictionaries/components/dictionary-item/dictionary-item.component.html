@@ -16,7 +16,7 @@
         [item]="item"
         [row]="true"
       ></app-simple-view>
-      <app-simple-view *ngIf="childrenTreeAmount === 0"
+      <app-simple-view *ngIf="reason"
         [descriptions]="getBlockDescriptions('reasonInquirer')"
         [form]="form"
         [preprocessed]="true"

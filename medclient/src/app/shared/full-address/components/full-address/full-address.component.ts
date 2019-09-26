@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {SearchAddressService} from '../../services/search-address.service';
 import {interval, Subject, Subscription} from 'rxjs';
 import {debounce, debounceTime} from 'rxjs/operators';
@@ -11,10 +11,11 @@ import {FormControl, FormGroup} from '@angular/forms';
   styleUrls: ['./full-address.component.scss']
 })
 export class FullAddressComponent implements OnInit, OnDestroy {
-  @Input() valueStreet;
-  @Input() valueBuilding;
+  @Input() valueStreet; //  адреса
+  @Input() valueBuilding; // номер дома
   @Input() disabled = false;
   @Input() form: FormGroup;
+  @Output() setPolygon = new EventEmitter(); // кординаты выбранного дома
 
   sbscs: Subscription[] = [];
 
@@ -29,7 +30,6 @@ export class FullAddressComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     let formDis = this.form.disabled;
-    console.log(this.valueStreet);
     this.form.addControl('address', new FormControl(this.valueStreet));
     this.form.addControl('houseNum', new FormControl(this.valueBuilding));
     if (formDis){
@@ -40,13 +40,9 @@ export class FullAddressComponent implements OnInit, OnDestroy {
         ch=>{
           if (!ch){
             this.form.controls['houseNum'].setValue(null, {emitEvent: false});
-            // this.form.controls['houseNum'].disable({emitEvent: false});
             this.buildings = [];
             this.valueBuilding = null;
           }
-          // else {
-          //   this.form.controls['houseNum'].enable({emitEvent: false});
-          // }
         }
       ),
       this.streetSearchSub.asObservable().pipe(debounceTime(500)).subscribe(
@@ -91,7 +87,6 @@ export class FullAddressComponent implements OnInit, OnDestroy {
     }
   }
 
-
   search() {
     return true;
   }
@@ -100,8 +95,8 @@ export class FullAddressComponent implements OnInit, OnDestroy {
     return !!item.houseNumber.includes(q);
   }
 
-  onSelectBuilding() {
-    console.log(this.valueBuilding);
+  onSelectBuilding(e) {
+    this.setPolygon.emit(e);
   }
 
 

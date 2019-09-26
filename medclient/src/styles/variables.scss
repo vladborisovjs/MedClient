@@ -36,6 +36,8 @@ $grays: map-merge(
     $grays
 );
 
+// first version
+
 //$blue:    #007bff !default;
 //$indigo:  #6610f2 !default;
 //$purple:  #6f42c1 !default;
@@ -46,13 +48,22 @@ $grays: map-merge(
 //$green:   #28a745 !default;
 //$teal:    #20c997 !default;
 //$cyan:    #17a2b8 !default;
-$blue: #6085b2 !default;
+
+// second version
+
+$blue: #2c3898 !default;
 $indigo:  #6610f2 !default;
+//$indigo-dark: #2d2d76 !default;
+$indigo-dark: #323676 !default;
+$indigo-light: #e5e1f7 !default;
 $purple:  #6f42c1 !default;
 $pink:    #e83e8c !default;
 $red:     #dc3545 !default;
 $orange:  #fd7e14 !default;
 $yellow:  #ffc107 !default;
+//$yellow-sand: #fffdee !default;
+$yellow-sand: #fffdee !default;
+$yellow-sand-dark: #e4e2d3 !default;
 $green:   #28a745 !default;
 $teal:    #20c997 !default;
 $cyan:    #17a2b8 !default;
@@ -83,7 +94,7 @@ $colors: map-merge(
 $primary:       $blue !default;
 $secondary:     $gray-600 !default;
 $success:       $green !default;
-$info:          $blue !default;
+$info:          $indigo-dark !default;
 $info-alt:      $brown !default;
 $warning:       $yellow !default;
 $danger:        $red !default;
@@ -842,7 +853,8 @@ $jumbotron-bg:                      $gray-200 !default;
 $card-spacer-y:                     .275rem !default;
 $card-spacer-x:                     1.25rem !default;
 $card-border-width:                 $border-width !default;
-$card-border-radius:                $border-radius !default;
+//$card-border-radius:                $border-radius !default;
+$card-border-radius:                0.1rem;
 $card-border-color:                 rgba($black, .125) !default;
 $card-inner-border-radius:          calc(#{$card-border-radius} - #{$card-border-width}) !default;
 $card-cap-bg:                       rgba($black, .03) !default;
@@ -1064,12 +1076,13 @@ $breadcrumb-item-padding:           .5rem !default;
 
 $breadcrumb-margin-bottom:          0rem !default;
 
-$breadcrumb-bg:                     $gray-200 !default;
+//$breadcrumb-bg:                     $gray-200 !default;
+$breadcrumb-bg:                     $indigo-light !default;
 $breadcrumb-divider-color:          $gray-600 !default;
 $breadcrumb-active-color:           $gray-600 !default;
 $breadcrumb-divider:                quote("/") !default;
 
-$breadcrumb-border-radius:          $border-radius !default;
+$breadcrumb-border-radius:          0 !default;
 
 
 // Carousel

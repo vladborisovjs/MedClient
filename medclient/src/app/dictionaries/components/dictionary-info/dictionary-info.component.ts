@@ -21,7 +21,6 @@ export class DictionaryInfoComponent implements OnInit {
   selectedItem: any;
   rootLevel: number;
   showDeleted: boolean = false;
-  childrenLength: boolean = true;
   constructor(private route: ActivatedRoute,
               private router: Router,
               private api: MedApi,
@@ -35,6 +34,8 @@ export class DictionaryInfoComponent implements OnInit {
         this.dict = data.dict ? data.dict : data.itemWithList;
         if (this.dict.name === 'mkb10') {
           this.rootLevel = -1;
+        } else if(this.dict.name === 'inquirer') {
+          this.rootLevel = 0;
         } else {
           this.rootLevel = undefined;
         }
@@ -55,7 +56,6 @@ export class DictionaryInfoComponent implements OnInit {
 
   goToNextLevel(e) {
     e.node.expanded = true;
-    console.log(e.node.data.id);
     this.api[this.dict.method](e.node.data.id, !this.showDeleted ? this.showDeleted : undefined).subscribe(
       nodes => {
         for (let i = 0; i < nodes.children.length; i++) {
@@ -67,9 +67,6 @@ export class DictionaryInfoComponent implements OnInit {
     );
   }
 
-  getTreeChildrenAmount(e) {
-    this.dicService.childrenTreeAmountService = e;
-  }
   updateTable() {
     this.selectedItem = null;
     this.filter = [this.showDeleted];
@@ -82,7 +79,6 @@ export class DictionaryInfoComponent implements OnInit {
     }
     this.dataSource = {
       get: (filter, offset, count) => {
-        console.log('-', ...this.filter);
         return this.api[this.dict.method](offset, count, ...this.filter);
       }
     };
@@ -102,7 +98,6 @@ export class DictionaryInfoComponent implements OnInit {
 
   createItem(parentId) {
     this.dicService.nodeParentId = parentId;
-    this.dicService.childrenTreeAmountService = 0;
     this.router.navigate([0], {relativeTo: this.route});
   }
 
@@ -142,6 +137,7 @@ export class DictionaryInfoComponent implements OnInit {
       }
     );
   }
+
   // Sergey VIP master race  development
   findIndexTree(nodes, rowData) {
     let foundIndex = nodes.findIndex(el => el.data === rowData);

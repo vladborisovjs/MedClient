@@ -15,13 +15,14 @@ import {SimpleNotificationsModule} from 'angular2-notifications';
 import {SocketService} from './services/socket.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CheckConditionService} from "./shared/services/check-condition.service";
+import {HotkeyModule} from 'angular2-hotkeys';
 
 const LOCATION_REF = new InjectionToken('LOCATION_REF');
 registerLocaleData(localeRu);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -29,7 +30,7 @@ registerLocaleData(localeRu);
     AppRoutingModule,
     HttpClientModule,
     SimpleNotificationsModule.forRoot(),
-
+    HotkeyModule.forRoot()
   ],
   providers: [
     {

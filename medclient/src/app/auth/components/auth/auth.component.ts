@@ -16,7 +16,7 @@ export class AuthComponent implements OnInit {
   // logPair: LoginPair;
 
   form = new FormGroup({
-    name: new FormControl('', Validators.required),
+    username: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required)
   });
   error: string = null;
@@ -28,12 +28,17 @@ export class AuthComponent implements OnInit {
 
     if (this.form.invalid) {
       this.error = 'Не введен логин и/или пароль';
-      this.form.get('name').markAsTouched();
+      this.form.get('username').markAsTouched();
       this.form.get('password').markAsTouched();
       return;
     }
 
-    this.user.login(LoginPair.fromJS(this.form.getRawValue()));
+    this.user.login(LoginPair.fromJS(this.form.getRawValue())).subscribe(
+      ()=>{},
+      ()=>{
+        this.error = 'Неверный логин и/или пароль'
+      }
+    );
   }
 
 }

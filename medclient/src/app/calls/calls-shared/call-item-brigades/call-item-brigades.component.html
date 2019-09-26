@@ -1,0 +1,37 @@
+<div class="card-pack">
+  <div class="card-wrapper" *ngFor="let bri of callContainer.brigadeList">
+    <div class="card bri-item">
+      <div class="card-header">
+        {{bri.brigade.name}}
+      </div>
+      <div class="card-body">
+        <p><em>Тип: </em>{{bri.brigade.brigadeTypeFK.name}}</p>
+        <p><em>Статус: </em>{{bri.brigade.brigadeStatusFK ? bri.brigade.brigadeStatusFK.name : '-'}}</p>
+        <div class="bri-control">
+          <button class="btn btn-sm btn-outline-primary" (click)="openBriStatuses(bri.brigade)">
+            Сообщение <i class="fas fa-envelope"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-primary" (click)="openBri110(bri.brigade)">
+            Формы Ф-110 <i class="fas fa-file"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="removeBrigade(bri.brigade)">
+            Удалить <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="card-wrapper">
+    <div class="card bri-item new-bri-item">
+      <div class="card-header">
+        <em>Новая бригада</em>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-outline-success" (click)="appointBrigade()">
+          Назначить <i class="fas fa-plus-circle"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

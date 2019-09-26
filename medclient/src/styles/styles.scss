@@ -10,6 +10,12 @@
 @import "../../node_modules/primeng/resources/primeng.min.css";
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
+.default-bg{
+  background-color: $yellow-sand;
+}
+
+
+
 .ui-state-active {
   background-color: lighten($blue, 80%);
 }
@@ -391,7 +397,8 @@ ngb-tabset.flex-ngb-tabs {
 }
 
 .patch {
-  background-color: rgba($black, .03);
+  //background-color: rgba($black, .03);
+  background-color: $yellow-sand;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -400,6 +407,12 @@ ngb-tabset.flex-ngb-tabs {
     color: $gray-500;
     width: 100%;
     text-align: center;
+  }
+  i{
+    //color: $gray-300;
+    color: $yellow-sand-dark;
+    text-align: center;
+    font-size: 9rem;
   }
 }
 

@@ -1,0 +1,22 @@
+<div class="card" *ngIf="featureType === 'subdivision'">
+  <div class="card-header p-1">
+    <div class="card-title">
+      <i class="fas fa-clinic-medical"></i> {{subdivision.typeFK.name}}
+    </div>
+  </div>
+  <div class="card-body p-1">
+    <a [href]="'./#/dictionaries/subdivisions/' + subdivision.id" target="_blank">{{subdivision.name}}</a>
+  </div>
+</div>
+
+<div class="card" *ngIf="featureType === 'call'">
+  <div class="card-header p-1">
+    <div class="card-title">
+      <i class="fas fa-phone-square-alt"></i> {{call.id}}
+    </div>
+  </div>
+  <div class="card-body p-1">
+    <a [href]="'./#/calls/' + call.id" target="_blank">{{call.reasonFK.reason}}</a>
+    <p class="text-secondary m-0">{{call.date | date: 'dd.MM.yyyy HH:mm'}}</p>
+  </div>
+</div>

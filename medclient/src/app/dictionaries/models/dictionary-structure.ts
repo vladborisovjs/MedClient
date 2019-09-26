@@ -1,6 +1,7 @@
 import {ISimpleDescription} from '../../shared/simple-control/services/simple-description.service';
 import {ColDef} from 'ag-grid-community';
 import {IConditions} from "../../shared/services/check-condition.service";
+import {BrigadeBean, DrugBean, InquirerBean, SubdivisionBean} from '../../../../swagger/med-api.service';
 
 export interface IDictItem {
   title: string;
@@ -11,6 +12,7 @@ export interface IDictItem {
   blocks?: {title: string, key: string}[]; // список блоков полей (для разных descriptions: ISimpleDescription[])
   conditions?: IConditions; // условия для сравнения разных полей и валидации их
   descriptions: ISimpleDescription[];
+  bean?: any;
 }
 
 export interface IHeadersTreeTable {
@@ -93,6 +95,7 @@ const dictionaries: IDictionaryInfo[] = [
   },
   {
     title: 'Подразделения',
+
     name: 'subdivisions',
     type: 'tree',
     method: 'getFullSubdivisionNodeUsingGET',
@@ -235,7 +238,8 @@ const dictionaries: IDictionaryInfo[] = [
       method: 'getSubdivisionUsingGET',
       saveMethod: 'updateSubdivisionUsingPOST',
       restoreMethod: 'restoreSubdivisionUsingPOST',
-      deleteMethod: 'deleteSubdivisionUsingDELETE'
+      deleteMethod: 'deleteSubdivisionUsingDELETE',
+      bean: SubdivisionBean,
     }
   },
   {
@@ -567,121 +571,121 @@ const dictionaries: IDictionaryInfo[] = [
       deleteMethod: 'deleteTransportUsingDELETE'
     }
   },
-  {
-    title: 'Сотрудники',
-    type: 'list',
-    name: 'performers',
-    method: 'getPerformerListUsingGET',
-    block: 'common',
-    colDef: [
-      {
-        headerName: 'Фамилия',
-        field: 'surname',
-      },
-      {
-        headerName: 'Имя',
-        field: 'name',
-      },
-      {
-        headerName: 'Отчество',
-        field: 'patronymic',
-      },
-      {
-        headerName: 'Должность',
-        field: 'typeFK.name',
-      },
-      {
-        headerName: 'Место работы',
-        field: 'workplaceSubdivisionFK.name',
-      },
-      {
-        headerName: 'Логин',
-        field: 'login',
-      },
-
-    ],
-    item: {
-      title: 'Сотрудник',
-      descriptions: [
-        {
-          label: 'Фамилия:',
-          key: 'surname',
-          type: 'text',
-          errorText: 'Только кириллица',
-          pattern: '^[а-яА-ЯёЁ\\s-]*',
-          styleClass: 'col-4',
-          additional: {
-            block: 'common'
-          }
-        },
-        {
-          label: 'Имя:',
-          key: 'name',
-          type: 'text',
-          errorText: 'Только кириллица',
-          pattern: '^[а-яА-ЯёЁ\\s-]*',
-          styleClass: 'col-4',
-          additional: {
-            block: 'common'
-          }
-        },        {
-          label: 'Отчество:',
-          key: 'patronymic',
-          type: 'text',
-          errorText: 'Только кириллица',
-          pattern: '^[а-яА-ЯёЁ\\s-]*',
-          styleClass: 'col-4',
-          additional: {
-            block: 'common'
-          }
-        },
-        {
-          label: 'Должность:',
-          key: 'typeFK',
-          dict: 'getPerformerTypeListUsingGET',
-          type: 'dict',
-          styleClass: '',
-          additional: {
-            block: 'common'
-          }
-        },
-        // {
-        //   label: 'Место работы:',
-        //   key: 'workpalceSubdivisionFK',
-        //   type: 'text',
-        //   styleClass: '',
-        //   additional: {
-        //     block: 'common'
-        //   }
-        // },
-        {
-          label: 'Подразделение:',
-          key: 'subdivisionFK',
-          dict: 'getSubdivisionListUsingGET',
-          type: 'dict',
-          styleClass: '',
-          additional: {
-            block: 'common'
-          }
-        },
-        {
-          label: 'Логин:',
-          key: 'login',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'common'
-          }
-        },
-
-      ],
-      blocks: [{title: '', key: 'common'}],
-      method: 'getPerformerUsingGET',
-      saveMethod: 'updatePerformerUsingPOST',
-      restoreMethod: 'restorePerformerUsingPOST',
-      deleteMethod: 'deletePerformerUsingDELETE'
-    }
-  },
+  // {
+  //   title: 'Сотрудники',
+  //   type: 'list',
+  //   name: 'performers',
+  //   method: 'getPerformerListUsingGET',
+  //   block: 'common',
+  //   colDef: [
+  //     {
+  //       headerName: 'Фамилия',
+  //       field: 'surname',
+  //     },
+  //     {
+  //       headerName: 'Имя',
+  //       field: 'name',
+  //     },
+  //     {
+  //       headerName: 'Отчество',
+  //       field: 'patronymic',
+  //     },
+  //     {
+  //       headerName: 'Должность',
+  //       field: 'typeFK.name',
+  //     },
+  //     {
+  //       headerName: 'Место работы',
+  //       field: 'workplaceSubdivisionFK.name',
+  //     },
+  //     {
+  //       headerName: 'Логин',
+  //       field: 'login',
+  //     },
+  //
+  //   ],
+  //   item: {
+  //     title: 'Сотрудник',
+  //     descriptions: [
+  //       {
+  //         label: 'Фамилия:',
+  //         key: 'surname',
+  //         type: 'text',
+  //         errorText: 'Только кириллица',
+  //         pattern: '^[а-яА-ЯёЁ\\s-]*',
+  //         styleClass: 'col-4',
+  //         additional: {
+  //           block: 'common'
+  //         }
+  //       },
+  //       {
+  //         label: 'Имя:',
+  //         key: 'name',
+  //         type: 'text',
+  //         errorText: 'Только кириллица',
+  //         pattern: '^[а-яА-ЯёЁ\\s-]*',
+  //         styleClass: 'col-4',
+  //         additional: {
+  //           block: 'common'
+  //         }
+  //       },        {
+  //         label: 'Отчество:',
+  //         key: 'patronymic',
+  //         type: 'text',
+  //         errorText: 'Только кириллица',
+  //         pattern: '^[а-яА-ЯёЁ\\s-]*',
+  //         styleClass: 'col-4',
+  //         additional: {
+  //           block: 'common'
+  //         }
+  //       },
+  //       {
+  //         label: 'Должность:',
+  //         key: 'typeFK',
+  //         dict: 'getPerformerTypeListUsingGET',
+  //         type: 'dict',
+  //         styleClass: '',
+  //         additional: {
+  //           block: 'common'
+  //         }
+  //       },
+  //       // {
+  //       //   label: 'Место работы:',
+  //       //   key: 'workpalceSubdivisionFK',
+  //       //   type: 'text',
+  //       //   styleClass: '',
+  //       //   additional: {
+  //       //     block: 'common'
+  //       //   }
+  //       // },
+  //       {
+  //         label: 'Подразделение:',
+  //         key: 'subdivisionFK',
+  //         dict: 'getSubdivisionListUsingGET',
+  //         type: 'dict',
+  //         styleClass: '',
+  //         additional: {
+  //           block: 'common'
+  //         }
+  //       },
+  //       {
+  //         label: 'Логин:',
+  //         key: 'login',
+  //         type: 'text',
+  //         styleClass: '',
+  //         additional: {
+  //           block: 'common'
+  //         }
+  //       },
+  //
+  //     ],
+  //     blocks: [{title: '', key: 'common'}],
+  //     method: 'getPerformerUsingGET',
+  //     saveMethod: 'updatePerformerUsingPOST',
+  //     restoreMethod: 'restorePerformerUsingPOST',
+  //     deleteMethod: 'deletePerformerUsingDELETE'
+  //   }
+  // },
   {
     title: 'Должности',
     type: 'list',
@@ -1173,7 +1177,7 @@ const dictionaries: IDictionaryInfo[] = [
     title: 'Типы вызовов',
     type: 'list',
     name: 'call-types',
-    method: 'getReferenceTypeListCallUsingGET',
+    method: 'getReferenceTypeListRingTypeUsingGET',
     block: 'calls',
     colDef: [
       {
@@ -1374,7 +1378,7 @@ const dictionaries: IDictionaryInfo[] = [
     title: 'Опросник "Повод к вызову"',
     type: 'tree',
     name: 'inquirer',
-    method: 'getFullNodeUsingGET',
+    method: 'getBranchNodeUsingGET',
     block: 'calls',
     headers: [
       {
@@ -1387,7 +1391,7 @@ const dictionaries: IDictionaryInfo[] = [
       }
     ],
     item: {
-      title: 'Опросник "Повод к вызову',
+      title: 'Опросник "Повод к вызову"',
       descriptions: [
         {
           label: 'Наименование:',
@@ -1417,6 +1421,16 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
+          label: 'Специализация',
+          key: 'specializationFK',
+          type: 'dict',
+          dict: 'readBrigadeTypeListUsingGET',
+          styleClass: '',
+          additional: {
+            block: 'reasonInquirer'
+          }
+        },
+        {
           label: 'Удаленная запись',
           key: 'isDeleted',
           type: 'checkbox',
@@ -1430,7 +1444,8 @@ const dictionaries: IDictionaryInfo[] = [
       method: 'getInquirerUsingGET',
       saveMethod: 'updateInquirerUsingPOST',
       restoreMethod: 'restoreInquirerUsingPOST',
-      deleteMethod: 'deleteInquirerUsingDELETE'
+      deleteMethod: 'deleteInquirerUsingDELETE',
+      bean: InquirerBean
     }
   },
   {
@@ -1614,7 +1629,8 @@ const dictionaries: IDictionaryInfo[] = [
       method: 'getBrigadeUsingGET',
       saveMethod: 'updateBrigadeUsingPOST',
       restoreMethod: 'restoreBrigadeUsingPOST',
-      deleteMethod: 'deleteBrigadeUsingDELETE'
+      deleteMethod: 'deleteBrigadeUsingDELETE',
+      bean: BrigadeBean
     }
   },
   {
@@ -3223,6 +3239,213 @@ const dictionaries: IDictionaryInfo[] = [
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
       deleteMethod: 'deleteReferenceTypeUsingDELETE'
+    }
+  },
+  {
+    title: 'Категории лекарств',
+    type: 'list',
+    name: 'category-drug',
+    method: 'getDrugCategoryListUsingGET',
+    block: 'drugStore',
+    colDef: [
+      {
+        headerName: 'Код',
+        field: 'code',
+        width: 150,
+      },
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 400
+      },
+    ],
+    item: {
+      title: 'Категория',
+      descriptions: [
+        {
+          label: 'Код:',
+          key: 'code',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Удаленная запись',
+          key: 'isDeleted',
+          type: 'checkbox',
+          styleClass: 'inline-checkbox col-12',
+          additional: {
+            block: 'drugStore'
+          }
+        }
+      ],
+      blocks: [{title: '', key: 'drugStore'}],
+      method: 'getCategoryDrugUsingGET',
+      restoreMethod: 'restoreDrugCategoryUsingPOST',
+      saveMethod: 'updateDrugCategoryUsingPOST',
+      deleteMethod: 'deleteDrugCategoryUsingDELETE'
+    }
+  },
+  {
+    title: 'Медикаменты',
+    type: 'list',
+    name: 'drugs',
+    method: 'getDrugListUsingGET',
+    block: 'drugStore',
+    colDef: [
+      {
+        headerName: 'Код',
+        field: 'code',
+        width: 150,
+      },
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 250
+      },
+      {
+        headerName: 'Примечания',
+        field: 'additionally',
+        width: 400
+      },
+      {
+        headerName: 'Количество',
+        field: 'amount',
+      }
+    ],
+    item: {
+      title: 'Медикамент',
+      descriptions: [
+        {
+          label: 'Код:',
+          key: 'code',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Примечения:',
+          key: 'additionally',
+          type: 'textarea',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Тип упаковки',
+          key: 'containerTypeFK',
+          type: 'dict',
+          dict: 'getUnitListUsingGET',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Количество в упаковке:',
+          key: 'amount',
+          type: 'number',
+          styleClass: 'col-6',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Единицы',
+          key: 'measurementFK',
+          dict: 'getUnitListUsingGET',
+          type: 'dict',
+          styleClass: 'col-6',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+      ],
+      blocks: [{title: '', key: 'drugStore'}],
+      method: 'getDrugUsingGET',
+      restoreMethod: 'restoreDrugBeanUsingPOST_1',
+      saveMethod: 'updateDrugUsingPOST',
+      deleteMethod: 'deleteDrugBeanUsingDELETE',
+      bean: DrugBean
+    }
+  },
+  {
+    title: 'Группы лекарств',
+    type: 'list',
+    name: 'group-drugs',
+    method: 'getDrugGroupListUsingGET',
+    block: 'drugStore',
+    colDef: [
+      {
+        headerName: 'Код',
+        field: 'code',
+        width: 150,
+      },
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 400
+      }
+    ],
+    item: {
+      title: 'Группа лекарств',
+      descriptions: [
+        {
+          label: 'Код:',
+          key: 'code',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore'
+          }
+        },
+        {
+          label: 'Удаленная запись',
+          key: 'isDeleted',
+          type: 'checkbox',
+          styleClass: 'inline-checkbox col-12',
+          additional: {
+            block: 'drugStore'
+          }
+        }
+      ],
+      blocks: [{title: '', key: 'drugStore'}],
+      method: 'getGroupDrugUsingGET',
+      restoreMethod: 'restoreDrugGroupUsingPOST',
+      saveMethod: 'updateDrugGroupUsingPOST',
+      deleteMethod: 'deleteDrugGroupUsingDELETE'
     }
   },
 ];

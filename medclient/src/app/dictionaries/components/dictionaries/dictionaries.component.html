@@ -1,8 +1,9 @@
-<div class="card-header flexible justify-content-around">
-  <h3>Справочники</h3>
-</div>
-<div class="card-body dict-list">
-  <div class="row d-flex">
+<div class="card h-100">
+  <div class="card-header flexible justify-content-around">
+    <h3>Справочники</h3>
+  </div>
+  <div class="card-body dict-list default-bg">
+    <div class="row d-flex">
       <div class="card flex-fill align-self-start mr-2">
         <div class="card-header">
           <div class="card-title">Общие</div>
@@ -36,6 +37,16 @@
             </li>
           </ul>
         </div>
+        <div class="card-header">
+          <div class="card-title">Аптека</div>
+        </div>
+        <div class="card-body dict-list-container">
+          <ul class="nav flex-column full-height">
+            <li class="nav-item" *ngFor="let el of drugStoreList">
+              <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
+            </li>
+          </ul>
+        </div>
       </div>
       <div class="card flex-fill">
         <div class="card-header">
@@ -49,5 +60,7 @@
           </ul>
         </div>
       </div>
+    </div>
   </div>
 </div>
+

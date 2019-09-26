@@ -48,11 +48,14 @@
             <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny" *ngIf="rowNode.node.children.length === 0 && rowNode.node.data.nodeCount !==0 && dict.name === 'mkb10'">
               <i class="fas fa-chevron-right"></i>
             </button>
+            <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny" *ngIf="rowNode.node.children.length === 0 && !rowNode.node.data.reason && dict.name === 'inquirer'">
+              <i class="fas fa-chevron-right"></i>
+            </button>
             <a *ngIf="rowData.name ? rowData.name : rowData.shortName" [routerLink]="rowData.id">
               {{rowData.code ? '(' + rowData.code + ') - ' : ''}} {{rowData.shortName? rowData.shortName : rowData.name ? rowData.name : 'Нет имени'}}
             </a>
 
-            <a *ngIf="rowData.query" [routerLink]="rowData.id" (click)="getTreeChildrenAmount(rowNode.node.children.length)">
+            <a *ngIf="rowData.query" [routerLink]="rowData.id">
               {{rowData.query + '? : ' + rowData.answer}}
             </a>
           </td>

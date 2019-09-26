@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CardItemService } from './card-item.service';
+import { CardItemService } from '../../card-f110/services/card-item.service';
 
 describe('CardItemService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

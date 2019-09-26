@@ -21,8 +21,14 @@ export class AuthInceptor implements HttpInterceptor {
         }
       },
       (error) => {
-        console.log('error', error);
-        this.ns.error(error.status, error.statusText + '\n' + error.message);
+        if (error.status === 401){
+          this.user.redirectedUrl = this.router.url === '/auth' ? this.user.redirectedUrl : this.router.url;
+          console.log(this.user.redirectedUrl);
+          this.router.navigate(['/auth']);
+        } else {
+          console.log('error', error);
+          this.ns.error(error.status, error.statusText + '\n' + error.message);
+        }
       },
       () => {
       }

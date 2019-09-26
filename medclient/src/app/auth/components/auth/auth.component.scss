@@ -1,8 +1,16 @@
-@import "../../../../styles/variables";
+//@import "~src/styles/variables";
+@import "~src/styles/variables";
+
+:host{
+  height: 100%;
+  background-color: $yellow-sand;
+}
 
 .logo-img{
   padding: 20px;
 }
+
+
 .login-component {
   max-width: 400px;
   margin: 150px auto;

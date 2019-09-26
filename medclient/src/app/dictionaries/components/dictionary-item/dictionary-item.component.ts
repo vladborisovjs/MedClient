@@ -9,7 +9,14 @@ import {
   SimpleDescriptionService
 } from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
-import {MedApi, PerformerBean, ReferenceTypeBean} from '../../../../../swagger/med-api.service';
+import {
+  BrigadeStatusBean,
+  BrigadeTypeBean, DrugBean,
+  MedApi,
+  PerformerBean,
+  ReferenceTypeBean,
+  UnitBean
+} from '../../../../../swagger/med-api.service';
 import {NotificationsService} from 'angular2-notifications';
 import {IDictItem} from '../../models/dictionary-structure';
 import {DictionaryService} from '../../services/dictionary.service';
@@ -26,7 +33,7 @@ export class DictionaryItemComponent implements OnInit {
   title: string;
   form: FormGroup;
   dictItem: IDictItem;
-  childrenTreeAmount: number;
+  reason: string;
   constructor(private route: ActivatedRoute,
               private router: Router,
               private api: MedApi,
@@ -37,12 +44,13 @@ export class DictionaryItemComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.childrenTreeAmount = this.dicService.childrenTreeAmountService;
     this.route.data.subscribe(data => {
+      console.log(data);
       this.desc = data.itemWithContent.item.descriptions;
       this.item = data.itemWithContent.content;
       this.title = data.itemWithContent.item.title;
       this.dictItem = data.itemWithContent.item;
+      this.reason = data.itemWithContent.content.reason;
     });
     this.form = this.sds.makeForm(this.desc);
     this.resetForms();
@@ -76,8 +84,7 @@ export class DictionaryItemComponent implements OnInit {
         this.item.data.isDeleted = false;
       } else {
         savingItem = Object.assign(this.item, this.form.getRawValue());
-        savingItem.typeFK = PerformerBean.fromJS(savingItem.typeFK);
-        savingItem.subdivisionFK = PerformerBean.fromJS(savingItem.subdivisionFK);
+        this.dictItem.bean ? savingItem = this.dictItem.bean.fromJS(savingItem) : console.log('Не указан тип бина объекта справочника');
       }
       this.api[this.dictItem.saveMethod](savingItem).subscribe(
         res => {
@@ -104,11 +111,10 @@ export class DictionaryItemComponent implements OnInit {
       this.item.data.isDeleted = false;
     } else {
       savingItem = Object.assign(this.item, this.form.getRawValue());
-      savingItem.typeFK = PerformerBean.fromJS(savingItem.typeFK);
-      savingItem.subdivisionFK = PerformerBean.fromJS(savingItem.subdivisionFK);
     }
     savingItem.deleted = false;
     savingItem.parentId = this.dicService.nodeParentId; // Через сервис пробрасываем parentid для создания потомка
+    console.log(this.dicService.nodeParentId);
     console.log(savingItem);
     this.api[this.dictItem.saveMethod](savingItem).subscribe(
       res => {

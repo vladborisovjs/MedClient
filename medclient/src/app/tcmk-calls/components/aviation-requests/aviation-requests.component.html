@@ -1,0 +1,50 @@
+<div class="card h-100">
+  <div class="card-header">
+    <div class="card-title center-me">
+      Заявки на санавиацию
+    </div>
+  </div>
+
+  <table class="table table-sm table-hover" *ngIf="requestsList && requestsList.length">
+    <thead>
+    <tr>
+      <th scope="col">№</th>
+      <th scope="col">Дата</th>
+      <th scope="col">Вызов</th>
+      <th scope="col">Пункт отправки</th>
+      <th scope="col">Пункт назначения</th>
+      <th scope="col">Описание</th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let req of requestsList">
+      <th>
+        {{req.id}}
+        <span *ngIf="req.isInterHospital"><i class="fas fa-hospital"></i><i class="fas fa-long-arrow-alt-right"></i><i class="fas fa-hospital"></i></span>
+        <span *ngIf="!req.isInterHospital"><i class="fas fa-map-marker-alt"></i><i class="fas fa-long-arrow-alt-right"></i><i class="fas fa-hospital"></i></span>
+      </th>
+      <td>{{req.date}}</td>
+      <td>{{req.call}}</td>
+      <td>
+        {{req.isInterHospital ?
+        req.departureSubdivisionFK.name :
+        req.departureAddress + 'д. ' + req.departureHouseNum}}
+      </td>
+      <td>{{req.destinationSubdivisionFK ? req.destinationSubdivisionFK.name : '-'}}</td>
+      <td>{{req.description}}</td>
+      <td>
+        {{req.isAccept ? 'Одобрена' : req.isAccept === false ? 'Отказ' : ''}}
+        <button class="btn btn-primary" *ngIf="req.isAccept !== true && req.isAccept !== false">
+          Открыть
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!requestsList || !requestsList.length" class="patch">
+    <h4>Список заявок пуст</h4>
+  </div>
+
+</div>

@@ -1,9 +1,14 @@
 @import "../../../../styles/variables";
 
+:host{
+  height: 100%;
+  //overflow: auto;
+}
+
 .dict-list {
-  .dict-list-body {
-    overflow: auto;
-  }
+  overflow: auto;
+  height: 100%;
+
   .nav-item {
     margin-bottom: 1px;
     border-radius: 0.25rem;

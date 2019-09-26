@@ -24,6 +24,7 @@ import { ModalEditTransportInBrigadeComponent } from './components/modal-edit-tr
 import { BrigadesControlComponent } from './components/brigades-control/brigades-control.component';
 import {DictionariesModule} from '../dictionaries/dictionaries.module';
 import { ModalConfirmCutTimeComponent } from './components/modal-confirm-cut-time/modal-confirm-cut-time.component';
+import { ModalProlongationDeleteComponent } from './components/modal-prolongation-delete/modal-prolongation-delete.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { ModalConfirmCutTimeComponent } from './components/modal-confirm-cut-tim
     ModalEditPerformerInBrigadeComponent,
     ModalEditTransportInBrigadeComponent,
     BrigadesControlComponent,
-    ModalConfirmCutTimeComponent
+    ModalConfirmCutTimeComponent,
+    ModalProlongationDeleteComponent
   ],
   imports: [
     CommonModule,
@@ -68,7 +70,8 @@ import { ModalConfirmCutTimeComponent } from './components/modal-confirm-cut-tim
     ModalProlongationComponent,
     ModalEditPerformerInBrigadeComponent,
     ModalEditTransportInBrigadeComponent,
-    ModalConfirmCutTimeComponent
+    ModalConfirmCutTimeComponent,
+    ModalProlongationDeleteComponent
   ]
 })
 export class ScheduleModule {

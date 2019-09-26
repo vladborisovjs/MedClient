@@ -11,7 +11,6 @@ import {UserService} from '../../services/user.service';
 
 export class DictionaryService {
   nodeParentId: number;
-  childrenTreeAmountService: number;
   constructor(private api: MedApi, private user: UserService) {
   }
 
@@ -36,6 +35,7 @@ export class DictionaryService {
 
   getDictionaryItem(dictName, itemId) {
     let dict = getDictInfo(dictName);
+    console.log(dict.item.method);
     if (itemId > 0) {
       let met: Observable<any> = this.api[dict.item.method](itemId);
       return met.pipe(map(
@@ -48,6 +48,4 @@ export class DictionaryService {
     }
 
   }
-
-
 }

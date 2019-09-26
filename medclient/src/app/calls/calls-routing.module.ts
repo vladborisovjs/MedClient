@@ -1,16 +1,9 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {CallsComponent} from './components/calls/calls.component';
-import {CallItemComponent} from './components/call-item/call-item.component';
+import {CallItemComponent} from './calls-shared/call-item/call-item.component';
 import {CallItemResolverService} from './services/resolvers/call-item-resolver.service';
-import {F110Component} from './components/f110/f110.component';
-import {CardSideOneComponent} from './components/card-side-one/card-side-one.component';
-import {CardSideTwoComponent} from './components/card-side-two/card-side-two.component';
-import {CardResultComponent} from './components/card-result/card-result.component';
-import {CardProtocolComponent} from './components/card-protocol/card-protocol.component';
-import {CardItemResolverService} from './services/resolvers/card-item-resolver.service';
-import {CardSideOnePatientComponent} from './components/card-side-one-patient/card-side-one-patient.component';
-import {CardAnamnesisComponent} from './components/card-anamnesis/card-anamnesis.component';
+import {NewCallComponent} from './calls-shared/new-call/new-call.component';
 
 
 const routes: Routes = [
@@ -26,6 +19,13 @@ const routes: Routes = [
         data: {
           title: null,
         },
+      },
+      {
+        path: 'new-call',
+        component: NewCallComponent,
+        data: {
+          title: 'Новый вызов'
+        }
       },
       {
         path: ':callId',
@@ -48,80 +48,7 @@ const routes: Routes = [
             data: {
               title: null,
             },
-            children: [
-              {
-                path: ':cardId',
-                component: F110Component,
-                data: {
-                  title: 'Ф-110'
-                },
-                resolve: {
-                  card: CardItemResolverService
-                },
-                children: [
-                  {
-                    path: '',
-                    pathMatch: 'full',
-                    redirectTo: 'side-one',
-                  },
-                  {
-                    path: 'side-one',
-                    data: {
-                      title: 'Первая сторона'
-                    },
-                    component: CardSideOneComponent,
-                  },
-                  {
-                    path: 'patient',
-                    component: CardSideOnePatientComponent,
-                    data: {
-                      title: 'Пациент'
-                    },
-                  },
-                  {
-                    path: 'side-two',
-                    component: CardSideTwoComponent,
-                    data: {
-                      title: 'Объективные данные'
-                    },
-                  },
-                  {
-                    path: 'anamnesis',
-
-                    component: CardAnamnesisComponent,
-                    // resolve:
-                    //   {
-                    //     anamnesis: CardItemResolverService
-                    //   },
-                    data: {
-                      title: 'Анамнез'
-                    },
-                  },
-                  {
-                    path: 'result',
-                    component: CardResultComponent,
-                    // resolve:
-                    //   {
-                    //     cardResult: CardItemResolverService
-                    //   },
-                    data: {
-                      title: 'Результат'
-                    },
-                  },
-                  {
-                    path: 'protocol',
-                    component: CardProtocolComponent,
-                    resolve:
-                      {
-                        protocolList: CardItemResolverService
-                      },
-                    data: {
-                      title: 'Протокол'
-                    },
-                  }
-                ]
-              }
-            ]
+            loadChildren: '../card-f110/card-f110.module#CardF110Module'
           }
         ]
       },

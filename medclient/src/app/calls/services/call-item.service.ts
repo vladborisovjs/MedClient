@@ -1,28 +1,22 @@
-import { Injectable } from '@angular/core';
-import {
-  CallDto,
-  CallPatientPartDto,
-  CallDeclarantPartDto,
-  CallFiasAddressDto,
-  CallGeneralPartDto,
-  FiasAddressObjectDto,
-  MedApi, BrigadeAppointRequestDto, CardPatientPartDto, CallTransferDto, CardBean, BrigadeBean, CallContainer
+import {Injectable} from '@angular/core';
+import { MedApi, CardBean, BrigadeBean, CallContainer, AviaRequestBean
 } from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {NotificationsService} from 'angular2-notifications';
 import {tap} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: 'root'})
 export class CallItemService {
   callItemSub: BehaviorSubject<CallContainer>;
   currentCall: CallContainer;
+  mode: string;
 
-  constructor(private api: MedApi, private user: UserService, private ns: NotificationsService) {
+  constructor(protected api: MedApi, private user: UserService, private ns: NotificationsService, private router: Router) {
     this.callItemSub = new BehaviorSubject<CallContainer>(null);
     this.callItemSub.subscribe(call => this.currentCall = call);
+    this.mode = 'DISPATCHER';
   }
 
   updateCall() { // обновляем вызов при его изменнии
@@ -39,109 +33,52 @@ export class CallItemService {
     );
   }
 
-
-  saveCall(){
+  saveCall() {
     this.currentCall = CallContainer.fromJS(this.currentCall);
     this.currentCall.call.status = null;
     return this.api.updateCallContainerUsingPOST(this.currentCall).pipe(
       tap(val => {
-        this.callItemSub.next(val);
+          this.callItemSub.next(val);
         }
       )
     );
   }
 
-  getChronology(patientId, callId) {
-    return this.api.getChronicCardUsingGET(this.user.subdivisionId, callId, patientId);
-  }
-
-  getProtocol(cardId) {
-    return this.api.readProtocolUsingGET_1(cardId);
-  }
-
-  getJournal(briScheduleId, callId) {
-    return this.api.getBrigadeScheduleCallTransferHistoryUsingGET_1(this.user.subdivisionId, callId, briScheduleId);
-  }
-
-  getTransfer(callId) {
-    return this.api.getSendListUsingGET(this.user.subdivisionId, callId);
-  }
-
-  getAvailable(callId) {
-    return this.api.readAllPrimaryUsingGET(this.user.subdivisionId, callId);
-  }
-
-  getF110(callId, deleted) {
-    return this.api.readCardsByCallAndSubdivisionUsingGET(this.user.subdivisionId, callId, deleted);
+  sendAviationRequest(aR: AviaRequestBean) {
+    aR = AviaRequestBean.fromJS(aR);
+    return this.api.updateAviaRequestUsingPOST(aR);
   }
 
   findBrigadesToAppoint() {
     return this.api.getActualBrigadeCrewListUsingGET(undefined, true);
   }
 
-  appointBrigadesToCall(callId, brigades: any[]) {
-    brigades.forEach(
-      bri => {
-        bri = BrigadeAppointRequestDto.fromJS(bri);
-      }
-    );
-    return this.api.setBrigadeUsingPOST(this.user.subdivisionId, callId, brigades).pipe(
-      tap(val => {
-          this.updateCall();
-        }
-      )
-    );
-  }
-
-  getCallsBrigades(callId) {
-    return this.api.getBrigadesFromCallUsingGET(this.user.subdivisionId, callId);
-  }
-
-  saveAddress(editAddress, callId) {
-    editAddress = CallFiasAddressDto.fromJS(editAddress);
-    return this.api.updateAddressPartUsingPUT(this.user.subdivisionId, callId, editAddress);
-  }
-
   getBrigadesCards(briId, callId) {
-    return this.api.getCardListUsingGET(0, 100, undefined, true,[] , callId, undefined, briId);
+    return this.api.getCardListUsingGET(0, 100, undefined, true, [], callId, undefined, briId);
   }
 
   createCallCard(bri: BrigadeBean, callId: number) {
-
-    return  this.api.updateCallUsingPOST_1(CardBean.fromJS({id: 0,call: callId, brigadeFK: bri}))
+    return this.api.updateCardUsingPOST(CardBean.fromJS({id: 0, call: callId, brigadeFK: bri}));
   }
 
-  // getCallBrigadeStatusesHistory(briScheduleId, callId) {
-  //   // return this.api.getBrigadeScheduleCallTransferHistoryUsingGET_1(this.user.subdivisionId, callId, briScheduleId);
-  //   return this.api.readAvailableEventsUsingGET(this.user.subdivisionId, callId, briScheduleId);
-  // }
-
-  getBrigadesMessages(briId, callId){
+  getBrigadesMessages(briId, callId) {
     return this.api.getAssignedBrigadeMessageListUsingGET(briId, callId);
   }
 
-  getMessages(){
+  getMessages() {
     return this.api.getReferenceTypeListBrigadeMessageUsingGET(0, 100, false);
   }
 
-  getReceivingTypes(){
+  getReceivingTypes() {
     return this.api.getReferenceTypeListReceivingTypeUsingGET(0, 100, false);
   }
 
-  getRejectStattuses(){
+  getRejectStattuses() {
     return this.api.getBrigadeStatusListUsingGET(0, 100, false, undefined, undefined, false);
   }
 
-  sendBrigadeMessage(briId, callId, recTypeId, mesTypeId, rejectCode){
+  sendBrigadeMessage(briId, callId, recTypeId, mesTypeId, rejectCode) {
     return this.api.updateAssignedBrigadeMessageListUsingPOST(briId, callId, recTypeId, mesTypeId, rejectCode);
-  }
-
-  saveCallBrigadeStatusesHistory(briScheduleId, callId, sList) {
-    return this.api.createNewMessageUsingPOST(this.user.subdivisionId, callId, briScheduleId, sList);
-  }
-
-  postTransfer(callId, transfers) {
-    return this.api.getSubdivisionsForCallTransferUsingPOST(this.user.subdivisionId, callId, transfers);
   }
 
 }

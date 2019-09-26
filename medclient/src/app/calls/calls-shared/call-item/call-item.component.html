@@ -1,0 +1,134 @@
+<div class="card full-height w-100">
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <div class="card-subtitle">Вызов №{{callItem.call.id}} - {{callItem.call.status}}</div>
+    <div class="toolbar-right"></div>
+  </div>
+  <div class="flexible w-100 h-100" resizable="horizontal" (onResize)="resize($event)" saveName="call-item">
+    <div class="general-block" leftResizable>
+      <div class="card full-height">
+        <div class="card-header toolbar justify-content-between">
+          <div class="toolbar-left">
+            <div class="btn-group">
+              <button *ngIf="!isEdit" class="btn btn-primary btn-sm" (click)="unlockForm()">
+                Редактировать <i class="fa fa-pen"></i>
+              </button>
+              <button *ngIf="isEdit" type="button" class="btn btn-success btn-sm" [disabled]="form.invalid"
+                      (click)="save()">
+                Сохранить <i class="fas fa-save"></i>
+              </button>
+
+              <button *ngIf="isEdit" class="btn btn-warning btn-sm" (click)="revertForm()">
+                Отменить изменения <i class="fas fa-undo"></i>
+              </button>
+            </div>
+          </div>
+          <div class="toolbar-right"><button class="btn btn-primary btn-sm" (click)="aviationRequest()">Заявка на авиацию</button></div>
+        </div>
+        <div class="p-2 scrollable default-bg">
+
+          <div class="card">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="card-title">Данные о вызове</div>
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('general')"
+                  [item]="callItem.call"
+                  [preprocessed]="true"
+                  [row]="true"
+                  [form]="form"
+                ></app-simple-view>
+              </li>
+              <li class="list-group-item">
+                <div class="card-title">
+                  Пациенты
+                </div>
+                <div *ngFor="let pat of patients; index as i;">
+                  <div *ngIf="!pat.item.isDeleted">
+                    <app-simple-view
+                      [descriptions]="getBlockDescriptions('patient')"
+                      [item]="pat.item"
+                      [preprocessed]="true"
+                      [row]="true"
+                      [form]="pat.form">
+                    </app-simple-view>
+                    <div class="toolbar">
+                      <div class="toolbar-right" *ngIf="isEdit">
+                        <button class="btn btn-danger" (click)="deletePatient(pat)">Удалить</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="toolbar-left">
+                  <button class="btn btn-primary" *ngIf="isEdit" (click)="addPatient()">Добавить пациента</button>
+                </div>
+              </li>
+
+
+              <li class="list-group-item">
+                <div class="card-title">Адрес вызова</div>
+                <app-full-address
+                  [form]="form"
+                  [valueBuilding]="callItem.call.houseNum"
+                  [valueStreet]="callItem.call.address"
+                  (setPolygon)="setAddressPoint($event.geometry)"
+                ></app-full-address>
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('address')"
+                  [item]="callItem.call"
+                  [preprocessed]="true"
+                  [row]="true"
+                  [form]="form"></app-simple-view>
+              </li>
+              <li class="list-group-item">
+                <div class="card-title">Заявитель</div>
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('declarant')"
+                  [item]="callItem.call"
+                  [preprocessed]="true"
+                  [row]="true"
+                  [form]="form"
+                ></app-simple-view>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="brigades-map-block" rightResizable fixed="500" resizable="vertical" (onResize)="resize($event)"
+         saveName="brigades-map">
+      <div class="card brigades-block" upResizable>
+        <div class="card-header">
+          <div class="card-title center-me">Бригады</div>
+        </div>
+        <app-call-item-brigades *ngIf="cs.mode === 'DISPATCHER'"></app-call-item-brigades>
+        <app-call-item-arm-brigade *ngIf="cs.mode === 'ARM_BRIGADE'"></app-call-item-arm-brigade>
+      </div>
+      <div class="horizontal-resizer" resizer="2px"></div>
+      <div class="card map-block" fixed="400px" bottomResizable>
+        <div class="card-header toolbar">
+          <div class="toolbar-right">
+
+          </div>
+          <div class="card-title">
+            Местоположение вызова
+          </div>
+          <div class="toolbar-right">
+            <div class="btn-group">
+              <button class="btn btn-info" *ngIf="isEdit" (click)="lockSettingPoint = !lockSettingPoint">
+                {{lockSettingPoint ? 'Указать' : 'Зафиксировать'}}
+                <i class="fas fa-map-pin"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <app-med-map
+          (onMapReady)="initMapPoint()"
+          (onClick)="setLocationFromClick($event)"
+        ></app-med-map>
+      </div>
+    </div>
+  </div>
+</div>

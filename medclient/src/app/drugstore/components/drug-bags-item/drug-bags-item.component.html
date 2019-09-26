@@ -1,0 +1,71 @@
+<div class="patch" *ngIf="!bagItem">
+  <i class="fas fa-briefcase-medical"></i>
+</div>
+
+<div class="p-1 h-100 default-bg flexible flex-column" *ngIf="bagItem">
+  <div class="card m-2">
+    <div class="card-header toolbar">
+      <div class="toolbar-left"></div>
+      <div class="card-title">{{bagItem.id ? 'Укладка' + (bagItem.brigadeFK ? ' бригады ' + bagItem.brigadeFK.name: '') : 'Новая укладка'}}</div>
+      <div class="toolbar-right">
+      </div>
+    </div>
+    <div class="card-body">
+      <app-simple-view
+        [form]="form"
+        [item]="bagItem"
+        [row]="true"
+        [descriptions]="descriptions"
+        [preprocessed]="true"></app-simple-view>
+    </div>
+    <div class="card-footer toolbar">
+      <div class="toolbar-left">
+      </div>
+      <div class="toolbar-right">
+        <div class="btn-group">
+          <button class="btn btn-outline-danger" (click)="deleteBag()" *ngIf="bagItem.id">
+            Удалить
+          </button>
+          <button class="btn btn-success" (click)="saveBagInfo()">
+            {{bagItem.id ? 'Сохранить описание' : 'Создать'}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card h-100 m-2" *ngIf="bagItem.id">
+    <div class="card-header">
+      <div class="card-title">
+        Лекарства
+      </div>
+    </div>
+    <app-grid-table
+      (onRowSelect)="selectDrug($event)"
+      [columnDefs]="colDef"
+      [listSource]="bagItem.bagDrugList"></app-grid-table>
+    <div class="card-footer toolbar pt-2">
+      <div class="toolbar-left">
+        <button class="btn btn-info" (click)="addDrugsByTemplate()">
+          Шаблоны
+        </button>
+      </div>
+      <div class="toolbar-right">
+        <div class="btn-group">
+          <!--<button class="btn btn-outline-danger" *ngIf="selectedDrug" (click)="deleteDrug()">-->
+            <!--Удалить-->
+          <!--</button>-->
+          <button class="btn btn-success" (click)="refill()">
+            Пополнить укладку
+          </button>
+          <button class="btn btn-success" (click)="addDrug2bag()">
+            Добавить лекарство
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="patch" *ngIf="!bagItem.id">
+    <i class="fas fa-pills"></i>
+  </div>
+</div>

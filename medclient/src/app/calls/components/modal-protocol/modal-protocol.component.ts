@@ -40,19 +40,20 @@ export class ModalProtocolComponent implements OnInit {
   constructor(private cs: CallItemService,  private modalInstance: NgbActiveModal) { }
 
   ngOnInit() {
-    this.cs.getProtocol(this.callId).subscribe(
-      list => {
-        this.listSource = list;
-      }
-    );
+    //   this.cs.getProtocol(this.callId).subscribe(
+    //     list => {
+    //       this.listSource = list;
+    //     }
+    //   );
+    // }
+    //
   }
-
   fitCol(e) {
     e.api.sizeColumnsToFit();
   }
 
   back() {
     this.modalInstance.dismiss();
-  }
 
+    }
 }

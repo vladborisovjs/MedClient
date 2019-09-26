@@ -1,0 +1,71 @@
+<div class="flexible default-bg">
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Эпидемиологический анамнез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="card.cardObjectiveBean"
+          [form]="form"
+          [descriptions]="getBlockDescriptions('epidemic')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Аллергический анамнез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="card.cardObjectiveBean"
+          [form]="form"
+          [descriptions]="getBlockDescriptions('allergic')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Гинекологический анамнез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="card.cardObjectiveBean"
+          [form]="form"
+          [descriptions]="getBlockDescriptions('gynecologic')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Жалобы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="card.cardObjectiveBean"
+          [form]="form"
+          [descriptions]="getBlockDescriptions('complaints')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Заболевания
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [item]="card.cardObjectiveBean"
+          [form]="form"
+          [descriptions]="getBlockDescriptions('illnes')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+</div>

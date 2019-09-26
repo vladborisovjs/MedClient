@@ -1,0 +1,152 @@
+<div class="flexible default-bg h-100">
+
+
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-body">
+        <app-simple-view
+          [item]="cardItem"
+          [form]="formType"
+          [descriptions]="descriptionsType"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+    <div *ngFor="let block of blocks[mode].arrBlock">
+      <div class="card">
+        <div class="card-header">
+          {{block.label}}
+        </div>
+        <div class="card-body">
+          <app-simple-view
+            [item]="cardItem.cardResultBean"
+            [form]="form"
+            [preprocessed]="true"
+            [descriptions]="getBlockDescriptions(block.block)"
+            [row]="true"
+          ></app-simple-view>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <app-simple-view
+          [item]="cardItem.cardResultBean"
+          [form]="form"
+          [preprocessed]="true"
+          [descriptions]="getBlockDescriptions('comments')"
+          [row]="true"
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-6 full-width" *ngIf="mode && mode !== 'undef'">
+    <div class="card">
+      <div class="card-header">
+        Мероприятия
+      </div>
+      <div class="card-body pt-1 px-0 pb-0">
+        <ngb-tabset [destroyOnHide]="false">
+          <ngb-tab title="На месте">
+            <ng-template ngbTabContent>
+              <div class="therapies">
+                <app-grid-table
+                  [columnDefs]="colDefs"
+                  (onRowDblClick)="editTherapy($event.data)"
+                  [pagination]="false"
+                  [listSource]="localTherapies">
+                </app-grid-table>
+              </div>
+              <div class="toolbar-right m-2">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-success" (click)="createTherapy('local')">Добавить</button>
+              </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  Эффективность мероприятий на месте
+                </div>
+                <div class="card-body">
+                  <app-simple-view
+                    [item]="cardItem.cardResultBean"
+                    [form]="form"
+                    [preprocessed]="true"
+                    [descriptions]="getBlockDescriptions('local_efficiency_assistance')"
+                    [row]="true"
+                  ></app-simple-view>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab title="В машине">
+            <ng-template ngbTabContent>
+              <div class="therapies">
+                <app-grid-table
+                  [columnDefs]="colDefs"
+                  (onRowDblClick)="editTherapy($event.data)"
+                  [pagination]="false"
+                  [listSource]="transportTherapies">
+                </app-grid-table>
+              </div>
+              <div class="toolbar-right m-2">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-success" (click)="createTherapy('transport')">Добавить</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  Эффективность мероприятий в машине
+                </div>
+                <div class="card-body">
+                  <app-simple-view
+                    [item]="cardItem.cardResultBean"
+                    [form]="form"
+                    [preprocessed]="true"
+                    [descriptions]="getBlockDescriptions('transport_efficiency_assistance')"
+                    [row]="true"
+                  ></app-simple-view>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+        </ngb-tabset>
+      </div>
+    </div>
+    <div class="flexible">
+      <div class="col-6 pl-0">
+        <div class="card">
+          <div class="card-header">
+            ЭКГ после мероприятий
+          </div>
+          <div class="card-body">
+            <app-simple-view
+              [item]="cardItem.cardResultBean"
+              [descriptions]="getBlockDescriptions('ekg_after')"
+              [form]="form"
+              [preprocessed]="true"
+              [row]="true"
+            ></app-simple-view>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 pr-0">
+        <div class="card">
+          <div class="card-header">
+            Результат мероприятий
+          </div>
+          <div class="card-body">
+            <app-simple-view
+              [item]="cardItem.cardResultBean"
+              [form]="form"
+              [preprocessed]="true"
+              [descriptions]="getBlockDescriptions('assistance_result')"
+              [row]="true"
+            ></app-simple-view>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

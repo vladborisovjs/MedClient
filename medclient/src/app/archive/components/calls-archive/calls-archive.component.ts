@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ColDef} from 'ag-grid-community';
 import {ArchiveService} from '../../services/archive.service';
 import {DatePipe} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
-import { FormGroup} from '@angular/forms';
+import {Router} from '@angular/router';
+import {FormGroup} from '@angular/forms';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
-import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
 import {tap} from 'rxjs/operators';
 
 @Component({
@@ -275,8 +274,7 @@ export class CallsArchiveComponent implements OnInit {
   }
   constructor(private arch: ArchiveService,
               private router: Router,
-              private sds: SimpleDescriptionService,
-              private route: ActivatedRoute,) { }
+              private sds: SimpleDescriptionService) { }
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
@@ -290,7 +288,7 @@ export class CallsArchiveComponent implements OnInit {
 
   goToCall(call) {
     console.log(call);
-    this.router.navigate([ 'calls/'+ call.data.id]);
+    this.router.navigate([ `calls/${call.data.id}`]);
   }
 
   searchCalls(){

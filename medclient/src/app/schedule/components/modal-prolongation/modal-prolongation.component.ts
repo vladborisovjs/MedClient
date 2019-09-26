@@ -78,11 +78,11 @@ export class ModalProlongationComponent implements OnInit {
       .subscribe(
         res => {
           console.log('res1', res);
-          this.ns.success('Успешно', 'Расписание пролонгировано')
+          this.modalInstance.close(true);
+          this.ns.success('Успешно', 'Расписание удалено')
         },
         err => {
-          console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeror', err);
-          // this.ns.error(err.message);
+          this.ns.error(err.message);
         }
       );
   }

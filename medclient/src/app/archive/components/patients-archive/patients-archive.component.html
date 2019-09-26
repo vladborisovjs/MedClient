@@ -4,7 +4,7 @@
       Поиск пациента
     </h5>
   </div>
-  <div class="card-body" >
+  <div class="card-body p-0" >
     <div class="full-height flexible" resizable="horizontal" saveName="patients-archive">
     <div class="card filter-patients-block" leftResizable>
       <div class="scrollable full-height">
@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="vertical-resizer" resizer="2px"></div>
-    <div class="card table-patients-block" rightResizable fixed="1000">
+    <div class="card table-patients-block" rightResizable fixed="300">
       <app-grid-table
         [dataSource]="dataSource"
         [columnDefs]="colDefs"

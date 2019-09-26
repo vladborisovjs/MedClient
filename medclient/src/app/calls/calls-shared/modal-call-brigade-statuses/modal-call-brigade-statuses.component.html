@@ -1,0 +1,66 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Сообщения бригады {{brigade.name}}
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="!loading" class="card-body">
+    <h6 class="center-me">История сообщения</h6>
+    <ol>
+      <li *ngFor="let s of messagesHistory">
+        {{s.messageTypeFK.name}} - {{s.receivingTypeFK.name}}
+      </li>
+    </ol>
+  </div>
+  <div *ngIf="!loading && !endCall" class="card-body">
+    <div class="row">
+      <div class="col-5">
+        <h6 class="center-me">Новое сообщение</h6>
+        <div class="m-1 w-100" *ngFor="let m of messages">
+          <button class="btn {{m === selectedMessage ? 'btn-success' : 'btn-info'}} w-100" (click)="selectMessage(m)">
+            {{m.name}}
+          </button>
+        </div>
+      </div>
+      <div class="col-7">
+        <h6 class="center-me">Способ передачи</h6>
+        <div class="m-1 w-100" *ngFor="let r of resTypes">
+          <button class="btn {{r === selectedResType ? 'btn-success' : 'btn-info'}} w-100" (click)="selectResType(r)">
+            {{r.name}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="rejectCall" class="row ">
+      <div class="col-12">
+        <h6 class="center-me">Причина отказа</h6>
+        <div class="m-1 w-100" *ngFor="let re of rejectingStatuses">
+          <button class="btn {{re.code === rejectingStatusCode ? 'btn-success' : 'btn-info'}} w-100"
+                  (click)="selectRejectType(re)">
+            {{re.name}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="loading" class="patch">
+    <h2 class="center-me">Загрузка...</h2>
+  </div>
+  <!--<div *ngIf="endCall" class="patch">-->
+  <!--<h2 class="center-me">Бригада {{endCall === 1? 'завершила вызов' : 'снята с вызова'}}</h2>-->
+  <!--</div>-->
+  <div class="card-footer toolbar">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" *ngIf="!endCall"
+                [disabled]="!(selectedResType && selectedMessage && (!rejectCall || (rejectCall && rejectingStatusCode)))"
+                (click)="sendMessage()">Передать
+        </button>
+        <button class="btn btn-secondary" (click)="back()">Назад</button>
+      </div>
+    </div>
+  </div>
+</div>

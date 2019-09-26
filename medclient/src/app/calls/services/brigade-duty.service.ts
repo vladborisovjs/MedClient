@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BrigadeDutyRequestDto, BrigadeStatusBean, CallStatusList, MedApi, Mode} from '../../../../swagger/med-api.service';
+import { BrigadeStatusBean, CallStatusList, MedApi,} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 
 @Injectable({
@@ -25,7 +25,7 @@ export class BrigadeDutyService {
 
   // журнал событий смены бригады
   getBrigdeProtocol(briId){
-    return this.api.getBrigadeScheduleCallTransferHistoryUsingGET(this.user.subdivisionId, briId)
+    // return this.api.getBrigadeScheduleCallTransferHistoryUsingGET(this.user.subdivisionId, briId)
   }
 
   // занятость смены бригады (список вызовов c начала смены)
@@ -57,5 +57,13 @@ export class BrigadeDutyService {
 
   brigadeOnBase(briId){
    return this.api.setOnBaseUsingPOST(briId);
+  }
+
+  brigadeReturningOnBase(briId) {
+    return this.api.setReturningUsingPOST(briId);
+  }
+
+  brigadeIsNotReady(briId, statusCode) {
+    return this.api.setInactiveUsingPOST(briId, statusCode);
   }
 }

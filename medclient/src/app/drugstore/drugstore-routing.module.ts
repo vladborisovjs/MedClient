@@ -1,9 +1,8 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {DrugstoreComponent} from './components/drugstore/drugstore.component';
-import {ManagingDrugstoreComponent} from './components/managing-drugstore/managing-drugstore.component';
-import {MonitoringDrugstoreComponent} from './components/monitoring-drugstore/monitoring-drugstore.component';
-import {EditionDrugstoreComponent} from './components/edition-drugstore/edition-drugstore.component';
+import {DrugBagsComponent} from './components/drug-bags/drug-bags.component';
+import {DrugBagTemplatesComponent} from './components/drug-bag-templates/drug-bag-templates.component';
 
 const routes: Routes = [
   {
@@ -20,24 +19,17 @@ const routes: Routes = [
         },
       },
       {
-        path: 'monitoring-drugstore',
-        component: MonitoringDrugstoreComponent,
+        path: 'bags',
+        component: DrugBagsComponent,
         data: {
-          title: 'Отслеживание',
+          title: 'Укладки',
         },
       },
       {
-        path: 'managing-drugstore',
-        component: ManagingDrugstoreComponent,
+        path: 'bags-templates',
+        component: DrugBagTemplatesComponent,
         data: {
-          title: 'Управление',
-        },
-      },
-      {
-        path: 'edition-drugstore',
-        component: EditionDrugstoreComponent,
-        data: {
-          title: 'Редактирование',
+          title: 'Шаблоны укладок',
         },
       },
     ]

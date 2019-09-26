@@ -1,19 +1,27 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AdminComponent} from './components/admin/admin.component';
+import {AdminUsersComponent} from './components/admin-users/admin-users.component';
 
 const routes: Routes = [
   {
     path: '',
     data: {
-      title: '',
+      title: 'Администрирование',
     },
     children: [
       {
         path: '',
         component: AdminComponent,
         data: {
-          title: 'Администрирование',
+          title: null,
+        },
+      },
+      {
+        path: 'users',
+        component: AdminUsersComponent,
+        data: {
+          title: 'Сотрудники',
         },
       },
     ]

@@ -6,9 +6,10 @@
 .filter-patients-block{
   min-width: 475px;
   height: 100%;
+  overflow: auto;
 }
 
 .table-patients-block{
-  min-width: 1000px;
+  min-width: 300px;
   height: 100%;
 }

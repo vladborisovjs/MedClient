@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MedApi, Mode3} from '../../../../swagger/med-api.service';
+import {MedApi} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 
 

@@ -1,0 +1,328 @@
+<!--<div class="card m-0" >-->
+  <!--<div class="card-header toolbar">-->
+    <!--<div class="toolbar-left">-->
+      <!--<button class="btn btn-success btn-sm" (click)="save()">Сохранить</button>-->
+    <!--</div>-->
+    <!--<div class="card-subtitle">Объективные данные</div>-->
+    <!--<div class="toolbar-right"></div>-->
+  <!--</div>-->
+<!--</div>-->
+<div class="flexible default-bg">
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Общее состояние
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('general_state')"
+          [item]="objective.cardObjectiveBean"
+          [preprocessed]="true"
+          [row]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        GLASGOW Coma
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('glasgow')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        </app-simple-view>
+      </div>
+    </div>
+      <div class="card">
+      <div class="card-header">
+        Дополнительные объективные данные <br> (кроме отмеченных)
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('addition')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+      </div>
+    <div class="card">
+      <div class="card-header">
+        Рефлексы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('reflexes')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Зрачки
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('pupils')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Лимфатические узлы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('lymph')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+</div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Отеки
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('edema')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Кожные покровы
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('skin')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Сердцебиение
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('heart')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Другое
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('other')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Дыхание
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('breath')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Хрипы в легких
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('wheezing')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div><div class="card">
+      <div class="card-header">
+        Стул и мочеиспускание
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('excreta')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Слизистая зева
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('throat')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Миндалины
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('tonsils')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Перкуторно над легким звук
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('perc')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Язык
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('tongue')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Живот
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('stomach')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Печень
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('liver')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+        <app-simple-view *ngIf="this.liverLarge"
+          [descriptions]="getBlockDescriptions('liverLarge')"
+          [item]="objective.cardObjectiveBean"
+                         [preprocessed]="true"
+          [row]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Диспетические явления
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('dyspeptic')"
+          [item]="objective.cardObjectiveBean"
+          [preprocessed]="true"
+          [row]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Диурез
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('diuresis')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Признаки алкогольного опьянения
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('alcohol')"
+          [item]="objective.cardObjectiveBean"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="form">
+        ></app-simple-view>
+      </div>
+    </div>
+  </div>
+</div>

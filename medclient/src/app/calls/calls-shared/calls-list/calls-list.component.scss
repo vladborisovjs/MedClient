@@ -1,0 +1,23 @@
+:host{
+  overflow: auto;
+  height: 100%;
+}
+
+.call-toolbar{
+  padding: 0.25rem;
+}
+
+.cards-block{
+  min-width: 300px;
+  .patch{
+    i{
+      font-size: 5rem;
+    }
+  }
+
+}
+
+.calls-block{
+  min-width: 700px;
+}
+

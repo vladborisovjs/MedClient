@@ -1,7 +1,10 @@
 <header>
   <!--<p-progressBar [hidden]="!lState" mode="indeterminate" class="customProgress"></p-progressBar>-->
   <app-nav-bar [items]="menuItems" (onExit)="logOut()"></app-nav-bar>
-  <app-breadcrumbs></app-breadcrumbs>
+  <div class="flexible w-100">
+    <app-breadcrumbs class="w-100"></app-breadcrumbs>
+    <app-push-control></app-push-control>
+  </div>
 </header>
 <main>
   <div class="card full-height main-wrapper">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ColDef} from 'ag-grid-community';
 import {ArchiveService} from '../../services/archive.service';
 import {DatePipe} from '@angular/common';
@@ -283,7 +283,7 @@ export class F110ArchiveComponent implements OnInit {
 
   goToCard(card) {
     console.log(card);
-    this.router.navigate(['calls/' + card.data.call + '/card/' + card.data.id + '/side-one']);
+    this.router.navigate([`calls/${card.data.call}/card/${card.data.id}/side-one`]);
   }
   eraseFilters() {
     this.filters = {};

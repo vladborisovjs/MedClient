@@ -12,7 +12,7 @@ export class UserService {
   authSub: Subject<boolean>;
   subdivisionId: number;
   token: string;
-
+  redirectedUrl: any;
   constructor(private http: HttpClient,
               private router: Router,
               private api: MedApi,
@@ -22,23 +22,28 @@ export class UserService {
   }
 
   login(loginPair) {
-    this.api.loginUsingPOST(loginPair).subscribe(
+    return this.api.loginUsingPOST(loginPair).pipe(tap(
       login => {
         this.initUser(login);
-        this.router.navigate(['/']);
+        if (this.redirectedUrl){
+          this.router.navigate([this.redirectedUrl]);
+        }  else {
+          this.router.navigate(['/']);
+        }
       }
-    );
+    ));
   }
 
   initUser(user) {
-    this.subdivisionId = user.subdivisionId;
-    this.token = user.token;
+    // this.subdivisionId = user.subdivisionId;
+    // this.token = user.token;
     this.authSub.next(true);
   }
 
   checkAuth(): Observable<boolean> | Promise<boolean> | boolean {
-    this.api.loginUsingGET().subscribe(
+    this.api.getPerformerByMeUsingGET().subscribe(
       login => {
+        console.log(login);
         this.initUser(login);
       },
       err => {
@@ -46,6 +51,10 @@ export class UserService {
       },
     );
     return this.authSub;
+  }
+
+  getMeWithBrigade() {
+    return this.api.getPerformerByMeWithBrigadeUsingGET();
   }
 
   logout(){

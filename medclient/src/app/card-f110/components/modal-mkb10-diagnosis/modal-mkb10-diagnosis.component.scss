@@ -1,0 +1,17 @@
+:host{
+  height: 100%;
+}
+
+.card {
+  overflow: auto;
+  height: 650px;
+}
+.btn-dark {
+  background-color: white;
+  position: relative;
+  right: 23px;
+}
+.btn-dark:hover {
+  color: black;
+  text-decoration: none;
+}

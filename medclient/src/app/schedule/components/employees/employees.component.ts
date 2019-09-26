@@ -8,6 +8,7 @@ import {ModalAddPerformerScheduleComponent} from '../modal-add-performer-schedul
 import {ModalPerformerScheduleListComponent} from '../modal-performer-schedule-list/modal-performer-schedule-list.component';
 import {ModalProlongationComponent} from '../modal-prolongation/modal-prolongation.component';
 import {DatePipe} from "@angular/common";
+import {ModalProlongationDeleteComponent} from '../modal-prolongation-delete/modal-prolongation-delete.component';
 
 @Component({
   selector: 'app-employees',
@@ -134,6 +135,17 @@ months = [
 
   prolongation() {
     const plong = this.modal.open(ModalProlongationComponent);
+    plong.componentInstance.performers = this.selectedPerformers;
+    plong.result.then(
+      r => {
+        const v = this.form.getRawValue();
+         r ? this.updateTable(v.year, v.month): void 0;
+      }
+    );
+  }
+
+  prolongationDelete() {
+    const plong = this.modal.open(ModalProlongationDeleteComponent);
     plong.componentInstance.performers = this.selectedPerformers;
     plong.result.then(
       r => {

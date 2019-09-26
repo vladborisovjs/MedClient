@@ -1,0 +1,63 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Добавление лекарства
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="p-2 header-wrapper">
+    <div class="">
+      <app-simple-view
+        [descriptions]="descriptions"
+        [form]="form"
+        [row]="true"
+      ></app-simple-view>
+    </div>
+    <div class="control-wrapper">
+      <div class="drug-info">
+        {{selectedDrug ? selectedDrug.name +' - '+ selectedDrug.code : ''}}
+      </div>
+      <button class="btn btn-sm btn-success mr-2" (click)="addDrug()" [disabled]="!selectedDrug">
+        Добавить
+      </button>
+      <input
+        class="sc-control form-control"
+        type="number"
+        [placeholder]="'кол-во'"
+        [disabled]="!selectedDrug"
+        [(ngModel)]="addCount">
+      <div class="ml-1">
+        шт.
+      </div>
+    </div>
+  </div>
+  <div class="table-wrapper">
+    <app-grid-table
+      [columnDefs]="colDef"
+      [dataSource]="source"
+      [filter]="filter"
+      (onRowSelect)="selectDrug($event)"
+    ></app-grid-table>
+  </div>
+  <!--<div class="patch">-->
+  <!--<div class="m-1" *ngIf="!selectedDrug">-->
+  <!--<em> Выберите лекарство из таблицы и укажите количество</em>-->
+  <!--</div>-->
+  <!--<div class="m-1" *ngIf="selectedDrug">-->
+  <!--<em> {{selectedDrug.name}}, {{selectedDrug.additionally}}</em>-->
+  <!--</div>-->
+  <!--</div>-->
+  <div class="card-footer toolbar">
+    <div class="toolbar-left">
+    </div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-secondary" (click)="back()">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

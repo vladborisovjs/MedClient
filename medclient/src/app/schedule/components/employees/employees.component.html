@@ -4,7 +4,7 @@
       График работы сотрудников
     </div>
   </div>
-  <div class="card-body p-2">
+  <div class="card-body default-bg p-2">
     <div class="toolbar">
       <div class="toolbar-left">
         <form [formGroup]="form" novalidate autocomplete="off" class="sc-form form-group flexible">
@@ -27,9 +27,14 @@
         </form>
       </div>
       <div class="toolbar-right">
-        <button class="btn btn-primary" [disabled]="selectedPerformers.length == 0" (click)="prolongation()">
-          Пролонгация
-        </button>
+        <div class="btn-group">
+          <button class="btn btn-outline-danger" [disabled]="selectedPerformers.length == 0" (click)="prolongationDelete()">
+            Удаление периода
+          </button>
+          <button class="btn btn-primary" [disabled]="selectedPerformers.length == 0" (click)="prolongation()">
+            Пролонгация
+          </button>
+        </div>
       </div>
     </div>
 

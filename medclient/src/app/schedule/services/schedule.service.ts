@@ -1,11 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
   BrigadeScheduleBean,
-  BrigadeScheduleCreateDto,
-  BrigadeScheduleUpdateDto,
   MedApi,
-  PerformerScheduleDto2,
-  PerformerShiftBean
 } from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 
@@ -17,14 +13,15 @@ export class ScheduleService {
   constructor(private api: MedApi, private user: UserService) {
   }
 
-  moveTimeZoneIso(t){
+  moveTimeZoneIso(t) {
     t = new Date(t);
     t.setHours(t.getHours() + 3);
     t = t.toISOString();
     return t;
 
   }
-  moveTimeZone(t){
+
+  moveTimeZone(t) {
     t = new Date(t);
     t.setHours(t.getHours() + 3);
     return t;
@@ -47,14 +44,18 @@ export class ScheduleService {
   }
 
   // пролонгация рабочего графика
-  prolongation(ids, performanceTypeId, from, to){
-    return this.api.scheduleProlongationUsingPOST(ids, performanceTypeId, from, to, undefined)
+  prolongation(ids, performanceTypeId, from, to) {
+    return this.api.scheduleProlongationUsingPOST(ids, performanceTypeId, from, to, undefined);
+  }
+
+  // удолгация
+  prolongationDelete(ids, from, to) {
+    return this.api.scheduleClearUsingDELETE(ids, from, to, undefined);
   }
 
 
-
   // получение списка сотрудников для назначения в смену бригады
-  getAvailablePerformers(type, from, to){
+  getAvailablePerformers(type, from, to) {
     // костыль для таймзон
     // from = this.moveTimeZoneIso(from);
     // to = this.moveTimeZoneIso(to);
@@ -89,14 +90,15 @@ export class ScheduleService {
     // );
     // briItem.period_details.date_from = this.moveTimeZone(briItem.period_details.date_from);
     // briItem.period_details.date_to = this.moveTimeZone(briItem.period_details.date_to);
-    return this.api.updateBrigadeScheduleUsingPOST(briItem)
+    return this.api.updateBrigadeScheduleUsingPOST(briItem);
   }
 
   // Редактирование смены бригады
 
-  editBrigadeSchedule(briId, scheduleId, briItem){
+  editBrigadeSchedule(briId, scheduleId, briItem) {
+    briItem.isAvailable = false;
     // briItem = BrigadeScheduleUpdateDto.fromJS(briItem);
-    return this.api.updateBrigadeScheduleUsingPOST(briItem)
+    return this.api.updateBrigadeScheduleUsingPOST(briItem);
   }
 
   // Удаление смены бригады
@@ -106,14 +108,13 @@ export class ScheduleService {
   // }
 
   // Удаление смены сотрудника
-  deletePerformerSchedule(performerId){
+  deletePerformerSchedule(performerId) {
     return this.api.deletePerformerShiftUsingDELETE(performerId);
   }
 
   getBrigadeScheduleById(id) {
-    return this.api.getBrigadeScheduleUsingGET(id)
+    return this.api.getBrigadeScheduleUsingGET(id);
   }
-
 
 
 }

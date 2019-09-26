@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {IMenuItem} from '../../../navigation/components/nav-bar/nav-bar.component';
 import {UserService} from '../../../services/user.service';
 
@@ -8,6 +8,15 @@ import {UserService} from '../../../services/user.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
+  // @HostListener('window:keydown', ['$event'])
+  // keyDownEvent(event: KeyboardEvent){
+  //   console.log(event.key, event.type);
+  // }
+  //
+  // @HostListener('window:keyup', ['$event'])
+  // keyUpEvent(event: KeyboardEvent){
+  //   console.log(event.key, event.type);
+  // }
 
   constructor(private user: UserService) { }
   menuItems: IMenuItem[] = [
@@ -17,12 +26,17 @@ export class MainComponent implements OnInit {
       iconClass: 'fas fa-solar-panel'
     },
     {
+      label: 'АРМ Бригады',
+      routerLink: '/armBrigade',
+      iconClass: 'fas fa-desktop'
+    },
+    {
       label: 'Архив',
       routerLink: '/archive',
       iconClass: 'fas fa-archive'
     },
     {
-      label: 'Управление сотрудниками и бригадами',
+      label: 'Управление сотрудниками',
       routerLink: '/schedule',
       iconClass: 'far fa-calendar-alt'
     },
@@ -50,6 +64,16 @@ export class MainComponent implements OnInit {
       label: 'Администрирование',
       routerLink: '/admin',
       iconClass: 'fas fa-cogs'
+    },
+    {
+      label: 'ТЦМК',
+      routerLink: '/tcmk-calls',
+      iconClass: 'fas fa-meteor'
+    },
+    {
+      label: 'Авиация',
+      routerLink: '/aviation',
+      iconClass: 'fas fa-helicopter'
     },
   ];
 

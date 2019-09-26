@@ -1,0 +1,10 @@
+@import "~src/styles/variables";
+:host{
+  background-color: $indigo-light;
+}
+
+.wrapper{
+  display: flex;
+  height: 100%;
+  align-items: center;
+}

@@ -4,14 +4,7 @@ import {
   ISimpleDescription,
   SimpleDescriptionService
 } from '../../../shared/simple-control/services/simple-description.service';
-import {
-  PerformerBean,
-  PerformerScheduleDto2,
-  PerformerScheduller,
-  PerformerShiftBean,
-  PeriodDetails,
-  ScheduleType, ScheduleTypeBean
-} from '../../../../../swagger/med-api.service';
+import { PerformerBean, PerformerShiftBean,ScheduleTypeBean} from '../../../../../swagger/med-api.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {ScheduleService} from '../../services/schedule.service';
 import {NotificationsService} from 'angular2-notifications';
@@ -87,6 +80,7 @@ export class ModalAddPerformerScheduleComponent implements OnInit, OnDestroy {
         type: 'dict',
         styleClass: 'col-12',
         // bindValue: 'scheduleTypeFK',
+        addLabel: 'code',
         dict: 'getScheduleTypeListUsingGET',
         additional: {
           block: 'schedule'
@@ -131,6 +125,11 @@ export class ModalAddPerformerScheduleComponent implements OnInit, OnDestroy {
       this.form.valueChanges.subscribe(
         ch => {
           this.onSchedule = ch.onSchedule;
+          console.log(ch);
+          // if (this.onSchedule){
+          //   this.form.get('dateTo').setValue(new Date(ch.dateTo));
+          //   this.form.get('dateFrom').setValue(new Date(ch.dateFrom));
+          // }
         }
       )
     );

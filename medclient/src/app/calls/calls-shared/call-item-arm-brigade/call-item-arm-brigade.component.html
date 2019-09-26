@@ -1,0 +1,41 @@
+<div class="flexible flex-row full-height">
+  <div class="card-wrapper col-3" *ngFor="let bri of callContainer.brigadeList">
+    <div class="card bri-item">
+      <div class="card-header">
+        {{bri.brigade.name}}
+      </div>
+      <div class="card-body">
+        <p><em>Тип: </em>{{bri.brigade.brigadeTypeFK.name}}</p>
+        <p><em>Статус: </em>{{bri.brigade.brigadeStatusFK ? bri.brigade.brigadeStatusFK.name : '-'}}</p>
+        <div class="bri-control">
+          <button class="btn btn-sm btn-outline-primary" (click)="openBriStatuses(bri.brigade)">
+            Сообщение <i class="fas fa-envelope"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card bri-cards full-width">
+    <div class="card-header">
+      <div class="card-title">
+        Карты Ф-110 бригады {{callContainer.brigadeList[0].brigade.name}}
+      </div>
+    </div>
+    <div class="card-body">
+      <app-grid-table
+        [columnDefs]="colDefs"
+        [sizeColumnsToFit]="true"
+        [pagination]="false"
+        (onRowDblClick)="goToCard($event)"
+        [listSource]="listSource">
+      </app-grid-table>
+    </div>
+    <div class="card-footer toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" (click)="createCard()">
+          Создать карту
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

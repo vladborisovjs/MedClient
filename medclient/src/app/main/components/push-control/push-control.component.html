@@ -1,0 +1,5 @@
+<div class="wrapper">
+  <i class="fas fa-link mx-1 {{fireMess.isListening ? 'text-primary': 'text-danger'}}" ></i>
+  <button class="btn btn-tiny btn-outline-info mx-1" *ngIf="fireMess.isListening" (click)="testPush()" >Тест соообщения</button>
+  <button class="btn btn-tiny btn-outline-info mx-1"  (click)="generateToken()">Обновить токен</button>
+</div>

@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MainComponent} from './components/main/main.component';
 import {StartComponent} from './components/start/start.component';
+import {ArmBrigadeModule} from '../arm-brigade/arm-brigade.module';
 
 const routes: Routes = [
   {
@@ -53,6 +54,18 @@ const routes: Routes = [
       {
         path: 'admin',
         loadChildren: '../admin/admin.module#AdminModule'
+      },
+      {
+        path: 'armBrigade',
+        loadChildren: '../arm-brigade/arm-brigade.module#ArmBrigadeModule'
+      },
+      {
+        path: 'tcmk-calls',
+        loadChildren: '../tcmk-calls/tcmk-calls.module#TcmkCallsModule'
+      },
+      {
+        path: 'aviation',
+        loadChildren: '../aviation/aviation.module#AviationModule'
       },
     ]
   }

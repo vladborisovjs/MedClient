@@ -63,18 +63,18 @@ export class ModalCallConfirmBrigadeComponent implements OnInit, OnDestroy {
       }
     );
     this.sbscs.push(
-      this.cs.appointBrigadesToCall(this.callId, this.brigades).subscribe(
-        ans => {
-          console.log(ans);
-          this.ns.success('Успешно', 'Бригады назначены на вызов');
-          this.modalInstance.close(true);
-        },
-        error => {
-          console.log(error);
-          this.ns.error('Ошибка', 'Не удалось назначить бригаду');
-          this.modalInstance.close(false);
-        }
-      )
+      // this.cs.appointBrigadesToCall(this.callId, this.brigades).subscribe(
+      //   ans => {
+      //     console.log(ans);
+      //     this.ns.success('Успешно', 'Бригады назначены на вызов');
+      //     this.modalInstance.close(true);
+      //   },
+      //   error => {
+      //     console.log(error);
+      //     this.ns.error('Ошибка', 'Не удалось назначить бригаду');
+      //     this.modalInstance.close(false);
+      //   }
+      // )
     );
 
   }

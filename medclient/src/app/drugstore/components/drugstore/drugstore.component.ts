@@ -9,19 +9,14 @@ import {ICardMenuItem} from '../../../navigation/components/card-menu/card-menu.
 export class DrugstoreComponent implements OnInit {
   cardMenuItems: ICardMenuItem[] = [
     {
-      label: 'Отслеживание',
-      routerLink: 'monitoring-drugstore',
-      iconClass: 'fas fa-eye'
+      label: 'Укладки',
+      routerLink: 'bags',
+      iconClass: 'fas fa-briefcase-medical'
     },
     {
-      label: 'Управление',
-      routerLink: 'managing-drugstore',
-      iconClass: 'fas fa-cog'
-    },
-    {
-      label: 'Редактирование',
-      routerLink: 'edition-drugstore',
-      iconClass: 'fas fa-file-signature'
+      label: 'Шаблоны укладок',
+      routerLink: 'bags-templates',
+      iconClass: 'fas fa-first-aid'
     },
   ];
 

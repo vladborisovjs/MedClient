@@ -29,7 +29,7 @@
       Дом
     </div>
     <ng-select
-      (change)="onSelectBuilding()"
+      (change)="onSelectBuilding($event)"
       [formControlName]="'houseNum'"
       [loading]="loadingBuilding"
       [items]="buildings"

@@ -20,11 +20,11 @@ export class SocketService {
 
   constructor(private us: UserService, @Inject(API_BASE_URL) baseURL: string) {
     this.baseURL = baseURL.slice(7);
-    this.us.authSub.asObservable().subscribe((res) => {
-      if (this.state === 'CLOSED' && res) {
-        this.connectToSocket();
-      }
-    });
+    // this.us.authSub.asObservable().subscribe((res) => {
+    //   if (this.state === 'CLOSED' && res) {
+    //     this.connectToSocket();
+    //   }
+    // });
   }
 
   connectToSocket() {

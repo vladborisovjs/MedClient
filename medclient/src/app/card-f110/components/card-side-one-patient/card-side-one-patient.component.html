@@ -1,0 +1,81 @@
+
+<div class="flexible default-bg">
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Основные данные
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('general')"
+          [row]="true"
+          [preprocessed]="true"
+          [item]="card.patientFK"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Трудовая деятельность
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('occupation')"
+          [item]="card.patientFK"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Документ, удостоверяющий личность
+      </div>
+    <div class="card-body">
+      <app-simple-view
+        [descriptions]="getBlockDescriptions('personalDoc')"
+        [item]="card.patientFK"
+        [row]="true"
+        [preprocessed]="true"
+        [form]="formPatient">
+      </app-simple-view>
+    </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Данные о страховании
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('insurance')"
+          [item]="card.patientFK"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 full-width">
+    <div class="card">
+      <div class="card-header">
+        Адрес постоянной регистрации
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('address')"
+          [item]="card.patientFK"
+          [row]="true"
+          [preprocessed]="true"
+          [form]="formPatient">
+        </app-simple-view>
+      </div>
+    </div>
+  </div>
+</div>
+
+

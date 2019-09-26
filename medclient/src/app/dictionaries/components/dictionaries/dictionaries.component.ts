@@ -7,11 +7,13 @@ import {getListOfDictionaries, IDictionaryInfo} from '../../models/dictionary-st
   styleUrls: ['./dictionaries.component.scss']
 })
 export class DictionariesComponent implements OnInit {
-commonList: IDictionaryInfo[];
-brigadesList: IDictionaryInfo[];
-callsList: IDictionaryInfo[];
-drugList: IDictionaryInfo[];
-objectivesList: IDictionaryInfo[]; // справочники объективных данных
+  commonList: IDictionaryInfo[];
+  brigadesList: IDictionaryInfo[];
+  callsList: IDictionaryInfo[];
+  drugList: IDictionaryInfo[];
+  objectivesList: IDictionaryInfo[]; // справочники объективных данных
+  drugStoreList: IDictionaryInfo[];
+
   constructor() { }
 
   ngOnInit() {
@@ -20,6 +22,7 @@ objectivesList: IDictionaryInfo[]; // справочники объективн�
     this.callsList = getListOfDictionaries('calls');
     this.drugList = getListOfDictionaries('drugs');
     this.objectivesList = getListOfDictionaries('objectives');
+    this.drugStoreList = getListOfDictionaries('drugStore');
   }
 
 }

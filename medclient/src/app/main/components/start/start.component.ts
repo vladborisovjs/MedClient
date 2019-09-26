@@ -14,12 +14,17 @@ export class StartComponent implements OnInit {
       iconClass: 'fas fa-solar-panel'
     },
     {
+      label: 'АРМ Бригады',
+      routerLink: '/armBrigade',
+      iconClass: 'fas fa-desktop'
+    },
+    {
       label: 'Архив',
       routerLink: '/archive',
       iconClass: 'fas fa-archive'
     },
     {
-      label: 'Управление сотрудниками и бригадами',
+      label: 'Управление сотрудниками', // не трогать!!!!!!!
       routerLink: '/schedule',
       iconClass: 'far fa-calendar-alt'
     },
@@ -47,6 +52,16 @@ export class StartComponent implements OnInit {
       label: 'Администирование',
       routerLink: '/admin',
       iconClass: 'fas fa-cogs'
+    },
+    {
+      label: 'ТЦМК',
+      routerLink: '/tcmk-calls',
+      iconClass: 'fas fa-meteor'
+    },
+    {
+      label: 'Авиация',
+      routerLink: '/aviation',
+      iconClass: 'fas fa-helicopter'
     },
   ];
 
