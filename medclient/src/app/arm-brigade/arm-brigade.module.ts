@@ -10,6 +10,8 @@ import {CallItemService} from '../calls/services/call-item.service';
 import {ArmBrigadeCallItemResolverService} from './services/resolvers/arm-brigade-call-item-resolver.service';
 import {CallsSharedModule} from '../calls/calls-shared/calls-shared.module';
 import {ModalModule} from '../shared/modal/modal.module';
+import {CheckboxModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [ArmBrigadeComponent],
@@ -24,6 +26,8 @@ import {ModalModule} from '../shared/modal/modal.module';
     LightResizerModule,
     SimpleControlModule,
     CallsSharedModule,
+    CheckboxModule,
+    FormsModule,
     ModalModule
   ]
 })

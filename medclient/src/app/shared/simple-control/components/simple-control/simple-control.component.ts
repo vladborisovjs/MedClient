@@ -33,6 +33,7 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder = '';
   @Input() rows = 2;
   @Input() showTime: boolean = true;
+  @Input() yearNavigator: boolean = false;
   @Input() timeOnlyWithDate: Date;
   @Input() minDate: Date;
   @Input() maxDate: Date;
@@ -54,6 +55,7 @@ export class SimpleControlComponent implements OnInit, ControlValueAccessor {
   @Input() presetValue: any;
   @Input() btnClass: string;
   @Input() action: any;
+  @Input() mask: string;
   @Input() addLabel: string;
   @Output() dictSelect = new EventEmitter();
   @HostBinding('class') hostClass;

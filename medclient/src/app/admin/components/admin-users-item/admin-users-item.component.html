@@ -2,12 +2,13 @@
   <i class="fas fa-lg fa-user-edit"></i>
 </div>
 
-<div class="p-1 h-100 default-bg" *ngIf="userItem">
+<div class="p-1 h-100 default-bg scrollable" *ngIf="userItem">
   <div class="card m-2">
     <div class="card-header toolbar">
       <div class="toolbar-left"></div>
       <div class="card-title">{{userItem.id ? 'Сотрудник' : 'Новый сотрудник'}}</div>
       <div class="toolbar-right">
+        <button class="btn btn-primary btn-sm ml-2" (click)="showLog()">Журнал</button>
       </div>
 
     </div>
@@ -16,7 +17,6 @@
         [descriptions]="getBlockDescriptions('general')"
         [form]="form"
         [preprocessed]="true"
-        [item]="userItem"
         [row]="true"></app-simple-view>
     </div>
   </div>
@@ -55,9 +55,9 @@
     </div>
   </div>
   <div class="card  m-2">
-    <div class="toolbar-right m-1">
+    <div class="toolbar-right m-1" *ngIf="access.checkAccessWrite({level: 'adminModule'})">
       <button class="btn btn-outline-danger mx-2" (click)="deleteUserItem()">Удалить</button>
-      <button class="btn btn-success" (click)="saveUserItem()" [disabled]="!samePassword">Сохранить</button>
+      <button class="btn btn-success" (click)="saveUserItem()" [disabled]="!samePassword || form.invalid">Сохранить</button>
     </div>
   </div>
 

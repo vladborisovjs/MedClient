@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {CallContainer} from '../../../../../swagger/med-api.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {BrigadeBean, CallContainer} from '../../../../../swagger/med-api.service';
 import {ModalCallAppointBrigadeComponent} from '../modal-call-appoint-brigade/modal-call-appoint-brigade.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
@@ -9,15 +9,17 @@ import {Subscription} from 'rxjs';
 import {ModalCallBrigadeStatusesComponent} from '../modal-call-brigade-statuses/modal-call-brigade-statuses.component';
 import {ModalCallF110Component} from '../modal-call-f110/modal-call-f110.component';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ModalCallBrigadeRemoveComponent} from "../modal-call-brigade-remove/modal-call-brigade-remove.component";
 
 @Component({
   selector: 'app-call-item-brigades',
   templateUrl: './call-item-brigades.component.html',
   styleUrls: ['./call-item-brigades.component.scss'],
 })
-export class CallItemBrigadesComponent implements OnInit {
+export class CallItemBrigadesComponent implements OnInit, OnDestroy {
   callContainer: CallContainer;
   sbscs: Subscription[] = [];
+  isEdit: boolean;
   constructor(private modal: NgbModal,
               private route: ActivatedRoute,
               private router: Router,
@@ -33,6 +35,9 @@ export class CallItemBrigadesComponent implements OnInit {
           this.callContainer = call;
           console.log(call);
         }
+      ),
+      this.cs.isEditingSub.subscribe(
+        editing => this.isEdit = editing
       ),
     );
 
@@ -80,12 +85,13 @@ export class CallItemBrigadesComponent implements OnInit {
     );
   }
 
-  removeBrigade(brigade) {
-    this.cmodal.confirm('Снятние бригады', `Снять бригаду ${brigade.name} с вызова?`).then(
-      res => {
-        if (res) {
-          this.callContainer.brigadeList.splice(this.callContainer.brigadeList.findIndex(val => val === brigade), 1);
-          this.cs.saveCall().subscribe(
+  removeBrigade(brigade: BrigadeBean) {
+    const rb = this.modal.open(ModalCallBrigadeRemoveComponent);
+    rb.componentInstance.brigade = brigade;
+    rb.result.then(
+      reason => {
+        if (reason) {
+          this.cs.removeBrigade(this.callContainer.call.id, brigade.id, reason).subscribe(
             res => {
               this.ns.success('Успешно', `Бригада ${brigade.name} снята с вызова`)
             }
@@ -93,5 +99,9 @@ export class CallItemBrigadesComponent implements OnInit {
         }
       }
     );
+  }
+
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
   }
 }

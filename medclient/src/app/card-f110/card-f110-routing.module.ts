@@ -7,7 +7,6 @@ import {CardSideOnePatientComponent} from './components/card-side-one-patient/ca
 import {CardSideTwoComponent} from './components/card-side-two/card-side-two.component';
 import {CardAnamnesisComponent} from './components/card-anamnesis/card-anamnesis.component';
 import {CardResultComponent} from './components/card-result/card-result.component';
-import {CardProtocolComponent} from './components/card-protocol/card-protocol.component';
 
 const routes: Routes = [
 
@@ -51,10 +50,6 @@ const routes: Routes = [
         path: 'anamnesis',
 
         component: CardAnamnesisComponent,
-        // resolve:
-        //   {
-        //     anamnesis: CardItemResolverService
-        //   },
         data: {
           title: 'Анамнез'
         },
@@ -62,10 +57,6 @@ const routes: Routes = [
       {
         path: 'result',
         component: CardResultComponent,
-        // resolve:
-        //   {
-        //     cardResult: CardItemResolverService
-        //   },
         data: {
           title: 'Результат'
         },

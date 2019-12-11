@@ -1,61 +1,61 @@
 import {Inject, Injectable} from '@angular/core';
 import {UserService} from './user.service';
-import {RxStomp} from '@stomp/rx-stomp';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {StompState} from '@stomp/ng2-stompjs';
 import {API_BASE_URL} from '../../../swagger/med-api.service';
+import * as SockJS from "sockjs-client";
+import {CompatClient, IMessage, Stomp, StompSubscription} from '@stomp/stompjs';
+import {RoleAccessService} from "./role-access.service";
+import {ISocketTopic, SocketTopicsService} from "../shared/socket-topic/services/socket-topics.service";
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
-  /**
-   * CLOSED - закрыто, TRYING - стучится (налажено)
-   */
-  public state$: Observable<string>;
-  state = 'CLOSED';
-  rxStomp: RxStomp;
-  baseURL: string;
+  client: CompatClient;
+  socketStatus: 'opened' | 'connecting' | 'closed' = 'closed';
+  socketTopics = this.sTopics.socketTopics;
+  topicsSubscriptions: StompSubscription[] = [];
 
-  constructor(private us: UserService, @Inject(API_BASE_URL) baseURL: string) {
-    this.baseURL = baseURL.slice(7);
-    // this.us.authSub.asObservable().subscribe((res) => {
-    //   if (this.state === 'CLOSED' && res) {
-    //     this.connectToSocket();
-    //   }
-    // });
+  constructor(private us: UserService,
+              private rs: RoleAccessService,
+              private sTopics: SocketTopicsService,
+              @Inject(API_BASE_URL) public apiUrl?: string) {
+    this.connectJS();
   }
 
-  connectToSocket() {
-    if (this.state === 'CLOSED') {
-      this.state = '_CUSTOM_TRYING_';
-      this.rxStomp = new RxStomp();
-      this.rxStomp.configure(
-        {
-          // brokerURL: 'ws://172.16.6.166/tcmk/api/stomp',
-          brokerURL: 'ws://' + this.baseURL+ '/api/stomp',
-          heartbeatIncoming: 0,
-          heartbeatOutgoing: 20000,
-          reconnectDelay: 500,
-          debug: (msg: string) => {
-            // console.log('stomp', new Date(), msg);
-          },
-          connectHeaders: {
-            login: this.us.token,
-          }
-        }
-      );
-      this.rxStomp.activate();
-      this.state$ = this.rxStomp.connectionState$.pipe(map((state: number) => {
-        this.state = StompState[state];
-        return this.state;
-      }));
 
-    }
+  connectJS() {
+    this.client = Stomp.over(() => {
+      this.socketStatus = 'connecting';
+      return new SockJS(this.apiUrl + '/endpoint')
+    });
+    this.client.configure({
+      reconnectDelay: 20000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+    });
+
+    this.client.connect(
+      {}, () => {
+        this.socketStatus = 'opened';
+        this.initStompSubscriptions();
+      },
+      (err) => {
+        this.socketStatus = 'closed';
+        console.log('ws err', err);
+      },
+      (closeEvent) => {
+        this.socketStatus = 'closed';
+        console.log(closeEvent);
+      }
+    );
   }
 
-  watchTopic(topic: string): Observable<any> {
-    return this.rxStomp.watch('/topic/' + topic);
+  initStompSubscriptions() {
+    this.socketTopics.forEach(
+      (topic: ISocketTopic) => {
+        this.topicsSubscriptions.push(this.client.subscribe(topic.destination, topic.messageAction));
+      }
+    );
   }
 }

@@ -1,23 +1,26 @@
 import {ISimpleDescription} from '../../shared/simple-control/services/simple-description.service';
 import {ColDef} from 'ag-grid-community';
-import {IConditions} from "../../shared/services/check-condition.service";
-import {BrigadeBean, DrugBean, InquirerBean, SubdivisionBean} from '../../../../swagger/med-api.service';
+import {IConditions} from '../../shared/services/check-condition.service';
+import {BrigadeBean, DrugNewBean, InquirerBean, RecordType, SubdivisionBean} from '../../../../swagger/med-api.service';
 
 export interface IDictItem {
   title: string;
   method: string; // метод получения элемента справочника
+  fullListMethod?: string; // метод для получения полного списка
   saveMethod: string; // метод сохранения элемента справочника
   restoreMethod?: string; // метод восстановления удаленного элемента справочника
   deleteMethod?: string; // метод восстановления удаления элемента справочника
-  blocks?: {title: string, key: string}[]; // список блоков полей (для разных descriptions: ISimpleDescription[])
+  blocks?: { title: string, key: string }[]; // список блоков полей (для разных descriptions: ISimpleDescription[])
   conditions?: IConditions; // условия для сравнения разных полей и валидации их
   descriptions: ISimpleDescription[];
-  bean?: any;
+  location?: boolean; // если у объекта устанавливается местоположение (активирует карту)
+  bean?: any; // тип бина айтема, для приведения типа при сохранении
+  recordType?: RecordType; // тип логов записи
 }
 
 export interface IHeadersTreeTable {
-  header: string,
-  width: string
+  header: string;
+  width: string;
 }
 
 export interface IDictionaryInfo {
@@ -28,9 +31,11 @@ export interface IDictionaryInfo {
   name: string; // имя для роутера
   colDef?: ColDef[];
   block: string;
-  item: IDictItem;
+  item: IDictItem; // элемент справочника
   params?: any; // параметры запроса
   paramsOrder?: string[]; // порядок параметров
+  filters?: ISimpleDescription[]; // фильтры справочника
+  rootLevel?: number; // поле значения корневого узла в tree dict
 }
 
 const dictionaries: IDictionaryInfo[] = [
@@ -40,6 +45,7 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'active-visit',
     method: 'getReferenceTypeListActiveVisitUsingGET',
     block: 'common',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -51,6 +57,20 @@ const dictionaries: IDictionaryInfo[] = [
         field: 'name',
         width: 400
       }
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
     ],
     item: {
       title: 'Активное посещение',
@@ -84,18 +104,18 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'common'
           }
         },
-
       ],
+
       blocks: [{title: '', key: 'common'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Подразделения',
-
+    title: 'Отделения и посты СМП',
     name: 'subdivisions',
     type: 'tree',
     method: 'getFullSubdivisionNodeUsingGET',
@@ -140,71 +160,71 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
+          label: 'Краткое наименование подразделения:',
+          key: 'shortName',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'general'
+          }
+        },
+        {
           label: 'Район',
-          key: '',
-          type: 'dict',
-          dict: '',
-          dictFiltersOrder: ['type'],
+          key: 'district',
+          type: 'text',
           additional: {
             block: 'address'
           }
         },
         {
           label: 'Населенный пункт',
-          key: '',
-          type: 'dict',
-          dict: '',
-          dictFiltersOrder: ['type'],
-          styleClass: 'col-6',
+          key: 'settlement',
+          type: 'text',
+          styleClass: 'col-4',
           additional: {
             block: 'address'
           }
         },
         {
           label: 'Улица',
-          key: '',
-          type: 'dict',
-          dict: '',
-          dictFiltersOrder: ['type'],
-          styleClass: 'col-6',
+          key: 'street',
+          type: 'text',
+          styleClass: 'col-4',
           additional: {
             block: 'address'
           }
         },
         {
           label: 'Дом',
-          key: '',
-          type: 'dict',
-          dict: '',
-          dictFiltersOrder: ['type'],
-          styleClass: 'col-4',
-          additional: {
-            block: 'address'
-          }
-        },
-        {
-          label: 'Корпус',
-          key: 'building',
+          key: 'houseNumber',
           type: 'text',
           styleClass: 'col-4',
           additional: {
             block: 'address'
           }
         },
-        {
-          label: 'Лит./Стр',
-          key: 'structure',
-          type: 'text',
-          styleClass: 'col-4',
-          additional: {
-            block: 'address'
-          }
-        },
+        // {
+        //   label: 'Корпус',
+        //   key: 'building',
+        //   type: 'text',
+        //   styleClass: 'col-4',
+        //   additional: {
+        //     block: 'address'
+        //   }
+        // },
+        // {
+        //   label: 'Лит./Стр',
+        //   key: 'structure',
+        //   type: 'text',
+        //   styleClass: 'col-4',
+        //   additional: {
+        //     block: 'address'
+        //   }
+        // },
         {
           label: 'Телефон',
           key: 'phone',
-          type: 'number',
-          errorText: 'Некорректный номер',
+          type: 'mask',
           additional: {
             block: 'contactInfo'
           }
@@ -213,23 +233,14 @@ const dictionaries: IDictionaryInfo[] = [
           label: 'E-mail',
           key: 'email',
           errorText: 'Неверный формат почты',
-          pattern: '^\\w+[\\w-\\.]*\\@\\w+((-\\w+)|(\\w*))\\.[a-z]{2,3}$',
-          required: true,
+          pattern: '^(\\w+[\\w-\\.]*\\@\\w+((-\\w+)|(\\w*))\\.[a-z]{2,3}|\s*)$',
           type: 'text',
           additional: {
             block: 'contactInfo'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'contactInfo'
-          }
-        }
       ],
+      location: true,
       blocks: [
         {title: 'Общие сведения', key: 'general'},
         {title: 'Адрес', key: 'address'},
@@ -240,10 +251,11 @@ const dictionaries: IDictionaryInfo[] = [
       restoreMethod: 'restoreSubdivisionUsingPOST',
       deleteMethod: 'deleteSubdivisionUsingDELETE',
       bean: SubdivisionBean,
+      recordType: RecordType.SUBDIVISION
     }
   },
   {
-    title: 'Больницы',
+    title: 'Медицинские организации',
     type: 'list',
     name: 'hospitals',
     method: 'getSubdivisionListUsingGET',
@@ -252,18 +264,63 @@ const dictionaries: IDictionaryInfo[] = [
     block: 'common',
     colDef: [
       {
-        headerName: 'Код',
+        headerName: 'Код организации',
         field: 'code',
-        width: 150,
+        width: 100,
       },
       {
-        headerName: 'Наименование',
+        headerName: 'Наименование организации',
         field: 'name',
         width: 400
-      }
+      },
+      {
+        headerName: 'Краткое наименование организации',
+        field: 'shortName',
+        width: 100
+      },
+      {
+        headerName: 'Электронная почта',
+        field: 'email',
+        width: 100
+      },
+      {
+        headerName: 'Веб сайт',
+        field: 'website',
+        width: 100
+      },
+      {
+        headerName: 'Телефон',
+        field: 'phone',
+        width: 100
+      },
+      {
+        headerName: 'Полный адрес',
+        field: '',
+        width: 100
+      },
+      {
+        headerName: 'Наименование района',
+        field: '',
+        width: 100
+      },
+      {
+        headerName: 'Населенный пункт',
+        field: '',
+        width: 100
+      },
+      {
+        headerName: 'Улица',
+        field: '',
+        width: 100
+      },
+      {
+        headerName: 'Номер дома',
+        field: '',
+        width: 100
+      },
     ],
     item: {
-      title: 'Больница',
+      title: 'Медицинская организация',
       descriptions: [
         {
           label: 'Тип',
@@ -286,7 +343,7 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Код:',
+          label: 'Код  организации:',
           key: 'code',
           type: 'text',
           styleClass: '',
@@ -295,7 +352,7 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Наименование:',
+          label: 'Наименование  организации:',
           key: 'name',
           type: 'text',
           styleClass: '',
@@ -303,16 +360,15 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'general'
           }
         },
-        // {
-        //   label: 'Район',
-        //   key: '',
-        //   type: 'dict',
-        //   dict: 'readAllUsingGET_10',
-        //   dictFiltersOrder: ['type'],
-        //   additional: {
-        //     block: 'address'
-        //   }
-        // },
+        {
+          label: 'Краткое наименование  организации:',
+          key: 'shortName',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'general'
+          }
+        },
         {
           label: 'Улица',
           key: '',
@@ -326,8 +382,7 @@ const dictionaries: IDictionaryInfo[] = [
         {
           label: 'Телефон',
           key: 'phone',
-          type: 'number',
-          errorText: 'Некорректный номер',
+          type: 'mask',
           additional: {
             block: 'contactInfo'
           }
@@ -336,8 +391,7 @@ const dictionaries: IDictionaryInfo[] = [
           label: 'E-mail',
           key: 'email',
           errorText: 'Неверный формат почты',
-          pattern: '^\\w+[\\w-\\.]*\\@\\w+((-\\w+)|(\\w*))\\.[a-z]{2,3}$',
-          required: true,
+          pattern: '^(\\w+[\\w-\\.]*\\@\\w+((-\\w+)|(\\w*))\\.[a-z]{2,3}|\s*)$',
           type: 'text',
           additional: {
             block: 'contactInfo'
@@ -346,23 +400,13 @@ const dictionaries: IDictionaryInfo[] = [
         {
           label: 'Web-сайт',
           key: 'website',
-          errorText: 'Неверный формат сайта',
-          pattern: '^(https?:\\/\\/)?(www\\.)?([a-zA-Z0-9]+(-?[a-zA-Z0-9])*\\.)+[\\w]{2,}(\\/\\S*)?$',
-          required: true,
+          // errorText: 'Неверный формат сайта',
+          // pattern: '^((https?:\\/\\/)?(www\\.)?([a-zA-Z0-9]+(-?[a-zA-Z0-9])*\\.)+[\\w]{2,}(\\/\\S*)?|\s*)$',
           type: 'text',
           additional: {
             block: 'contactInfo'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'deleted'
-          }
-        }
       ],
       blocks: [
         {title: 'Общие сведения', key: 'general'},
@@ -377,40 +421,125 @@ const dictionaries: IDictionaryInfo[] = [
     }
   },
   {
-    title: 'Типы графиков',
+    title: 'Виды организаций',
     type: 'list',
-    name: 'schedule-types',
-    method: 'getScheduleTypeListUsingGET',
+    name: 'hospitals-types',
+    method: 'getSubdivisionTypeListUsingGET',
     block: 'common',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Наименование',
         field: 'name',
+        width: 200
+      },
+      {
+        headerName: 'Код вида подразделения',
+        field: 'code',
+        width: 100
+      },
+      {
+        headerName: 'Код подразделения, которому подчиняется',
+        field: 'parentId',
+        width: 100
+      },
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
+    item: {
+      title: 'Вид организации',
+      descriptions: [
+        {
+          label: 'Вид подразделения:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'general'
+          }
+        },
+        {
+          label: 'Код вида подразделения:',
+          key: 'code',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'general'
+          }
+        },
+      ],
+
+      blocks: [
+        {title: 'Общие сведения', key: 'general'},
+      ],
+      method: 'getSubdivisionTypeUsingGET',
+      saveMethod: 'updateSubdivisionTypeUsingPOST',
+      restoreMethod: 'restoreSubdivisionTypeUsingPOST',
+      deleteMethod: 'deleteSubdivisionTypeUsingDELETE'
+    }
+  },
+  {
+    title: 'Графики работы сотрудников',
+    type: 'list',
+    name: 'schedule-types',
+    method: 'getScheduleTypeListUsingGET',
+    block: 'common',
+    paramsOrder: ['name', 'code'],
+    colDef: [
+      {
+        headerName: 'Наименование графика работы',
+        field: 'name',
         width: 135,
       },
       {
-        headerName: 'Начало',
-        field: 'timeFrom',
-        width: 135,
-      },
-      {
-        headerName: 'Длительность',
+        headerName: 'Количество рабочих минут в одном рабочем дне',
         field: 'workingMinutes',
         width: 145,
       },
       {
-        headerName: 'Рабочих дней',
+        headerName: 'Количество рабочих дней в одном цикле графика',
         field: 'workingDays',
         width: 135,
       },
       {
-        headerName: 'Выходных дней',
+        headerName: 'Время начала работы по графику',
+        field: 'timeFrom',
+        width: 135,
+      },
+      {
+        headerName: 'Количество выходных дней в одном цикле графика',
         field: 'daysOff',
         width: 145,
       },
     ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      // {
+      //   label: 'Код:',
+      //   key: 'code',
+      //   type: 'text',
+      //   styleClass: 'col-1',
+      // },
+    ],
     item: {
-      title: 'График',
+      title: 'График работы сотрудников',
       conditions: {
         diff_time: {
           first: 'timeFrom',
@@ -422,6 +551,9 @@ const dictionaries: IDictionaryInfo[] = [
           second: 'daysOff',
           result: 'name',
           separator: '/'
+        },
+        makeWorkCode: {
+          true: true
         }
       },
       descriptions: [
@@ -431,15 +563,6 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           readonly: true,
           required: true,
-          additional: {
-            block: 'common'
-          }
-        },
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
           additional: {
             block: 'common'
           }
@@ -489,7 +612,7 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Рабочих часов',
+          label: 'Рабочих минут',
           key: 'workingMinutes',
           type: 'text',
           readonly: true,
@@ -500,6 +623,7 @@ const dictionaries: IDictionaryInfo[] = [
         },
 
       ],
+
       blocks: [{title: '', key: 'common'}],
       method: 'getScheduleTypeUsingGET',
       saveMethod: 'updateScheduleTypeUsingPOST',
@@ -508,33 +632,69 @@ const dictionaries: IDictionaryInfo[] = [
     }
   },
   {
-    title: 'Транспорты',
+    title: 'Автотранспорт',
     type: 'list',
     name: 'transport',
     method: 'getTransportListUsingGET',
     block: 'common',
+    params: {isHelicopter: false},
+    paramsOrder: ['name', 'code', 'isHelicopter'],
     colDef: [
       {
-        headerName: 'Гос. номер',
+        headerName: 'Подразделение, которому принадлежит',
+        field: 'subdivision',
+        width: 150
+      },
+      {
+        headerName: 'Регистрационный номер',
         field: 'code',
         width: 150,
       },
       {
-        headerName: 'Марка',
+        headerName: 'Тип',
         field: 'name',
         width: 200
       },
       {
-        headerName: 'Цвет',
-        field: 'color',
-        width: 200
+        headerName: 'Признак',
+        cellRenderer: p => {
+          if (p.data && p.data.isHelicopter) {
+            return 'авиация';
+          } else {
+            return 'авто';
+          }
+        },
+        width: 100
+      }
+    ],
+    filters: [
+      {
+        label: 'Тип:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+      {
+        label: 'Регистрационный номер:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-2',
       },
     ],
     item: {
-      title: 'Транспорт',
+      title: 'Автотранспорт',
       descriptions: [
         {
-          label: 'Гос. номер:',
+          label: 'Подразделение:',
+          key: 'subdivision',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Регистрационный номер:',
           key: 'code',
           type: 'text',
           styleClass: '',
@@ -543,7 +703,7 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Марка:',
+          label: 'Тип:',
           key: 'name',
           type: 'text',
           styleClass: '',
@@ -552,16 +712,18 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Цвет:',
-          key: 'color',
-          type: 'text',
+          label: 'Авто',
+          key: 'isHelicopter',
+          type: 'checkbox',
           styleClass: '',
           additional: {
             block: 'common'
-          }
+          },
+          hide: true,
+          presetValue: 'false'
         },
-
       ],
+
       blocks: [
         {title: '', key: 'common'},
       ],
@@ -571,142 +733,205 @@ const dictionaries: IDictionaryInfo[] = [
       deleteMethod: 'deleteTransportUsingDELETE'
     }
   },
-  // {
-  //   title: 'Сотрудники',
-  //   type: 'list',
-  //   name: 'performers',
-  //   method: 'getPerformerListUsingGET',
-  //   block: 'common',
-  //   colDef: [
-  //     {
-  //       headerName: 'Фамилия',
-  //       field: 'surname',
-  //     },
-  //     {
-  //       headerName: 'Имя',
-  //       field: 'name',
-  //     },
-  //     {
-  //       headerName: 'Отчество',
-  //       field: 'patronymic',
-  //     },
-  //     {
-  //       headerName: 'Должность',
-  //       field: 'typeFK.name',
-  //     },
-  //     {
-  //       headerName: 'Место работы',
-  //       field: 'workplaceSubdivisionFK.name',
-  //     },
-  //     {
-  //       headerName: 'Логин',
-  //       field: 'login',
-  //     },
-  //
-  //   ],
-  //   item: {
-  //     title: 'Сотрудник',
-  //     descriptions: [
-  //       {
-  //         label: 'Фамилия:',
-  //         key: 'surname',
-  //         type: 'text',
-  //         errorText: 'Только кириллица',
-  //         pattern: '^[а-яА-ЯёЁ\\s-]*',
-  //         styleClass: 'col-4',
-  //         additional: {
-  //           block: 'common'
-  //         }
-  //       },
-  //       {
-  //         label: 'Имя:',
-  //         key: 'name',
-  //         type: 'text',
-  //         errorText: 'Только кириллица',
-  //         pattern: '^[а-яА-ЯёЁ\\s-]*',
-  //         styleClass: 'col-4',
-  //         additional: {
-  //           block: 'common'
-  //         }
-  //       },        {
-  //         label: 'Отчество:',
-  //         key: 'patronymic',
-  //         type: 'text',
-  //         errorText: 'Только кириллица',
-  //         pattern: '^[а-яА-ЯёЁ\\s-]*',
-  //         styleClass: 'col-4',
-  //         additional: {
-  //           block: 'common'
-  //         }
-  //       },
-  //       {
-  //         label: 'Должность:',
-  //         key: 'typeFK',
-  //         dict: 'getPerformerTypeListUsingGET',
-  //         type: 'dict',
-  //         styleClass: '',
-  //         additional: {
-  //           block: 'common'
-  //         }
-  //       },
-  //       // {
-  //       //   label: 'Место работы:',
-  //       //   key: 'workpalceSubdivisionFK',
-  //       //   type: 'text',
-  //       //   styleClass: '',
-  //       //   additional: {
-  //       //     block: 'common'
-  //       //   }
-  //       // },
-  //       {
-  //         label: 'Подразделение:',
-  //         key: 'subdivisionFK',
-  //         dict: 'getSubdivisionListUsingGET',
-  //         type: 'dict',
-  //         styleClass: '',
-  //         additional: {
-  //           block: 'common'
-  //         }
-  //       },
-  //       {
-  //         label: 'Логин:',
-  //         key: 'login',
-  //         type: 'text',
-  //         styleClass: '',
-  //         additional: {
-  //           block: 'common'
-  //         }
-  //       },
-  //
-  //     ],
-  //     blocks: [{title: '', key: 'common'}],
-  //     method: 'getPerformerUsingGET',
-  //     saveMethod: 'updatePerformerUsingPOST',
-  //     restoreMethod: 'restorePerformerUsingPOST',
-  //     deleteMethod: 'deletePerformerUsingDELETE'
-  //   }
-  // },
   {
-    title: 'Должности',
+    title: 'Виды автотранспорта',
     type: 'list',
-    name: 'performer-types',
-    method: 'getPerformerTypeListUsingGET',
+    name: 'transport-types',
+    method: 'getTransportTypeUsingGET',
     block: 'common',
     colDef: [
       {
-        headerName: 'Код',
+        headerName: 'Наименование',
+        field: 'type',
+        width: 150
+      },
+    ],
+    item: {
+      title: 'Вид автотранспорта',
+      descriptions: [
+        {
+          label: 'Наименование:',
+          key: 'type',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+      ],
+      blocks: [
+        {title: '', key: 'common'},
+      ],
+      method: '',
+      saveMethod: '',
+      restoreMethod: '',
+      deleteMethod: ''
+    }
+  },
+  {
+    title: 'Санитарная авиация',
+    type: 'list',
+    name: 'helicopters',
+    method: 'getTransportListUsingGET',
+    block: 'common',
+    params: {isHelicopter: true},
+    paramsOrder: ['name', 'code', 'isHelicopter'],
+    colDef: [
+      {
+        headerName: 'Подразделение, которому принадлежит',
+        field: 'subdivision',
+        width: 150
+      },
+      {
+        headerName: 'Регистрационный номер',
         field: 'code',
         width: 150,
       },
       {
-        headerName: 'Наименование',
+        headerName: 'Тип',
         field: 'name',
-        width: 400
+        width: 200
+      },
+      {
+        headerName: 'Признак',
+        cellRenderer: p => {
+          if (p.data && p.data.isHelicopter) {
+            return 'авиация';
+          } else {
+            return 'авто';
+          }
+        },
+        width: 100
       }
     ],
+    filters: [
+      {
+        label: 'Тип:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+      {
+        label: 'Регистрационный номер:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+    ],
     item: {
-      title: 'Должность',
+      title: 'Санитарная авиация',
       descriptions: [
+        {
+          label: 'Подразделение:',
+          key: 'subdivision',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Регистрационный номер:',
+          key: 'code',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Тип:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Авиационный транспорт',
+          key: 'isHelicopter',
+          type: 'checkbox',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Доступен',
+          key: 'isAvailable',
+          type: 'checkbox',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+      ],
+
+      blocks: [
+        {title: '', key: 'common'},
+      ],
+      method: 'getTransportUsingGET',
+      saveMethod: 'updateTransportUsingPOST',
+      restoreMethod: 'restoreTransportUsingPOST',
+      deleteMethod: 'deleteTransportUsingDELETE'
+    }
+  },
+  {
+    title: 'Должности сотрудников',
+    type: 'list',
+    name: 'performer-types',
+    method: 'getPerformerTypeListUsingGET',
+    block: 'common',
+    paramsOrder: ['name', 'code'],
+    colDef: [
+      {
+        headerName: 'Должность',
+        field: 'name',
+        width: 200
+      },
+      {
+        headerName: 'Код',
+        field: 'code',
+        width: 100,
+      },
+      {
+        headerName: 'Краткое наименование',
+        field: 'shortName',
+        width: 100
+      },
+      {
+        headerName: 'Группа',
+        field: 'groupName',
+        width: 150,
+      },
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
+    item: {
+      title: 'Должность сотрудника',
+      descriptions: [
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
         {
           label: 'Код:',
           key: 'code',
@@ -717,9 +942,26 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Наименование:',
-          key: 'name',
+          label: 'Краткое ниаменование:',
+          key: 'shortName',
           type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Группа',
+          key: 'groupCode',
+          type: 'select',
+          selectList: [
+            {name: 'Мед. работник бригад', id: 0},
+            {name: 'Водители бригад', id: 1},
+            {name: 'Невыездной персонал', id: 2},
+            {name: 'Пилоты авиабригад', id: 3},
+            {name: 'Мед. работники авиабригад', id: 4},
+            {name: 'Прочий персонал бригад', id: 5},
+          ],
           styleClass: '',
           additional: {
             block: 'common'
@@ -727,6 +969,7 @@ const dictionaries: IDictionaryInfo[] = [
         },
 
       ],
+
       blocks: [{title: '', key: 'common'}],
       method: 'getPerformerTypeUsingGET',
       saveMethod: 'updatePerformerTypeUsingPOST',
@@ -735,11 +978,12 @@ const dictionaries: IDictionaryInfo[] = [
     }
   },
   {
-    title: 'Специализации',
+    title: 'Специализации сотрудников',
     type: 'list',
     name: 'skills',
     method: 'getSkillListUsingGET',
     block: 'common',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -750,10 +994,29 @@ const dictionaries: IDictionaryInfo[] = [
         headerName: 'Наименование',
         field: 'name',
         width: 400
+      },
+      {
+        headerName: 'Общеупотребимое наименование',
+        field: 'commonName',
+        width: 400
       }
     ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     item: {
-      title: 'Специализация',
+      title: 'Специализация сотрудника',
       descriptions: [
         {
           label: 'Код:',
@@ -773,8 +1036,17 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'common'
           }
         },
-
+        {
+          label: 'Общеупотребимое наименование:',
+          key: 'commonName',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
       ],
+
       blocks: [{title: '', key: 'common'}],
       method: 'getSkillUsingGET',
       saveMethod: 'updateSkillUsingPOST',
@@ -783,35 +1055,51 @@ const dictionaries: IDictionaryInfo[] = [
     }
   },
   {
-    title: 'Типы бригад',
+    title: 'Типы бригад СМП',
     type: 'list',
     name: 'brigades-types',
     method: 'readBrigadeTypeListUsingGET',
     block: 'brigades',
+    paramsOrder: ['name', 'code'],
     colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 400
+      },
       {
         headerName: 'Код',
         field: 'code',
         width: 150,
       },
       {
-        headerName: 'Наименование',
-        field: 'name',
-        width: 400
-      }
+        headerName: 'Признак наличия',
+        field: '',
+        width: 150,
+      },
+      {
+        headerName: 'Системный код',
+        field: '',
+        width: 150,
+      },
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
     ],
     item: {
-      title: 'Тип бригады',
+      title: 'Тип бригады СМП',
       descriptions: [
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'brigades'
-          }
-        },
         {
           label: 'Наименование:',
           key: 'name',
@@ -822,28 +1110,31 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
+          label: 'Код:',
+          key: 'code',
+          type: 'text',
+          styleClass: '',
           additional: {
             block: 'brigades'
           }
-        }
+        },
       ],
+
       blocks: [{title: '', key: 'brigades'}],
       method: 'getBrigadeTypeUsingGET',
       saveMethod: 'updateBrigadeTypeUsingPOST',
       restoreMethod: 'restoreBrigadeTypeUsingPOST',
-      deleteMethod: 'deleteBrigadeTypeUsingDELETE'
+      deleteMethod: 'deleteBrigadeTypeUsingDELETE',
+      recordType: RecordType.BRIGADE_TYPE
     }
   },
   {
-    title: 'Типы передач',
+    title: 'Способы передачи вызовов СМП',
     type: 'list',
     name: 'brigade-receiving',
     method: 'getReferenceTypeListReceivingTypeUsingGET',
-    block: 'brigades',
+    block: 'calls',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -856,8 +1147,22 @@ const dictionaries: IDictionaryInfo[] = [
         width: 400
       }
     ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     item: {
-      title: 'Тип передачи',
+      title: 'Способ передачи вызова СМП',
       descriptions: [
         {
           label: 'Тип',
@@ -888,21 +1193,65 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'brigades'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'brigades'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'brigades'
+        //   }
+        // }
       ],
+
       blocks: [{title: '', key: 'brigades'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
+    }
+  },
+  {
+    title: 'Состояния вызовов СМП',
+    type: 'list',
+    name: 'call-statuses',
+    method: 'getCallStatusListUsingGET',
+    block: 'calls',
+    colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 400
+      }
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+    ],
+    item: {
+      title: 'Состояние вызова СМП',
+      descriptions: [
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'brigades'
+          }
+        },
+      ],
+
+      blocks: [{title: '', key: 'brigades'}],
+      method: '',
+      restoreMethod: '',
+      saveMethod: '',
+      deleteMethod: '',
     }
   },
   {
@@ -911,6 +1260,7 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'brigade-receiving-place',
     method: 'getReferenceTypeListBrigadeReceivingPlaceUsingGET',
     block: 'brigades',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -922,6 +1272,20 @@ const dictionaries: IDictionaryInfo[] = [
         field: 'name',
         width: 400
       }
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
     ],
     item: {
       title: 'Место вызова бригады',
@@ -955,21 +1319,23 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'brigades'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'brigades'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'brigades'
+        //   }
+        // }
       ],
+
       blocks: [{title: '', key: 'brigades'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -978,6 +1344,7 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'delay-reason',
     method: 'getReferenceTypeListDelayReasonUsingGET',
     block: 'brigades',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -989,6 +1356,20 @@ const dictionaries: IDictionaryInfo[] = [
         field: 'name',
         width: 400
       }
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
     ],
     item: {
       title: 'Причина задержки',
@@ -1022,29 +1403,32 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'brigades'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'brigades'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'brigades'
+        //   }
+        // }
       ],
+
       blocks: [{title: '', key: 'brigades'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Типы заявителей',
+    title: 'Типы заявителей вызовов СМП',
     type: 'list',
     name: 'declarant-types',
     method: 'getReferenceTypeListDeclarantUsingGET',
     block: 'common',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -1057,8 +1441,22 @@ const dictionaries: IDictionaryInfo[] = [
         width: 400
       }
     ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     item: {
-      title: 'Тип заявителя',
+      title: 'Тип заявителя вызова СМП',
       descriptions: [
         {
           label: 'Тип',
@@ -1089,21 +1487,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'general'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'general'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'general'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'general'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -1112,6 +1511,7 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'general-state',
     method: 'getReferenceTypeListGeneralStateUsingGET',
     block: 'common',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -1123,6 +1523,20 @@ const dictionaries: IDictionaryInfo[] = [
         field: 'name',
         width: 400
       }
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
     ],
     item: {
       title: 'Вид состояния пациента',
@@ -1156,29 +1570,31 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'general'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'general'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'general'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'general'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Типы вызовов',
+    title: 'Виды вызовов СМП',
     type: 'list',
     name: 'call-types',
     method: 'getReferenceTypeListRingTypeUsingGET',
     block: 'calls',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -1191,8 +1607,22 @@ const dictionaries: IDictionaryInfo[] = [
         width: 400
       }
     ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     item: {
-      title: 'Тип вызова',
+      title: 'Вид вызова СМП',
       descriptions: [
         {
           label: 'Тип',
@@ -1203,7 +1633,7 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'calls'
           },
           hide: true,
-          presetValue: 'CALL'
+          presetValue: 'CALL_TYPE'
         },
         {
           label: 'Код:',
@@ -1223,96 +1653,114 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'calls'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'calls'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'calls'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'calls'}],
       method: 'getReferenceTypeUsingGET',
       saveMethod: 'updateReferenceTypeUsingPOST',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
-  {
-    title: 'Типы звонков',
-    type: 'list',
-    name: 'ring-type',
-    method: 'getReferenceTypeListRingTypeUsingGET',
-    block: 'calls',
-    colDef: [
-      {
-        headerName: 'Код',
-        field: 'code',
-        width: 150,
-      },
-      {
-        headerName: 'Наименование',
-        field: 'name',
-        width: 400
-      }
-    ],
-    item: {
-      title: 'Тип звонка',
-      descriptions: [
-        {
-          label: 'Тип',
-          key: 'type',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'calls'
-          },
-          hide: true,
-          presetValue: 'RING_TYPE'
-        },
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'calls'
-          }
-        },
-        {
-          label: 'Наименование:',
-          key: 'name',
-          type: 'text',
-          bindLabel: 'name',
-          additional: {
-            block: 'calls'
-          }
-        },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'calls'
-          }
-        }
-      ],
-      blocks: [{title: '', key: 'calls'}],
-      method: 'getReferenceTypeUsingGET',
-      saveMethod: 'updateReferenceTypeUsingPOST',
-      restoreMethod: 'restoreReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
-    }
-  },
+//   {
+//     title: 'Типы звонков',
+//     type: 'list',
+//     name: 'ring-type',
+//     method: 'getReferenceTypeListRingTypeUsingGET',
+//     block: 'calls',
+//    paramsOrder: ['name', 'code'],
+//     colDef: [
+//       {
+//         headerName: 'Код',
+//         field: 'code',
+//         width: 150,
+//       },
+//       {
+//         headerName: 'Наименование',
+//         field: 'name',
+//         width: 400
+//       }
+//     ],
+//     filters: [
+//       {
+//         label: 'Наименование:',
+//         key: 'name',
+//         type: 'text',
+//         styleClass: 'col-2',
+//       },
+//       {
+//         label: 'Код:',
+//         key: 'code',
+//         type: 'text',
+//         styleClass: 'col-1',
+//       },
+//     ],
+//     item: {
+//       title: 'Тип звонка',
+//       descriptions: [
+//         {
+//           label: 'Тип',
+//           key: 'type',
+//           type: 'text',
+//           styleClass: '',
+//           additional: {
+//             block: 'calls'
+//           },
+//           hide: true,
+//           presetValue: 'RING_TYPE'
+//         },
+//         {
+//           label: 'Код:',
+//           key: 'code',
+//           type: 'text',
+//           styleClass: '',
+//           additional: {
+//             block: 'calls'
+//           }
+//         },
+//         {
+//           label: 'Наименование:',
+//           key: 'name',
+//           type: 'text',
+//           bindLabel: 'name',
+//           additional: {
+//             block: 'calls'
+//           }
+//         },
+//         // {
+//         //   label: 'Удаленная запись',
+//         //   key: 'isDeleted',
+//         //   type: 'checkbox',
+//         //   styleClass: 'inline-checkbox col-12',
+//         //   additional: {
+//         //     block: 'calls'
+//         //   }
+//         // }
+//       ],
+//       blocks: [{title: '', key: 'calls'}],
+//       method: 'getReferenceTypeUsingGET',
+//       saveMethod: 'updateReferenceTypeUsingPOST',
+//       restoreMethod: 'restoreReferenceTypeUsingPOST',
+//       deleteMethod: 'deleteReferenceTypeUsingDELETE',
+//       recordType: RecordType.REFERENCE_TYPE
+// }
+//   },
   {
     title: 'Места вызовов',
     type: 'list',
     name: 'place-types',
     method: 'getReferenceTypeListCallPlaceUsingGET',
     block: 'calls',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -1324,6 +1772,20 @@ const dictionaries: IDictionaryInfo[] = [
         field: 'name',
         width: 400
       }
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
     ],
     item: {
       title: 'Места вызова',
@@ -1357,25 +1819,26 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'calls'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'calls'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'calls'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'calls'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Опросник "Повод к вызову"',
+    title: 'Поводы вызова СМП',
     type: 'tree',
     name: 'inquirer',
     method: 'getBranchNodeUsingGET',
@@ -1391,7 +1854,7 @@ const dictionaries: IDictionaryInfo[] = [
       }
     ],
     item: {
-      title: 'Опросник "Повод к вызову"',
+      title: 'Повод вызова СМП',
       descriptions: [
         {
           label: 'Наименование:',
@@ -1430,15 +1893,15 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'reasonInquirer'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'inquirer'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'inquirer'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'inquirer'}],
       method: 'getInquirerUsingGET',
@@ -1446,66 +1909,11 @@ const dictionaries: IDictionaryInfo[] = [
       restoreMethod: 'restoreInquirerUsingPOST',
       deleteMethod: 'deleteInquirerUsingDELETE',
       bean: InquirerBean
-    }
+    },
+    rootLevel: 0,
   },
   {
-    title: 'Единицы измерения',
-    type: 'list',
-    name: 'units',
-    method: 'getUnitListUsingGET',
-    block: 'common',
-    colDef: [
-      {
-        headerName: 'Код',
-        field: 'code',
-        width: 150,
-      },
-      {
-        headerName: 'Наименование',
-        field: 'name',
-        width: 400
-      }
-    ],
-    item: {
-      title: 'Единица измерения',
-      descriptions: [
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'general'
-          }
-        },
-        {
-          label: 'Наименование:',
-          key: 'name',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'general'
-          }
-        },
-        {
-          label: 'Удаленная запись',
-          key: 'deleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'general'
-          }
-        }
-      ],
-      blocks: [{title: '', key: 'general'}],
-      method: 'getUnitUsingGET',
-      saveMethod: 'updateUnitUsingPOST',
-      restoreMethod: 'restoreUnitUsingPOST',
-      deleteMethod: 'deleteUnitUsingDELETE'
-    }
-  },
-  {
-    title: 'МКБ10',
+    title: 'Классификатор МКБ-10',
     type: 'tree',
     name: 'mkb10',
     method: 'getFullMkbNodeUsingGET',
@@ -1517,7 +1925,7 @@ const dictionaries: IDictionaryInfo[] = [
       },
     ],
     item: {
-      title: 'МКБ10',
+      title: 'Классификатор МКБ-10',
       descriptions: [
         {
           label: 'Код:',
@@ -1558,17 +1966,166 @@ const dictionaries: IDictionaryInfo[] = [
       ],
       blocks: [{title: '', key: 'general'}],
       method: 'getClassMkbUsingGET',
+      fullListMethod: 'getFullListUsingGET',
       saveMethod: 'updateClassMkbUsingPOST',
       restoreMethod: 'restoreClassMkbUsingPOST',
       deleteMethod: 'deleteClassMkbUsingDELETE'
-    }
+    },
+    filters: [
+      {
+        label: 'Наименование',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      }
+    ],
+    paramsOrder: ['name', 'code'],
+    rootLevel: -1,
   },
   {
-    title: 'Бригады',
+    title: 'Бригады СМП',
     type: 'list',
     name: 'brigades-control',
     method: 'getBrigadeListUsingGET',
     block: 'brigades',
+    params: {isAvia: false},
+    paramsOrder: ['name', 'code', 'isAvia', 'subdivisionId'],
+    colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 270,
+      },
+      {
+        headerName: 'Код',
+        field: 'code',
+        width: 270,
+      },
+      {
+        headerName: 'Тип бригады',
+        field: 'brigadeTypeFK.name',
+        width: 300,
+      },
+      {
+        headerName: 'Подразделение',
+        field: 'subdivisionFK.name',
+        width: 200
+      },
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
+    item: {
+      title: 'Бригада СМП',
+      descriptions: [
+        {
+          label: 'Наименование',
+          key: 'name',
+          type: 'text',
+          additional: {
+            block: 'brigades'
+          }
+        },
+        {
+          label: 'Код',
+          key: 'code',
+          type: 'text',
+          additional: {
+            block: 'brigades'
+          }
+        },
+        {
+          label: 'Тип',
+          key: 'brigadeTypeFK',
+          type: 'dict',
+          dict: 'readBrigadeTypeListUsingGET',
+          additional: {
+            block: 'brigades'
+          }
+        },
+        {
+          label: 'Район:',
+          key: 'subdivisionFK',
+          type: 'dict',
+          dict: 'getSubdivisionListUsingGET',
+          bindLabel: 'shortName',
+          dictFilters: {type: [448641, 1202]},
+          dictFiltersOrder: ['type'],
+          required: true,
+          styleClass: 'col-12',
+          additional: {
+            block: 'brigades'
+          }
+        },
+        // {
+        //   label: 'Подразделение',
+        //   key: 'subdivisionFK',
+        //   type: 'dict',
+        //   dict: 'getSubdivisionListUsingGET',
+        //   additional: {
+        //     block: 'brigades'
+        //   }
+        // },
+        {
+          label: 'Авиабригада',
+          key: 'isAviaBrigade',
+          type: 'tricheckbox',
+          styleClass: 'inline-checkbox col-12',
+          additional: {
+            block: 'brigades'
+          },
+          hide: true,
+          presetValue: false
+        }
+      ],
+      blocks: [{title: '', key: 'brigades'}],
+      method: 'getBrigadeUsingGET',
+      saveMethod: 'updateBrigadeUsingPOST',
+      restoreMethod: 'restoreBrigadeUsingPOST',
+      deleteMethod: 'deleteBrigadeUsingDELETE',
+      bean: BrigadeBean,
+      recordType: RecordType.BRIGADE
+    }
+  },
+  {
+    title: 'Авиационные бригады',
+    type: 'list',
+    name: 'aviation-brigades-control',
+    method: 'getBrigadeListUsingGET',
+    paramsOrder: ['name', 'code', 'isAvia'],
+    params: {isAvia: true},
+    block: 'brigades',
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+    ],
     colDef: [
       {
         headerName: 'Наименование',
@@ -1587,7 +2144,7 @@ const dictionaries: IDictionaryInfo[] = [
       },
     ],
     item: {
-      title: 'Бригада',
+      title: 'Авиационная бригада',
       descriptions: [
         {
           label: 'Наименование',
@@ -1607,22 +2164,38 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Статус',
-          key: 'brigadeStatusFK',
+          label: 'Район:',
+          key: 'subdivisionFK',
           type: 'dict',
-          dict: 'getBrigadeStatusListUsingGET',
+          dict: 'getSubdivisionListUsingGET',
+          bindLabel: 'shortName',
+          dictFilters: {type: [448641, 1202]},
+          dictFiltersOrder: ['type'],
+          required: true,
+          styleClass: 'col-12',
           additional: {
             block: 'brigades'
           }
         },
+        // {
+        //   label: 'Статус',
+        //   key: 'brigadeStatusFK',
+        //   type: 'dict',
+        //   dict: 'getBrigadeStatusListUsingGET',
+        //   additional: {
+        //     block: 'brigades'
+        //   }
+        // },
         {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
+          label: 'Авиабригада',
+          key: 'isAviaBrigade',
+          type: 'tricheckbox',
           styleClass: 'inline-checkbox col-12',
           additional: {
             block: 'brigades'
-          }
+          },
+          hide: true,
+          presetValue: true
         }
       ],
       blocks: [{title: '', key: 'brigades'}],
@@ -1630,15 +2203,107 @@ const dictionaries: IDictionaryInfo[] = [
       saveMethod: 'updateBrigadeUsingPOST',
       restoreMethod: 'restoreBrigadeUsingPOST',
       deleteMethod: 'deleteBrigadeUsingDELETE',
-      bean: BrigadeBean
+      bean: BrigadeBean,
+      recordType: RecordType.BRIGADE
     }
   },
   {
-    title: 'Поведение пациентов',
+    title: 'Состояния бригад',
+    type: 'list',
+    name: 'brigades-statuses',
+    method: 'getBrigadeStatusListUsingGET',
+    block: 'brigades',
+    paramsOrder: ['name', 'code'],
+    colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 270,
+      },
+      {
+        headerName: 'Доступна',
+        field: 'isAvailable',
+        width: 270,
+        valueFormatter: (p) => p.value ? 'Да' : 'Нет'
+      },
+      {
+        headerName: 'Код',
+        field: 'code',
+        width: 270,
+      },
+    ],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
+    item: {
+      title: 'Состояние бригады',
+      descriptions: [
+        {
+          label: 'Наименование',
+          key: 'name',
+          type: 'text',
+          additional: {
+            block: 'brigades'
+          }
+        },
+        {
+          label: 'Код',
+          key: 'code',
+          type: 'text',
+          additional: {
+            block: 'brigades'
+          }
+        },
+        {
+          label: 'Доступна',
+          key: 'isAvailable',
+          type: 'checkbox',
+          additional: {
+            block: 'brigades'
+          }
+        }
+      ],
+      blocks: [{title: '', key: 'brigades'}],
+      method: 'getBrigadeStatusUsingGET',
+      saveMethod: 'updateBrigadeStatusUsingPOST',
+      restoreMethod: 'restoreBrigadeStatusUsingPOST',
+      deleteMethod: 'deleteBrigadeStatusUsingDELETE',
+      bean: BrigadeBean,
+      recordType: RecordType.BRIGADE_STATUS
+    }
+  },
+  {
+    title: 'Поведение пациента',
     type: 'list',
     name: 'behaviour',
     method: 'getReferenceTypeListBehaviourUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -1683,21 +2348,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -1706,6 +2372,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'complications',
     method: 'getReferenceTypeListComplicationsUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -1750,21 +2431,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -1773,6 +2455,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'complications-help',
     method: 'getReferenceTypeListComplicationsHelpUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -1817,29 +2514,45 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Сознания',
+    title: 'Сознание',
     type: 'list',
     name: 'conscious',
     method: 'getReferenceTypeListConsciousUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -1884,29 +2597,45 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Смерть',
+    title: 'Место смерти',
     type: 'list',
     name: 'death',
     method: 'getReferenceTypeListDeathUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -1951,21 +2680,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -1974,6 +2704,7 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'dyspnea',
     method: 'getReferenceTypeListDyspneaUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -2018,21 +2749,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2041,6 +2773,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'heart-noise',
     method: 'getReferenceTypeListHeartNoiseUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2085,21 +2832,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2108,6 +2856,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'heart-rate',
     method: 'getReferenceTypeListHeartRateUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2152,21 +2915,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2175,6 +2939,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'heart-tone',
     method: 'getReferenceTypeListHeartToneUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2219,21 +2998,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2242,6 +3022,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'incident',
     method: 'getReferenceTypeListIncidentUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2286,21 +3081,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2309,6 +3105,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'intoxication',
     method: 'getReferenceTypeListIntoxicationUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2353,29 +3164,45 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Хрипота в легких',
+    title: 'Хрип в легких',
     type: 'list',
     name: 'lungs-wheezing',
     method: 'getReferenceTypeListLungsWheezingUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2420,29 +3247,45 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Перкуртурный звук над легкими',
+    title: 'Перкуторный звук над легкими',
     type: 'list',
     name: 'lungs-perc',
     method: 'getReferenceTypeListPercLungsSoundUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2487,29 +3330,45 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Социальная категория пациентов',
+    title: 'Социальные категории пациентов',
     type: 'list',
     name: 'patient-social-type',
     method: 'getReferenceTypeListPatientSocialTypeUsingGET',
-    block: 'objectives',
+    block: 'common',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2531,7 +3390,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           },
           hide: true,
           presetValue: 'PATIENT_SOCIAL_TYPE'
@@ -2542,7 +3401,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
         {
@@ -2551,32 +3410,39 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
       ],
-      blocks: [{title: '', key: 'objectives'}],
+      blocks: [{title: '', key: 'common'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
     title: 'Документы пациентов',
     type: 'list',
-    name: 'patient-source-type',
-    method: 'getReferenceTypeListPatientSourceTypeUsingGET',
-    block: 'objectives',
+    name: 'patient-source-type', // todo: перепроверить этот справочник
+    method: 'getDocumentTypeListUsingGET',
+    block: 'common',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2592,24 +3458,24 @@ const dictionaries: IDictionaryInfo[] = [
     item: {
       title: 'Документы пациента',
       descriptions: [
-        {
-          label: 'Тип',
-          key: 'type',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'objectives'
-          },
-          hide: true,
-          presetValue: 'PATIENT_SOURCE_TYPE'
-        },
+        // {
+        //   label: 'Тип',
+        //   key: 'type',
+        //   type: 'text',
+        //   styleClass: '',
+        //   additional: {
+        //     block: 'common'
+        //   },
+        //   hide: true,
+        //   presetValue: 'PATIENT_SOURCE_TYPE'
+        // },
         {
           label: 'Код:',
           key: 'code',
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
         {
@@ -2618,32 +3484,39 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
       ],
-      blocks: [{title: '', key: 'objectives'}],
-      method: 'getReferenceTypeUsingGET',
-      restoreMethod: 'restoreReferenceTypeUsingPOST',
-      saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      blocks: [{title: '', key: 'common'}],
+      method: 'getDocumentTypeUsingGET',
+      restoreMethod: 'restoreDocumentTypeUsingPOST',
+      saveMethod: 'updateDocumentTypeUsingPOST',
+      deleteMethod: 'deleteDocumentTypeUsingDELETE',
+      // recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Место жительство пациетов',
+    title: 'Места жительство пациентов',
     type: 'list',
     name: 'patient-type',
     method: 'getReferenceTypeListPatientTypeUsingGET',
-    block: 'objectives',
+    block: 'common',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2657,7 +3530,7 @@ const dictionaries: IDictionaryInfo[] = [
       }
     ],
     item: {
-      title: 'Место жительство пациета',
+      title: 'Место жительство пациента',
       descriptions: [
         {
           label: 'Тип',
@@ -2665,7 +3538,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           },
           hide: true,
           presetValue: 'PATIENT_TYPE'
@@ -2676,7 +3549,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
         {
@@ -2685,24 +3558,16 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
       ],
-      blocks: [{title: '', key: 'objectives'}],
+      blocks: [{title: '', key: 'common'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2711,6 +3576,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'penalties',
     method: 'getReferenceTypeListPenaltiesUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2755,21 +3635,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2778,6 +3659,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'penalties-ds',
     method: 'getReferenceTypeListPenaltiesDSUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2822,21 +3718,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2845,6 +3742,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'reflexes-ds',
     method: 'getReferenceTypeListReflexesDSUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2889,21 +3801,22 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -2912,6 +3825,21 @@ const dictionaries: IDictionaryInfo[] = [
     name: 'reflexes-tendon',
     method: 'getReferenceTypeListTendonReflexesUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -2956,29 +3884,31 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Результаты',
+    title: 'Результатат вызова',
     type: 'list',
     name: 'result',
     method: 'getReferenceTypeListResultUsingGET',
-    block: 'objectives',
+    block: 'calls',
+    paramsOrder: ['name', 'code'],
     colDef: [
       {
         headerName: 'Код',
@@ -3023,29 +3953,45 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Причина результов',
+    title: 'Причина результатов',
     type: 'list',
     name: 'result-cause',
     method: 'getReferenceTypeListResultCauseUsingGET',
     block: 'objectives',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -3090,29 +4036,56 @@ const dictionaries: IDictionaryInfo[] = [
             block: 'objectives'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
+        // {
+        //   label: 'Удаленная запись',
+        //   key: 'isDeleted',
+        //   type: 'checkbox',
+        //   styleClass: 'inline-checkbox col-12',
+        //   additional: {
+        //     block: 'objectives'
+        //   }
+        // }
       ],
       blocks: [{title: '', key: 'objectives'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Транспортировки',
+    title: 'Виды медицинской эвакуации',
     type: 'list',
     name: 'transportation',
     method: 'getReferenceTypeListTransportationUsingGET',
-    block: 'objectives',
+    block: 'common',
+    params: {type: 'TRANSPORTATION'},
+    paramsOrder: ['type', 'name', 'code'],
+    filters: [
+      {
+        label: 'Тип',
+        type: 'dict',
+        key: 'type',
+        dict: 'getReferenceTypeListTransportationMethodUsingGET',
+        bindValue: 'id',
+        styleClass: 'col-1',
+        hide: true,
+        presetValue: 'TRANSPORTATION'
+      },
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -3126,7 +4099,7 @@ const dictionaries: IDictionaryInfo[] = [
       }
     ],
     item: {
-      title: 'Транспортировка',
+      title: 'Вид медицинской эвакуации',
       descriptions: [
         {
           label: 'Тип',
@@ -3134,7 +4107,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           },
           hide: true,
           presetValue: 'TRANSPORTATION'
@@ -3145,7 +4118,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
         {
@@ -3154,24 +4127,16 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
       ],
-      blocks: [{title: '', key: 'objectives'}],
+      blocks: [{title: '', key: 'common'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
@@ -3179,7 +4144,22 @@ const dictionaries: IDictionaryInfo[] = [
     type: 'list',
     name: 'transportation-method',
     method: 'getReferenceTypeListTransportationMethodUsingGET',
-    block: 'objectives',
+    block: 'common',
+    paramsOrder: ['name', 'code'],
+    filters: [
+      {
+        label: 'Наименование:',
+        key: 'name',
+        type: 'text',
+        styleClass: 'col-2',
+      },
+      {
+        label: 'Код:',
+        key: 'code',
+        type: 'text',
+        styleClass: 'col-1',
+      },
+    ],
     colDef: [
       {
         headerName: 'Код',
@@ -3201,7 +4181,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           },
           hide: true,
           presetValue: 'TRANSPORTATION_METHOD'
@@ -3212,7 +4192,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
         {
@@ -3221,233 +4201,276 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'objectives'
+            block: 'common'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'objectives'
-          }
-        }
       ],
-      blocks: [{title: '', key: 'objectives'}],
+      blocks: [{title: '', key: 'common'}],
       method: 'getReferenceTypeUsingGET',
       restoreMethod: 'restoreReferenceTypeUsingPOST',
       saveMethod: 'updateReferenceTypeUsingPOST',
-      deleteMethod: 'deleteReferenceTypeUsingDELETE'
+      deleteMethod: 'deleteReferenceTypeUsingDELETE',
+      recordType: RecordType.REFERENCE_TYPE
     }
   },
   {
-    title: 'Категории лекарств',
+    title: 'Медсредства',
     type: 'list',
-    name: 'category-drug',
-    method: 'getDrugCategoryListUsingGET',
-    block: 'drugStore',
+    name: 'medications',
+    method: 'getDrugNewListUsingGET',
+    block: 'drugStore2',
     colDef: [
-      {
-        headerName: 'Код',
-        field: 'code',
-        width: 150,
-      },
       {
         headerName: 'Наименование',
         field: 'name',
-        width: 400
+      },
+      {
+        headerName: 'Лекарственная форма',
+        field: 'drugFormBeanFK.name'
+      },
+      {
+        headerName: 'Вид лекарственного препарата',
+        field: 'drugTypeBeanFK.name'
+      },
+      {
+        headerName: 'Единица измерения',
+        field: 'unitNewBeanFK.name',
+        width: 100
+      },
+      {
+        headerName: 'Анатомо-терапевтическо -химическая классификация (АТХ)',
+        field: 'athBeanFK.name'
       },
     ],
     item: {
-      title: 'Категория',
+      title: 'Медсредство',
       descriptions: [
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'drugStore'
-          }
-        },
         {
           label: 'Наименование:',
           key: 'name',
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'drugStore'
+            block: 'drugStore2'
           }
         },
         {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
+          label: 'Лекарственная форма:',
+          key: 'drugFormBeanFK',
+          type: 'dict',
+          dict: 'listFormUsingGET',
+          styleClass: '',
           additional: {
-            block: 'drugStore'
+            block: 'drugStore2'
           }
-        }
+        },
+        {
+          label: 'Вид лекарственного препарата:',
+          key: 'drugTypeBeanFK',
+          type: 'dict',
+          dict: 'listTypeUsingGET',
+          styleClass: '',
+          additional: {
+            block: 'drugStore2'
+          }
+        },
+        {
+          label: 'Единица измерения:',
+          key: 'unitNewBeanFK',
+          type: 'dict',
+          dict: 'listUnitUsingGET',
+          styleClass: '',
+          additional: {
+            block: 'drugStore2'
+          }
+        },
+        {
+          label: 'Анатомо-терапевтическо-химическая классификация (АТХ):',
+          key: 'athBeanFK',
+          type: 'dict',
+          dict: 'listAthUsingGET',
+          styleClass: '',
+          additional: {
+            block: 'drugStore2'
+          }
+        },
       ],
-      blocks: [{title: '', key: 'drugStore'}],
-      method: 'getCategoryDrugUsingGET',
-      restoreMethod: 'restoreDrugCategoryUsingPOST',
-      saveMethod: 'updateDrugCategoryUsingPOST',
-      deleteMethod: 'deleteDrugCategoryUsingDELETE'
+      blocks: [{title: '', key: 'drugStore2'}],
+      method: 'getDrugNewUsingGET',
+      restoreMethod: 'restoreDrugNewUsingGET',
+      saveMethod: 'updateDrugNewUsingPOST',
+      deleteMethod: 'deleteDrugNewUsingDELETE',
+      bean: DrugNewBean
     }
   },
   {
-    title: 'Медикаменты',
+    title: 'Виды лекарственных средств',
     type: 'list',
-    name: 'drugs',
-    method: 'getDrugListUsingGET',
-    block: 'drugStore',
+    name: 'type-medication',
+    method: 'listTypeUsingGET',
+    block: 'drugStore2',
     colDef: [
-      {
-        headerName: 'Код',
-        field: 'code',
-        width: 150,
-      },
       {
         headerName: 'Наименование',
         field: 'name',
         width: 250
       },
-      {
-        headerName: 'Примечания',
-        field: 'additionally',
-        width: 400
-      },
-      {
-        headerName: 'Количество',
-        field: 'amount',
-      }
     ],
     item: {
-      title: 'Медикамент',
+      title: 'Вид лекарственного средства',
       descriptions: [
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'drugStore'
-          }
-        },
         {
           label: 'Наименование:',
           key: 'name',
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'drugStore'
-          }
-        },
-        {
-          label: 'Примечения:',
-          key: 'additionally',
-          type: 'textarea',
-          styleClass: '',
-          additional: {
-            block: 'drugStore'
-          }
-        },
-        {
-          label: 'Тип упаковки',
-          key: 'containerTypeFK',
-          type: 'dict',
-          dict: 'getUnitListUsingGET',
-          styleClass: '',
-          additional: {
-            block: 'drugStore'
-          }
-        },
-        {
-          label: 'Количество в упаковке:',
-          key: 'amount',
-          type: 'number',
-          styleClass: 'col-6',
-          additional: {
-            block: 'drugStore'
-          }
-        },
-        {
-          label: 'Единицы',
-          key: 'measurementFK',
-          dict: 'getUnitListUsingGET',
-          type: 'dict',
-          styleClass: 'col-6',
-          additional: {
-            block: 'drugStore'
+            block: 'drugStore2'
           }
         },
       ],
-      blocks: [{title: '', key: 'drugStore'}],
-      method: 'getDrugUsingGET',
-      restoreMethod: 'restoreDrugBeanUsingPOST_1',
-      saveMethod: 'updateDrugUsingPOST',
-      deleteMethod: 'deleteDrugBeanUsingDELETE',
-      bean: DrugBean
+      blocks: [{title: '', key: 'drugStore2'}],
+      method: 'getTypeUsingGET',
+      restoreMethod: 'restoreTypeUsingGET',
+      saveMethod: 'updateTypeUsingPOST',
+      deleteMethod: 'deleteTypeUsingDELETE',
     }
   },
   {
-    title: 'Группы лекарств',
+    title: 'Единицы измерения',
     type: 'list',
-    name: 'group-drugs',
-    method: 'getDrugGroupListUsingGET',
-    block: 'drugStore',
+    name: 'units2',
+    method: 'listUnitUsingGET',
+    block: 'drugStore2',
     colDef: [
-      {
-        headerName: 'Код',
-        field: 'code',
-        width: 150,
-      },
       {
         headerName: 'Наименование',
         field: 'name',
-        width: 400
-      }
+        width: 250
+      },
     ],
     item: {
-      title: 'Группа лекарств',
+      title: 'Единица измерения',
       descriptions: [
-        {
-          label: 'Код:',
-          key: 'code',
-          type: 'text',
-          styleClass: '',
-          additional: {
-            block: 'drugStore'
-          }
-        },
         {
           label: 'Наименование:',
           key: 'name',
           type: 'text',
           styleClass: '',
           additional: {
-            block: 'drugStore'
+            block: 'drugStore2'
           }
         },
-        {
-          label: 'Удаленная запись',
-          key: 'isDeleted',
-          type: 'checkbox',
-          styleClass: 'inline-checkbox col-12',
-          additional: {
-            block: 'drugStore'
-          }
-        }
       ],
-      blocks: [{title: '', key: 'drugStore'}],
-      method: 'getGroupDrugUsingGET',
-      restoreMethod: 'restoreDrugGroupUsingPOST',
-      saveMethod: 'updateDrugGroupUsingPOST',
-      deleteMethod: 'deleteDrugGroupUsingDELETE'
+      blocks: [{title: '', key: 'drugStore2'}],
+      method: 'getUnitUsingGET_1',
+      restoreMethod: 'restoreUnitUsingGET',
+      saveMethod: 'updateUnitDrugUsingPOST',
+      deleteMethod: 'deleteUnitUsingDELETE_1',
     }
   },
+  {
+    title: 'Места хранения',
+    type: 'list',
+    name: 'bags-templates',
+    method: 'listBagsUsingGET',
+    block: 'drugStore2',
+    colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 250
+      },
+    ],
+    item: {
+      title: 'Место хранения',
+      descriptions: [
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore2'
+          }
+        },
+      ],
+      blocks: [{title: '', key: 'drugStore2'}],
+      method: 'getTmpBagUsingGET',
+      restoreMethod: 'restoreTmpBagUsingGET',
+      saveMethod: 'updateBagNewUsingPOST',
+      deleteMethod: 'deleteTmpBagUsingDELETE',
+    }
+  },
+  // Группы медсредств
+  {
+    title: 'Группы медсредств',
+    type: 'list',
+    name: 'ware-types',
+    method: 'listWaresAndOthersUsingGET',
+    block: 'drugStore2',
+    colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 250
+      },
+    ],
+    item: {
+      title: 'Группа медсредства',
+      descriptions: [
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore2'
+          }
+        },
+      ],
+      blocks: [{title: '', key: 'drugStore2'}],
+      method: '',
+      restoreMethod: '',
+      saveMethod: '',
+      deleteMethod: '',
+    }
+  },
+  // Виды упаковок
+  {
+    title: 'Виды упаковок',
+    type: 'list',
+    name: 'package-types',
+    method: 'getDrugPackagesUsingGET',
+    block: 'drugStore2',
+    colDef: [
+      {
+        headerName: 'Наименование',
+        field: 'name',
+        width: 250
+      },
+    ],
+    item: {
+      title: 'Группа медсредства',
+      descriptions: [
+        {
+          label: 'Наименование:',
+          key: 'name',
+          type: 'text',
+          styleClass: '',
+          additional: {
+            block: 'drugStore2'
+          }
+        },
+      ],
+      blocks: [{title: '', key: 'drugStore2'}],
+      method: '',
+      restoreMethod: '',
+      saveMethod: '',
+      deleteMethod: '',
+    }
+  },
+
 ];
 
 

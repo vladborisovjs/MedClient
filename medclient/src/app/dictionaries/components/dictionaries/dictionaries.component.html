@@ -1,6 +1,6 @@
 <div class="card h-100">
   <div class="card-header flexible justify-content-around">
-    <h3>Справочники</h3>
+    <h3>Ведение НСИ</h3>
   </div>
   <div class="card-body dict-list default-bg">
     <div class="row d-flex">
@@ -10,7 +10,7 @@
         </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of commonList">
+            <li class="nav-item" *ngFor="let el of commonList | orderBy: 'title'">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>
@@ -22,7 +22,7 @@
         </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of brigadesList">
+            <li class="nav-item" *ngFor="let el of brigadesList | orderBy: 'title'">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>
@@ -32,17 +32,27 @@
         </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of callsList">
+            <li class="nav-item" *ngFor="let el of callsList | orderBy: 'title'">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>
         </div>
+        <!--<div class="card-header">-->
+          <!--<div class="card-title">Аптека</div>-->
+        <!--</div>-->
+        <!--<div class="card-body dict-list-container">-->
+          <!--<ul class="nav flex-column full-height">-->
+            <!--<li class="nav-item" *ngFor="let el of drugStoreList">-->
+              <!--<a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>-->
+            <!--</li>-->
+          <!--</ul>-->
+        <!--</div>-->
         <div class="card-header">
           <div class="card-title">Аптека</div>
         </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of drugStoreList">
+            <li class="nav-item" *ngFor="let el of drugStoreList2 | orderBy: 'title'">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>
@@ -54,7 +64,7 @@
         </div>
         <div class="card-body dict-list-container">
           <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of objectivesList">
+            <li class="nav-item" *ngFor="let el of objectivesList | orderBy: 'title'">
               <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
             </li>
           </ul>

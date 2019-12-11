@@ -17,6 +17,17 @@ import { ModalAviationRequestComponent } from './modal-aviation-request/modal-av
 import {NewCallComponent} from './new-call/new-call.component';
 import {RouterModule} from '@angular/router';
 import {ModalCallInquirerComponent} from './modal-call-inquirer/modal-call-inquirer.component';
+import {CheckboxModule} from 'primeng/primeng';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ModalModule} from '../../shared/modal/modal.module';
+import { ModalAviaRequestInfoComponent } from './modal-avia-request-info/modal-avia-request-info.component';
+import {InfoPlateModule} from '../../shared/info-plate/info-plate.module';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {LogsModule} from "../../shared/logs/logs.module";
+import {AudioPlayerModule} from "../../shared/audio-player/audio-player.module";
+import {MedPipesModule} from "../../shared/med-pipes/med-pipes.module";
+import { ModalCallBrigadeRemoveComponent } from './modal-call-brigade-remove/modal-call-brigade-remove.component';
+import { ModalCallPatientArchiveComponent } from './modal-call-patient-archive/modal-call-patient-archive.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +41,10 @@ import {ModalCallInquirerComponent} from './modal-call-inquirer/modal-call-inqui
     NewCallComponent,
     ModalCallF110Component,
     ModalAviationRequestComponent,
-    ModalCallInquirerComponent
+    ModalCallInquirerComponent,
+    ModalAviaRequestInfoComponent,
+    ModalCallBrigadeRemoveComponent,
+    ModalCallPatientArchiveComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +53,16 @@ import {ModalCallInquirerComponent} from './modal-call-inquirer/modal-call-inqui
     LightResizerModule,
     FullAddressModule,
     BestMapModule,
-    RouterModule
+    RouterModule,
+    CheckboxModule,
+    FormsModule,
+    NgSelectModule,
+    ReactiveFormsModule,
+    ModalModule,
+    InfoPlateModule,
+    LogsModule,
+    AudioPlayerModule,
+    MedPipesModule
   ],
   exports: [
     CallsListComponent,
@@ -51,6 +74,9 @@ import {ModalCallInquirerComponent} from './modal-call-inquirer/modal-call-inqui
     ModalCallF110Component,
     ModalAviationRequestComponent,
     ModalCallInquirerComponent,
+    ModalAviaRequestInfoComponent,
+    ModalCallBrigadeRemoveComponent,
+    ModalCallPatientArchiveComponent
   ]
 })
 export class CallsSharedModule { }

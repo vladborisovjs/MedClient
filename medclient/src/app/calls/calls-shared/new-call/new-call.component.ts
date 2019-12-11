@@ -1,9 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {CallsService} from '../../services/calls.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
-import {CallContainer, PatientBean, PatientTemplateBean} from '../../../../../swagger/med-api.service';
+import {
+  CallContainer,
+  PatientBean,
+  PatientTemplateBean
+} from '../../../../../swagger/med-api.service';
 import {NotificationsService} from 'angular2-notifications';
 import {interval, Subscription} from 'rxjs';
 
@@ -15,6 +19,9 @@ import {ColDef} from 'ag-grid-community';
 import {debounce, tap} from 'rxjs/operators';
 import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+import {ModalCallPatientArchiveComponent} from "../modal-call-patient-archive/modal-call-patient-archive.component";
+import {FullnameShorterPipe} from "../../../shared/med-pipes/pipes/fullname-shorter.pipe";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-modal-create-call',
@@ -32,18 +39,23 @@ export class NewCallComponent implements OnInit, OnDestroy {
       required: true,
       dict: 'getReferenceTypeListRingTypeUsingGET',
       styleClass: 'col-3',
-      errorText: 'Поле не может быть пустым',
+      errorText: 'Обязательное',
       additional: {
         block: 'general'
       },
     },
+
     {
       label: 'Приоритет*',
       key: 'priority',
       type: 'select',
       required: true,
-      errorText: 'Поле не может быть пустым',
-      selectList: [
+      errorText: 'Обязательное',
+      selectList: this.calls.mode === 'tcmk' ? [
+        {name: 'Экстренный', id: 1},
+      ]
+      :
+        [
         {name: 'Экстренный', id: 1},
         {name: 'Неотложный', id: 0},
       ],
@@ -58,7 +70,7 @@ export class NewCallComponent implements OnInit, OnDestroy {
       type: 'dict',
       readonly: true,
       required: true,
-      errorText: 'Поле не может быть пустым',
+      errorText: 'Обязательное',
       bindLabel: 'reason',
       styleClass: 'col-4',
       additional: {
@@ -79,19 +91,25 @@ export class NewCallComponent implements OnInit, OnDestroy {
     },
 
     {
-      label: 'Описание*',
+      label: 'Описание',
       key: 'reasonComment',
       type: 'textarea',
-      errorText: 'Поле не может быть пустым',
-      required: true,
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'Необоснованный вызов',
-      key: 'is_unfounded',
-      type: 'checkbox',
+      label: 'Признак ЧС*',
+      key: 'emergencySituation',
+      type: 'select',
+      required: true,
+      errorText: 'Обязательное',
+      selectList: [
+        {name:'Нет угрозы ЧС', id:0},
+        {name:'Угроза ЧС', id:1},
+        {name:'ЧС', id:2}
+        ],
+      styleClass: 'col-4',
       additional: {
         block: 'general'
       }
@@ -111,10 +129,9 @@ export class NewCallComponent implements OnInit, OnDestroy {
     {
       label: 'Телефон*',
       key: 'declarantPhone',
-      type: 'number',
+      type: 'mask',
       required: true,
-      pattern: '^[0-9]*',
-      errorText: 'Некорректный номер',
+      errorText: 'Обязательное',
       styleClass: 'col-4',
       additional: {
         block: 'declarant'
@@ -125,7 +142,7 @@ export class NewCallComponent implements OnInit, OnDestroy {
       key: 'declarantTypeFK',
       type: 'dict',
       required: true,
-      errorText: 'Поле не может быть пустым',
+      errorText: 'Обязательное',
       dict: 'getReferenceTypeListDeclarantUsingGET',
       styleClass: 'col-4',
       additional: {
@@ -182,9 +199,9 @@ export class NewCallComponent implements OnInit, OnDestroy {
     {
       label: 'Возраст: лет',
       key: 'ageYears',
-      type: 'number',
+      type: 'text',
       pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      errorText: 'Только числа',
       styleClass: 'col-3',
       additional: {
         block: 'patient'
@@ -194,9 +211,9 @@ export class NewCallComponent implements OnInit, OnDestroy {
     {
       label: 'Месяцев',
       key: 'ageMonths',
-      type: 'number',
+      type: 'text',
       pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      errorText: 'Только числа',
       styleClass: 'col-3',
       additional: {
         block: 'patient'
@@ -205,23 +222,14 @@ export class NewCallComponent implements OnInit, OnDestroy {
     {
       label: 'Дней',
       key: 'ageDays',
-      type: 'number',
+      type: 'text',
       pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      errorText: 'Только числа',
       styleClass: 'col-3',
       additional: {
         block: 'patient'
       }
     },
-    // {
-    //   label: 'Корпус',
-    //   key: 'building',
-    //   type: 'text',
-    //   styleClass: 'col-2',
-    //   additional: {
-    //     block: 'address'
-    //   }
-    // },
     {
       label: 'Подъезд',
       key: 'entranceNum',
@@ -268,21 +276,39 @@ export class NewCallComponent implements OnInit, OnDestroy {
     //   }
     // },
     {
-      label: 'Место вызова',
+      label: '*Место вызова*',
       key: 'placeTypeFK',
       type: 'dict',
+      required: true,
+      errorText: 'Обязательное',
       dict: 'getReferenceTypeListCallPlaceUsingGET',
       styleClass: 'col-3',
       additional: {
         block: 'address'
       }
-    }
+    },
+    {
+      label: 'Район*',
+      key: 'subdivisionFK',
+      type: 'dict',
+      dict: 'getSubdivisionListUsingGET',
+      required: true,
+      errorText: 'Обязательное',
+      dictFilters: {type: [448641]},
+      dictFiltersOrder: ['type'],
+      styleClass: 'col-12',
+      additional: {
+        block: 'address'
+      }
+    },
   ];
-  callItem: CallContainer =  CallContainer.fromJS({call: {id: 0, patientList: []}});
+  callItem: CallContainer =  CallContainer.fromJS({call: {id: 0, patientList: [], subdivisionFK: this.user.mePerformer.performer.subdivisionFK}});
   patients: {item: PatientTemplateBean, form: FormGroup, subscription: Subscription}[] = [];
   sbscs: Subscription[] = [];
-  filterRepeatedCalls: any = {};
-  loading: boolean;
+  filterRepeatedCalls = {
+    repeatedCall: false
+  };
+  repeatedCallItem: any;
   colDefs: ColDef[] = [
     {
       headerName: 'Дата',
@@ -294,13 +320,13 @@ export class NewCallComponent implements OnInit, OnDestroy {
       },
       width: 180
     },
-    {
-      headerName: 'Заявитель',
-      field: 'declarantName',
-      sortable: true,
-      filter: true,
-      width: 200,
-    },
+    // {
+    //   headerName: 'Заявитель',
+    //   field: 'declarantName',
+    //   sortable: true,
+    //   filter: true,
+    //   width: 200,
+    // },
     {
       headerName: 'Адрес',
       field: 'address',
@@ -320,12 +346,7 @@ export class NewCallComponent implements OnInit, OnDestroy {
           if (!params.data.patientList[0].call) {
             return ' ';
           }
-          params.data.patientList.forEach(
-            p => {
-              pat = pat + p.surname + ' ' + p.name + ', ';
-            }
-          );
-          pat = pat.slice(0, -2);
+          pat = this.nameShorterPipe.transform(params.data.patientList);
           return pat;
         } else {
           return ' ';
@@ -333,28 +354,9 @@ export class NewCallComponent implements OnInit, OnDestroy {
 
       },
     },
-    {
-      headerName: 'Бригады',
-      field: 'brigades',
-      sortable: false,
-      filter: true,
-      width: 180,
-      valueGetter: params => {
-        if (!params.data.assignedBrigadeList[0].call) {
-          return ' ';
-        }
-        let bris = '';
-        params.data.assignedBrigadeList.forEach(
-          b => {
-            bris = bris + b.brigadeFK.name + ', ';
-          }
-        );
-        bris = bris.slice(0, -2);
-        return bris;
-      },
-    },
   ];
   datePipe = new DatePipe('ru');
+  nameShorterPipe = new FullnameShorterPipe();
   dateFormatter(params) {
     return params.value ? this.datePipe.transform(params.value, 'dd.MM.yyyy HH:mm') : '-';
   }
@@ -368,7 +370,15 @@ export class NewCallComponent implements OnInit, OnDestroy {
     }),
   ];
 
-  dataSource: IGridTableDataSource;
+  incomingCall: any; // данные звонка из localStorage
+  isCreating: boolean; // флаг нажатия кнопки создать
+
+  dataSource: IGridTableDataSource = {
+    get: (filter, offset, count) => {
+      this.repeatedCallItem = null;
+      return this.calls.getRepeatedCalls(offset, count, filter);
+    }
+  };
   constructor(
     private calls: CallsService,
     private modal: NgbModal,
@@ -378,29 +388,37 @@ export class NewCallComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private ms: MedMapService,
     private hotkeysService: HotkeysService,
+    private user: UserService
     ) {
     this.hotkeys.forEach(key => this.hotkeysService.add(key));
   }
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
+
+    let incomingS = localStorage.getItem('incoming'); // Новый вызов после звонка по телефону
+    if(incomingS){
+      this.incomingCall = JSON.parse(incomingS);
+      this.callItem.call.declarantPhone = this.incomingCall.fromNumber;
+      this.callItem.call.sessionId = this.incomingCall.sessionId;
+      this.ns.success('Предзаполнение', `Сессия: ${this.incomingCall.sessionId}`);
+    }
+
+    this.callItem.call.subdivisionFK = this.user.mePerformer.performer.subdivisionFK;
+    this.form.reset(this.callItem.call, {emitEvent: false});
+
+    this.form.controls['typeFK'].valueChanges.subscribe( // для похожих вызовов
+      type => {
+        this.filterRepeatedCalls.repeatedCall = type.code === 'REPEATED';
+        this.filterRepeatedCalls = Object.assign({}, this.filterRepeatedCalls)
+      }
+    );
     this.checkPatientsLength();
-    this.updateDataSource();
     this.getRepeatedCalls();
   }
 
   ngOnDestroy() {
     this.sbscs.forEach( el => el.unsubscribe());
-  }
-
-  updateDataSource() {
-    this.dataSource = {
-      get: (filter, offset, count) => {
-        this.loading = true;
-        return this.calls.getRepeatedCalls(offset, count, filter.order, filter.isAsc, filter.name, filter.surname, filter.patronymic).pipe(tap(() => this.loading = false));
-      }
-    };
-    return this.dataSource;
   }
 
   initMapPoint(){
@@ -447,14 +465,14 @@ export class NewCallComponent implements OnInit, OnDestroy {
     this.getRepeatedCalls();
   }
 
-  selectedRepeateCall(e) {
-    this.calls.getCall(e.data.id).subscribe(
-      rep => {
-        this.setRepeatedCall(rep);
-        this.refreshForms();
-      }
-    );
-  }
+  // selectedRepeateCall(e) {
+  //   this.calls.getCall(e.data.id).subscribe(
+  //     rep => {
+  //       this.setRepeatedCall(rep);
+  //       this.refreshForms();
+  //     }
+  //   );
+  // }
 
   getRepeatedCalls() {
     if (this.patients.length) {
@@ -469,30 +487,27 @@ export class NewCallComponent implements OnInit, OnDestroy {
   }
 
   setRepeatedCall(rep) {
-    this.checkPatientsLength();
-    Object.assign(this.callItem.call, rep.call);
-    this.ms.setPointLonLat(JSON.parse(rep.call.location));
-    this.ms.setMapViewOnPoint(JSON.parse(rep.call.location));
-  }
-
-  resetForms() {
-    this.patients[0].form.reset(this.callItem.call.patientList);
-    this.form.reset();
+    Object.assign(this.callItem.call, rep.data, {id: 0,typeFK : this.callItem.call.typeFK, aviaRequest: null});
+    if (rep.data.location) {
+      this.ms.setPointLonLat(JSON.parse(rep.data.location));
+      this.ms.setMapViewOnPoint(JSON.parse(rep.data.location));
+    }
+    this.setPatients();
+    this.refreshForms();
   }
 
   refreshForms() {
     this.form.reset(this.callItem.call);
-    this.patients[0].form.reset(this.callItem.call.patientList[0]);
+    for (let i=0; i< this.callItem.call.patientList.length; i++) {
+      this.patients[i].form.reset(this.callItem.call.patientList[i]);
+    }
   }
 
   deletePatient(i) {
-    if (this.patients.length === 1) {
-        this.resetForms();
-    }
+    this.patients[i].form.reset(this.callItem.call.patientList);
     this.patients[i].subscription.unsubscribe();
     this.patients.splice(i, 1);
     this.getRepeatedCalls();
-    // this.checkPatientsLength();
   }
 
   checkPatientsLength() {
@@ -500,24 +515,45 @@ export class NewCallComponent implements OnInit, OnDestroy {
       this.addPatient();
     }
   }
+
+  setPatients() {
+    if (this.callItem.call.patientList.length) {
+      this.patients = [];
+      for (let i=0; i< this.callItem.call.patientList.length; i++) {
+        this.addPatient();
+      }
+    }
+  }
   create() {
-    this.callItem.call.patientList = this.patients.map(
-      pat => pat.item
-    );
-    this.patients.forEach(pat => pat.subscription.unsubscribe());
-    Object.assign(this.callItem.call, this.form.getRawValue());
-    this.sbscs.push(
-      this.calls.createCall(this.callItem).subscribe(
-        res => {
-          this.ns.success('Успешно', `Создан вызов №${res.call.id}`);
-          this.router.navigate([`../${res.call.id}`], {relativeTo: this.route});
-        },
-        err => {
-          this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-          console.log('Save new call', err);
-        }
-      )
-    );
+    this.isCreating = true;
+    if (this.form.invalid) {
+      this.ns.error('Ошибка заполнения', 'Форма заполнена неверно');
+      Object.keys(this.form.controls).forEach(control => this.form.controls[control].markAsTouched());
+      this.isCreating = false;
+    } else {
+      this.callItem.call.patientList = this.patients.map(
+        pat => pat.item
+      );
+      this.patients.forEach(pat => pat.subscription.unsubscribe());
+      Object.assign(this.callItem.call, this.form.getRawValue());
+      console.log(this.callItem);
+      this.sbscs.push(
+        this.calls.createCall(this.callItem).subscribe(
+          res => {
+            this.isCreating = false;
+            localStorage.removeItem('incoming');
+            this.ns.success('Успешно', `Создан вызов №${res.call.number}`);
+            this.router.navigate([`../${res.call.id}`], {relativeTo: this.route});
+          },
+          err => {
+            this.isCreating = false;
+            this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
+            console.log('Save new call', err);
+          }
+        )
+      );
+    }
+
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {
@@ -537,4 +573,32 @@ export class NewCallComponent implements OnInit, OnDestroy {
     e.api.sizeColumnsToFit();
   }
 
+  selectRepCall(e) {
+    this.repeatedCallItem = e.data;
+  }
+
+  openRepCall() {
+    window.open( `#/calls/${this.repeatedCallItem.id}`)
+  }
+
+
+  openPatientArchive(){
+    const pa = this.modal.open(ModalCallPatientArchiveComponent, {size: 'lg'});
+    pa.componentInstance.filter = this.patients[0].form.getRawValue();
+    pa.result.then(
+      (p: PatientBean) =>{
+        p.ageYears = null;
+        p.ageMonths = null;
+        p.ageDays = null;
+        if (new Date().getFullYear() - new Date(p.birthday).getFullYear() > 0){
+          p.ageYears = new Date().getFullYear() - new Date(p.birthday).getFullYear();
+        } else if (new Date().getMonth() - new Date(p.birthday).getMonth() > 0) {
+          p.ageMonths = new Date().getMonth() - new Date(p.birthday).getMonth();
+        } else if (new Date().getDate() - new Date(p.birthday).getDate() > 0) {
+          p.ageDays = new Date().getDate() - new Date(p.birthday).getDate();
+        }
+        this.patients[0].form.reset(p);
+      }
+    );
+  }
 }

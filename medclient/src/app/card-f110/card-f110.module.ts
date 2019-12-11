@@ -16,11 +16,18 @@ import {CardSideOneComponent} from './components/card-side-one/card-side-one.com
 import {CardAnamnesisComponent} from './components/card-anamnesis/card-anamnesis.component';
 import {CardResultComponent} from './components/card-result/card-result.component';
 import {CardProtocolComponent} from './components/card-protocol/card-protocol.component';
-import {ModalMkb10DiagnosisComponent} from './components/modal-mkb10-diagnosis/modal-mkb10-diagnosis.component';
 import {ModalAddDrugsComponent} from './components/modal-add-drugs/modal-add-drugs.component';
 import {ModalCardResultTherapyComponent} from './components/modal-card-result-therapy/modal-card-result-therapy.component';
 import {TreeTableModule} from 'primeng/primeng';
 import {CardItemResolverService} from './services/resolvers/card-item-resolver.service';
+import { ModalAddPatientToCardComponent } from './components/modal-add-patient-to-card/modal-add-patient-to-card.component';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {ModalCardResultTherapyWithBagComponent} from './components/modal-card-result-therapy-with-bag/modal-card-result-therapy-with-bag.component';
+import {ModalMkb10DiagnosisModule} from '../shared/modal-mkb10-diagnosis/modal-mkb10-diagnosis.module';
+import {LOCK_CONF, TeldaNgLocksService} from "telda-ng-locks";
+import {API_BASE_URL} from "../../../swagger/med-api.service";
+import {CardItemService} from "./services/card-item.service";
+import {MedPipesModule} from "../shared/med-pipes/med-pipes.module";
 
 @NgModule({
   declarations: [
@@ -32,8 +39,9 @@ import {CardItemResolverService} from './services/resolvers/card-item-resolver.s
     CardSideOnePatientComponent,
     CardAnamnesisComponent,
     ModalAddDrugsComponent,
-    ModalMkb10DiagnosisComponent,
     ModalCardResultTherapyComponent,
+    ModalAddPatientToCardComponent,
+    ModalCardResultTherapyWithBagComponent,
   ],
   imports: [
     CommonModule,
@@ -47,15 +55,31 @@ import {CardItemResolverService} from './services/resolvers/card-item-resolver.s
     FormsModule,
     ReactiveFormsModule,
     TreeTableModule,
+    NgSelectModule,
+    ModalMkb10DiagnosisModule,
+    MedPipesModule
   ],
   providers: [
-    CardItemResolverService
+    CardItemResolverService,
+    CardItemService,
+    TeldaNgLocksService,
+    {
+      provide: LOCK_CONF,
+      useFactory: (url) => {
+        return {
+          name: `card`,
+          url: `${url}/api/andy/locks/card`
+        };
+      },
+      deps: [API_BASE_URL]
+    },
   ],
   entryComponents: [
-    ModalMkb10DiagnosisComponent,
     ModalCardResultTherapyComponent,
+    ModalCardResultTherapyWithBagComponent,
     ModalAddDrugsComponent,
     ModalAddDrugsComponent,
+    ModalAddPatientToCardComponent
   ]
 })
 export class CardF110Module { }

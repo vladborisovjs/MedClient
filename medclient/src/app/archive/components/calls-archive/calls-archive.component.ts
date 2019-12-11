@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ColDef} from 'ag-grid-community';
 import {ArchiveService} from '../../services/archive.service';
 import {DatePipe} from '@angular/common';
@@ -6,13 +6,15 @@ import {Router} from '@angular/router';
 import {FormGroup} from '@angular/forms';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {tap} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {CallStatusPipe} from '../../../shared/med-pipes/pipes/call-status.pipe';
 
 @Component({
   selector: 'app-calls-archive',
   templateUrl: './calls-archive.component.html',
   styleUrls: ['./calls-archive.component.scss']
 })
-export class CallsArchiveComponent implements OnInit {
+export class CallsArchiveComponent implements OnInit, OnDestroy {
   colDefs: ColDef[] = [
     {
       headerName: '№',
@@ -30,6 +32,16 @@ export class CallsArchiveComponent implements OnInit {
         return this.dateFormatter(p);
       },
       width: 200
+    },
+    {
+      headerName: 'Статус',
+      field: 'status',
+      sortable: false,
+      filter: false,
+      width: 300,
+      cellRenderer: (p) => {
+        return this.callStatusPipe.transform(p.value);
+      },
     },
     {
       headerName: 'Заявитель',
@@ -59,17 +71,22 @@ export class CallsArchiveComponent implements OnInit {
       filter: true,
       width: 200,
       valueGetter: params => {
-        if (params.data.callPatientList && params.data.callPatientList.length) {
+        if (params.data.patientList && params.data.patientList.length) {
           let pat = '';
-          if (!params.data.callPatientList[0].call) {
-            return ' ';
+          if (!params.data.patientList[0]) {
+            return '';
           }
-          params.data.callPatientList.forEach(
+          params.data.patientList.forEach(
             p => {
-              pat = pat + p.patientFK.surname + ' ' + p.patientFK.name + ', ';
+              if (!p.id) {
+                pat = 'не указаны';
+              } else {
+                pat = pat + (p.surname ? p.surname : '') + ' ' +
+                  (p.name ? p.name[0] : '') + '. ' + (p.patronymic ? p.patronymic[0] : '') + '., ';
+                pat = pat.slice(0, -2);
+              }
             }
           );
-          pat = pat.slice(0, -2);
           return pat;
         } else {
           return ' ';
@@ -83,8 +100,8 @@ export class CallsArchiveComponent implements OnInit {
       filter: true,
       width: 180,
       valueGetter: params => {
-        if (!params.data.assignedBrigadeList[0].call) {
-          return ' ';
+        if (!params.data.assignedBrigadeList || !params.data.assignedBrigadeList[0].call) {
+          return 'не назначена';
         }
         let bris = '';
         params.data.assignedBrigadeList.forEach(
@@ -99,7 +116,8 @@ export class CallsArchiveComponent implements OnInit {
     {
       headerName: 'Сотрудник',
       field: 'performerFK.name',
-      valueGetter: params => params.data.performerFK.surname + ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
+      valueGetter: params => params.data.performerFK.surname + ' ' +
+        params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
       sortable: true,
       filter: true,
       width: 180,
@@ -109,23 +127,22 @@ export class CallsArchiveComponent implements OnInit {
   form: FormGroup;
   descriptions: ISimpleDescription[] = [
     {
-      key: 'id',
+      key: 'number',
       label: 'Номер',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
-      styleClass: 'col-12',
-      additional:{
+      type: 'text',
+      styleClass: 'col-6',
+      additional: {
         block: 'callInfo'
       }
     },
     {
-      key: 'typeFK',
+      key: 'callTypeId',
       label: 'Тип',
       type: 'dict',
-      dict: 'getReferenceTypeListCallUsingGET',
-      styleClass: 'col-12',
-      additional:{
+      dict: 'getReferenceTypeListRingTypeUsingGET',
+      bindValue: 'id',
+      styleClass: 'col-6',
+      additional: {
         block: 'callInfo'
       }
     },
@@ -134,7 +151,7 @@ export class CallsArchiveComponent implements OnInit {
       label: 'Дата с',
       type: 'date',
       styleClass: 'col-6',
-      additional:{
+      additional: {
         block: 'callInfo'
       }
     },
@@ -143,67 +160,172 @@ export class CallsArchiveComponent implements OnInit {
       label: 'по',
       type: 'date',
       styleClass: 'col-6',
-      additional:{
+      additional: {
         block: 'callInfo'
       }
     },
     {
-      key: 'subdivisionId',
-      label: 'Подразделение',
-      type: 'text', // dict
-      styleClass: 'col-6',
-      additional:{
-        block: 'callInfo'
-      }
-    },
-    {
-      key: 'performerFK',
-      label: 'Сотрудник',
-      type: 'dict',
-      dict: 'getPerformerListUsingGET',
+      label: 'Приоритет',
+      key: 'callPriorityList',
+      type: 'select',
+      selectList: [
+        {name: 'Экстренный', id: [1]},
+        {name: 'Неотложный', id: [0]},
+      ],
       styleClass: 'col-6',
       additional: {
         block: 'callInfo'
       }
     },
     {
+      label: 'Статус',
+      key: 'callStatusList',
+      type: 'select',
+      selectList: [
+        {name: 'Незавершенный', id: [0]},
+        {name: 'Непринятый', id: [1]},
+        {name: 'Активный', id: [2]},
+        {name: 'Подтвержденый', id: [3]},
+        {name: 'Завершенный', id: [4]},
+        {name: 'Необоснованный', id: [5]},
+        {name: 'Транспортировка', id: [6]}
+      ],
+      styleClass: 'col-6',
+      additional: {
+        block: 'callInfo'
+      }
+    },
+    // {
+    //   key: 'subdivisionId',
+    //   label: 'Подразделение',
+    //   type: 'dict',
+    //   dict: 'getSubdivisionTypeListUsingGET',
+    //   bindValue: 'id',
+    //   styleClass: 'col-6',
+    //   additional:{
+    //     block: 'callInfo'
+    //   }
+    // },
+    {
+      label: 'Бригада',
+      key: 'brigadeId',
+      type: 'dict',
+      dict: 'getBrigadeListUsingGET',
+      bindValue: 'id',
+      additional: {
+        block: 'callInfo'
+      }
+    },
+    {
+      key: 'subdivisionId',
+      label: 'Район',
+      type: 'dict',
+      dict: 'getSubdivisionListUsingGET',
+      dictFilters: {type: [448641]},
+      dictFiltersOrder: ['type'],
+      bindValue: 'id',
+      additional: {
+        block: 'callInfo'
+      }
+    },
+    {
+      label: 'Фамилия',
+      key: 'patientSurname',
+      type: 'text',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      errorText: 'Только кириллица',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
+    },
+    {
+      label: 'Имя',
       key: 'patientName',
-      label: 'ФИО',
       type: 'text',
       errorText: 'Только кириллица',
       pattern: '^[а-яА-ЯёЁ\\s-]*',
-      styleClass: 'col-8',
-      additional:{
-        block: 'patient'
-      }
-    },
-    {
-      key: 'patientSex',
-      label: 'Пол',
-      type: 'select',
-      selectList: [
-        {name: 'Муж.', id: 1},
-        {name: 'Жен.', id: 2},
-      ],
       styleClass: 'col-4',
-      additional:{
+      additional: {
         block: 'patient'
       }
     },
     {
-      key: 'reason',
-      label: 'Повод',
+      label: 'Отчество',
+      key: 'patientPatronymic',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
       type: 'text',
-      additional:{
+      styleClass: 'col-4',
+      additional: {
         block: 'patient'
       }
     },
+    {
+      label: 'Возраст: лет',
+      key: 'patientAgeYears',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
+
+    },
+    {
+      label: 'Месяцев',
+      key: 'patientAgeMonths',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
+    },
+    {
+      label: 'Дней',
+      key: 'patientAgeDays',
+      type: 'number',
+      pattern: '^[0-9]*',
+      errorText: 'Поле не может быть отрицательным',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient'
+      }
+    },
+    // {
+    //   key: 'patientSex',
+    //   label: 'Пол',
+    //   type: 'select',
+    //   selectList: [
+    //     {name: 'Муж.', id: 1},
+    //     {name: 'Жен.', id: 2},
+    //   ],
+    //   styleClass: 'col-3',
+    //   additional:{
+    //     block: 'patient'
+    //   }
+    // },
+    // {
+    //   key: 'reason',
+    //   label: 'Повод',
+    //   type: 'dict',
+    //   shortDict: true,
+    //   dictFilters: {rootId: 0},
+    //   dictFiltersOrder: ['rootId'],
+    //   dict: 'getBranchNodeUsingGET',
+    //   additional:{
+    //     block: 'patient'
+    //   }
+    // },
     {
       key: 'districtId',
       label: 'Район',
-      type: 'text', //dict
+      type: 'text', // dict
       styleClass: 'col-6',
-      additional:{
+      additional: {
         block: 'address'
       }
     },
@@ -211,8 +333,8 @@ export class CallsArchiveComponent implements OnInit {
       key: 'aoName',
       label: 'Улица',
       styleClass: 'col-6',
-      type: 'text', //dict
-      additional:{
+      type: 'text', // dict
+      additional: {
         block: 'address'
       }
     },
@@ -222,51 +344,40 @@ export class CallsArchiveComponent implements OnInit {
       type: 'text',
       errorText: 'Только кириллица',
       pattern: '^[а-яА-ЯёЁ\\s-]*',
-      styleClass: 'col-7',
-      additional:{
-        block: 'declarant'
-      }
-    },
-    {
-      key: 'declarantTypeFK',
-      label: 'Тип заявителя',
-      type: 'dict',
-      dict: 'getReferenceTypeListDeclarantUsingGET',
-      styleClass: 'col-5',
-      additional:{
-        block: 'declarant'
-      }
-    },
-    {
-      key: 'typeFK',
-      label: 'Место вызова',
-      type: 'dict',
-      dict: 'getReferenceTypeListCallPlaceUsingGET',
-      styleClass: 'col-6',
-      additional:{
+      styleClass: 'col-4',
+      additional: {
         block: 'declarant'
       }
     },
     {
       key: 'declarantPhone',
       label: 'Телефон',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Некорректный номер',
-      styleClass: 'col-6',
-      additional:{
+      type: 'mask',
+      styleClass: 'col-4',
+      additional: {
+        block: 'declarant'
+      }
+    },
+    {
+      key: 'declarantTypeId',
+      label: 'Тип заявителя',
+      type: 'dict',
+      dict: 'getReferenceTypeListDeclarantUsingGET',
+      bindValue: 'id',
+      styleClass: 'col-4',
+      additional: {
         block: 'declarant'
       }
     },
   ];
   loading: boolean;
   datePipe = new DatePipe('ru');
+  callStatusPipe = new CallStatusPipe();
+  sbscs: Subscription[] = [];
   dataSource = {
     get: (filter, offset, count) => {
       this.loading = true;
-      filter.dateFrom = filter.dateFrom ? filter.dateFrom.toISOString() : undefined;
-      filter.dateTo = filter.dateTo ? filter.dateTo.toISOString() : undefined;
-      return this.arch.searchCall(offset, count, filter, filter.dateFrom, filter.dateTo).pipe(tap(() => this.loading = false));
+      return this.arch.searchCall(filter, offset, count).pipe(tap(() => this.loading = false));
     }
   };
   dateFormatter(params) {
@@ -278,10 +389,13 @@ export class CallsArchiveComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
+    this.form.reset({callStatusList: [4]}); // завершенный вызово
     this.searchCalls();
   }
 
-
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
   fitCol(e) {
     e.api.sizeColumnsToFit();
   }
@@ -291,8 +405,9 @@ export class CallsArchiveComponent implements OnInit {
     this.router.navigate([ `calls/${call.data.id}`]);
   }
 
-  searchCalls(){
+  searchCalls() {
     this.filters = this.form.getRawValue();
+    console.log(this.filters);
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {
@@ -304,7 +419,7 @@ export class CallsArchiveComponent implements OnInit {
     });
   }
 
-  eraseFilters(){
+  eraseFilters() {
     this.filters = {};
     this.form.reset({});
   }

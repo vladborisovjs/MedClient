@@ -1,3 +1,59 @@
-<p>
-  avia-requets works!
-</p>
+<div class="card full-height">
+  <div class="card-header">
+    <h5 class="center-me">
+      Вылеты и заявки на авиацию
+    </h5>
+  </div>
+  <div class="flexible h-100 w-100" resizable="horizontal" saveName="avia-request">
+    <div class="req-list" leftResizable fixed="500px">
+      <div class="card h-100">
+        <div class="card-header">
+          <div class="card-title">Список заявок и вылетов</div>
+        </div>
+        <app-grid-table
+          [dataSource]="dataSource"
+          [columnDefs]="colDef"
+          [filter]="filter"
+          (onRowSelect)="selectRequest($event)"
+        ></app-grid-table>
+      </div>
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="req-item default-bg" rightResizable >
+      <div class="card m-2" *ngIf="requestItem">
+        <div class="card-header">
+          <div class="card-title">
+            Заявка
+          </div>
+        </div>
+        <div class="card-body">
+          <b>№:</b> {{requestItem.id}}  <b>Дата:</b> {{requestItem.date | date : 'dd.MM HH:mm' }} <a class="btn btn-tiny btn-outline-primary" target="_blank" [href]="'#/tcmk-calls/' + requestItem.call">Открыть вызов</a><br>
+          <b>Описание:</b> {{requestItem.description}} <br>
+            <b>Обработка:</b> {{requestItem.isAccept ? 'Одобрена' : requestItem.isAccept === false ? 'Отклонена' : 'Не обработана'}} <br>
+          <span *ngIf="requestItem.isAccept === true">
+            <b>Бригада:</b> {{requestItem.brigadeFK.name}} <br>
+            <b> Состав:</b> {{requestItem.crew}}<br>
+           <b> Пункт назначения:</b> {{requestItem.destinationSubdivisionFK.name}}
+          </span>
+          <app-simple-view
+            *ngIf="requestItem.isAccept === null"
+            [form]="form"
+            [preprocessed]="true"
+            [descriptions]="descriptions"
+            [item]="requestItem"
+            [row]="true"
+          ></app-simple-view>
+        </div>
+        <div class="card-footer toolbar-right" *ngIf="requestItem.isAccept === null">
+          <div class="btn-group" >
+            <button class="btn btn-danger" (click)="rejectRequest()">Отклонить</button>
+            <button class="btn btn-success" (click)="acceptRequest()"  [disabled]="form.invalid">Одобрить</button>
+          </div>
+        </div>
+      </div>
+      <div class="patch" *ngIf="!requestItem">
+        <i class="fas fa-pills"></i>
+      </div>
+    </div>
+  </div>
+</div>

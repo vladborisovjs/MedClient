@@ -7,7 +7,7 @@
   <div class="collapse navbar-collapse" [ngbCollapse]="isCollapsed" >
     <ul class="navbar-nav mr-auto">
       <ng-container *ngFor="let item of items">
-        <li *ngIf="!item.items" routerLinkActive="active" class="nav-item">
+        <li *ngIf="!item.items && (!item.accessLevel || access.checkAccessRead({level: item.accessLevel}))" routerLinkActive="active" class="nav-item">
           <a class="nav-link" [routerLink]="item.routerLink">
             <i *ngIf="item.iconClass" [class]=item.iconClass></i>
             {{item.label}}
@@ -20,9 +20,36 @@
           </div>
         </li>
       </ng-container>
-
     </ul>
-    <button class="btn btn-info" (click)="onExit.emit($event)"> <i class="fas fa-sign-out-alt"></i> Выход </button>
+    <div class="form-inline my-2 my-lg-0">
+      <div class="navbar-nav"><i class="fas fa-info-circle nav-link "></i></div>
+
+      <div ngbDropdown display="dynamic" class="d-inline-block mr-sm-2">
+        <div class="navbar-nav"><span class="nav-link" id="dropPerformer" ngbDropdownToggle><i class="fas fa-user-circle"></i> {{performer.performer.surname}}</span></div>
+        <div ngbDropdownMenu aria-labelledby="dropPerformer" class="p-0 performer-info">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                {{performer.performer.surname}} {{performer.performer.name}} {{performer.performer.patronymic}}
+              </div>
+            </div>
+            <div class="card-body">
+              <b><i class="fas fa-user-circle"></i></b>: {{performer.performer.username}} <br>
+              <b><i class="fas fa-phone-square-alt"></i></b>: {{performer.performer.phone}} <br>
+              <b><i class="fas fa-clinic-medical"></i></b>: {{performer.performer?.subdivisionFK?.typeFK?.name}} <br>
+              <b><i class="fas fa-user-md"></i></b>: {{performer.performer?.typeFK?.name}} <br>
+              <b>Роли:</b>
+              <ul>
+                <li *ngFor="let role of performer.performer.roleList">
+                  {{role.name}}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-info" (click)="onExit.emit($event)"> <i class="fas fa-sign-out-alt"></i> Выход </button>
+    </div>
   </div>
 
 </nav>

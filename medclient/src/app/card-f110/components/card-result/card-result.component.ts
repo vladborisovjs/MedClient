@@ -4,17 +4,14 @@ import {FormGroup} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {CardItemService} from '../../services/card-item.service';
 import {NotificationsService} from 'angular2-notifications';
-import {of, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {ColDef} from 'ag-grid-community';
-import {
-  CardBean,
-  TherapyBean,
-} from '../../../../../swagger/med-api.service';
+import {CardBean, TherapyBean} from '../../../../../swagger/med-api.service';
 import {DatePipe} from '@angular/common';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
-import {ModalMkb10DiagnosisComponent} from '../modal-mkb10-diagnosis/modal-mkb10-diagnosis.component';
-import {ModalCardResultTherapyComponent} from '../modal-card-result-therapy/modal-card-result-therapy.component';
+import {ModalMkb10DiagnosisComponent} from '../../../shared/modal-mkb10-diagnosis/components/modal-mkb10-diagnosis.component';
+import {ModalCardResultTherapyWithBagComponent} from '../modal-card-result-therapy-with-bag/modal-card-result-therapy-with-bag.component';
 
 @Component({
   selector: 'app-card-result',
@@ -37,23 +34,48 @@ export class CardResultComponent implements OnInit, OnDestroy {
       field: 'text',
       sortable: true,
       filter: true,
-      width: 500
+      width: 200
+    },
+    {
+      headerName: 'Лекарственный препарат',
+      width: 250,
+      cellRenderer: params => {
+        if (params.data.therapyItemList) {
+          const drugs = params.data.therapyItemList.find((item) => item.drugFK !== null);
+          console.log(drugs);
+          return drugs ? drugs.drugFK.name : '';
+        } else {
+          return '';
+        }
+      }
+    },
+    {
+      headerName: 'Медицинское изделие',
+      width: 250,
+      cellRenderer: params => {
+        if (params.data.therapyItemList) {
+          const wares = params.data.therapyItemList.find((item) => {
+            return item.wareFK !== null;
+          });
+          return wares ? wares.wareFK.name : '';
+        } else {
+          return '';
+        }
+      }
     }
   ];
-  selectedTherapy: any;
   sbscs: Subscription[] = [];
   cardItem: CardBean;
   mode: string = 'undef'; // режим отображения форм в зависимости от типа результата
   form: FormGroup;
   formType: FormGroup;
-  loading: boolean;
   descriptionsType: ISimpleDescription [] = [
     {
       label: 'Тип: ',
       type: 'dict',
       key: 'resultTypeFK',
       required: true,
-      errorText: 'Поле не может быть пустым',
+      errorText: 'Обязательное',
       dict: 'getReferenceTypeListResultUsingGET',
       styleClass: 'col-12',
       additional: {
@@ -72,10 +94,14 @@ export class CardResultComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Способ',
+      label: 'Откуда',
       type: 'dict',
-      key: 'transportationMethodFK',
-      dict: 'getReferenceTypeListTransportationMethodUsingGET',
+      key: 'hospFromFK',
+      styleClass: 'col-12',
+      bindLabel: 'shortName',
+      dict: 'getSubdivisionListUsingGET',
+      dictFilters: {type: [1558]},
+      dictFiltersOrder: ['type'],
       additional: {
         block: 'transporting'
       }
@@ -84,14 +110,30 @@ export class CardResultComponent implements OnInit, OnDestroy {
       label: 'Куда',
       type: 'dict',
       key: 'hospToFK',
+      styleClass: 'col-12',
+      bindLabel: 'shortName',
       dict: 'getSubdivisionListUsingGET',
+      dictFilters: {type: [1558]},
+      dictFiltersOrder: ['type'],
       additional: {
         block: 'transporting'
       }
     },
     {
+      label: 'Способ',
+      type: 'dict',
+      key: 'transportationMethodFK',
+      styleClass: 'col-6',
+      dict: 'getReferenceTypeListTransportationMethodUsingGET',
+      additional: {
+        block: 'transporting'
+      }
+    },
+
+    {
       label: 'Дата/Время',
       key: 'transportingDate',
+      styleClass: 'col-6',
       type: 'date',
       additional: {
         block: 'transporting'
@@ -101,6 +143,14 @@ export class CardResultComponent implements OnInit, OnDestroy {
       label: 'Осложнения при транспортировке',
       type: 'checkbox',
       key: 'hospComplications',
+      additional: {
+        block: 'transporting'
+      }
+    },
+    {
+      label: 'Комментарий',
+      type: 'textarea',
+      key: 'HospComplicationsText',
       additional: {
         block: 'transporting'
       }
@@ -126,6 +176,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
       key: 'mkbFK',
       type: 'dict',
       readonly: true,
+      required: true,
       styleClass: 'col-10',
       additional: {
         block: 'diagnosis'
@@ -148,6 +199,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
       key: 'concomitantDiagnosisFK',
       type: 'dict',
       readonly: true,
+      required: true,
       styleClass: 'col-10',
       additional: {
         block: 'diagnosis'
@@ -169,6 +221,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
       label: 'Осложнения',
       key: 'complicationFK',
       type: 'dict',
+      styleClass: 'col-6',
       dict: 'getReferenceTypeListComplicationsUsingGET',
       additional: {
         block: 'diagnosis'
@@ -176,9 +229,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Ритм',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       key: 'ekgRhytm',
       styleClass: 'line-form col-6',
       additional: {
@@ -187,9 +238,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'ЧСС',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       key: 'ekgChSS',
       styleClass: 'line-form col-6',
       postLabel: 'в мин.',
@@ -218,9 +267,9 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Через',
-      type: 'number',
+      type: 'text',
       pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      errorText: 'Только числа',
       key: 'activeVisitHours',
       styleClass: 'line-form col-6',
       postLabel: 'час',
@@ -240,9 +289,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'ЧСС: ',
       key: 'transportChss',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'в сек.',
       additional: {
@@ -252,9 +299,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'PS: ',
       key: 'transportPulse',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'в сек.',
       additional: {
@@ -264,9 +309,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'АД: ',
       key: 'transportAd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'мм Hg.',
       additional: {
@@ -276,9 +319,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Рабочее АД: ',
       key: 'transportWorkAd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'мм Hg',
       additional: {
@@ -288,9 +329,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 't тела: ',
       key: 'transportTemperature',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: '°С',
       additional: {
@@ -300,9 +339,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'ЧД: ',
       key: 'transportChd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'в сек.',
       additional: {
@@ -312,9 +349,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Глюкометрия: ',
       key: 'transportGlucometry',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'ммоль',
       additional: {
@@ -324,9 +359,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Sat O2: ',
       key: 'transportOximetry',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: '%',
       additional: {
@@ -336,9 +369,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'ЧСС: ',
       key: 'localChss',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'в сек.',
       additional: {
@@ -348,9 +379,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'PS: ',
       key: 'localPulse',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'в сек.',
       additional: {
@@ -360,9 +389,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'АД: ',
       key: 'localAd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'мм Hg.',
       additional: {
@@ -372,9 +399,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Рабочее АД: ',
       key: 'localWorkAd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'мм Hg',
       additional: {
@@ -384,9 +409,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 't тела: ',
       key: 'localTemperature',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: '°С',
       additional: {
@@ -396,9 +419,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'ЧД: ',
       key: 'localChd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'в сек.',
       additional: {
@@ -408,9 +429,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Глюкометрия: ',
       key: 'localGlucometry',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: 'ммоль',
       additional: {
@@ -420,9 +439,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Sat O2: ',
       key: 'localPulseOximetry',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-6',
       postLabel: '%',
       additional: {
@@ -431,9 +448,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Ритм',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       key: 'ekgRhytmAfter',
       styleClass: 'line-form col-12',
       additional: {
@@ -442,9 +457,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'ЧСС',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       key: 'ekgChSSAfter',
       styleClass: 'line-form col-12',
       postLabel: 'в мин',
@@ -464,21 +477,59 @@ export class CardResultComponent implements OnInit, OnDestroy {
     {
       label: 'Результат мероприятий: ',
       type: 'dict',
-      key: 'resultCauseFK',
-      dict: 'getReferenceTypeListResultCauseUsingGET',
+      key: 'complicationHelpFK',
+      dict: 'getReferenceTypeListComplicationsHelpUsingGET',
       styleClass: 'col-12',
       additional: {
         block: 'assistance_result'
       }
     },
+    {
+      label: 'Помощь оказана в городе',
+      type: 'checkbox',
+      key: 'helpInCity',
+      additional: {
+        block: 'assistance_result'
+      }
+    },
   ];
+
   blocks = {
-      noBlocks: {arrBlock: []},
-      general: {arrBlock: [{ label: 'Диагноз', block:'diagnosis'}, {label:'Активное посещение', block:'activeVisitFK'}, {label: 'Экг', block:'ekg'}]},
-      transport: {arrBlock: [{ label: 'Диагноз', block:'diagnosis'}, {label:'Активное посещение', block:'activeVisitFK'}, {label: 'Экг', block:'ekg'}, { label: 'Транспортировка', block:'transporting'}]},
-      transfer: {arrBlock: [{ label: 'Диагноз', block:'diagnosis'}, {label:'Активное посещение', block:'activeVisitFK'}, {label: 'Экг', block:'ekg'}, {label: 'Передача спецбригаде', block:'transfer_patient'}]},
-      deathTime: {arrBlock: [{ label: 'Диагноз', block:'diagnosis'}, {label:'Активное посещение', block:'activeVisitFK'}, {label: 'Экг', block:'ekg'}, {label: 'смерть', block:'deathTime'}]},
-      undef: {arrBlock:[]}
+    noBlocks: {
+      arrBlock: []
+    },
+    general: {
+      arrBlock: [
+        {label: 'Диагноз', block: 'diagnosis'},
+        {label: 'Активное посещение', block: 'activeVisitFK'},
+        {label: 'ЭКГ', block: 'ekg'}
+      ]
+    },
+    transport: {
+      arrBlock: [
+        {label: 'Диагноз', block: 'diagnosis'},
+        {label: 'ЭКГ', block: 'ekg'},
+        {label: 'Транспортировка', block: 'transporting'}
+      ]
+    },
+    transfer: {
+      arrBlock: [
+        {label: 'Диагноз', block: 'diagnosis'},
+        {label: 'Активное посещение', block: 'activeVisitFK'},
+        {label: 'ЭКГ', block: 'ekg'},
+        {label: 'Передача спецбригаде', block: 'transfer_patient'}
+      ]
+    },
+    deathTime: {
+      arrBlock: [
+        {label: 'смерть', block: 'deathTime'},
+        {label: 'Диагноз', block: 'diagnosis'},
+        {label: 'Транспортировка', block: 'transporting'}
+      ]
+    },
+    undef: {
+      arrBlock: []
+    }
   };
   localTherapies: TherapyBean[] = [];
   transportTherapies: TherapyBean[] = [];
@@ -494,39 +545,81 @@ export class CardResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.updateDataSource();
     this.form = this.sds.makeForm(this.descriptions);
     this.formType = this.sds.makeForm(this.descriptionsType);
     this.sbscs.push(
+      this.cas.isEditingSub.subscribe(s =>{
+        if (s === 'disable' || s === 'loading'){
+          this.form.disable({emitEvent: false});
+          this.formType.disable({emitEvent: false});
+        } else {
+          this.form.enable({emitEvent: false});
+          this.formType.enable({emitEvent: false});
+        }
+      }),
       this.cas.cardItemSub.subscribe(cardItem => {
         this.cardItem = cardItem;
         this.formType.reset(this.cardItem);
-        this.cardItem.resultTypeFK ? this.setMode(this.cardItem.resultTypeFK.id) : true;
+        this.cardItem.resultTypeFK && this.setMode(this.cardItem.resultTypeFK.id);
         this.resetTherapies();
       }),
       this.form.valueChanges.subscribe(
         result => {
-          this.cas.formResult = this.form.invalid;
           Object.assign(this.cardItem.cardResultBean, result);
+          this.blocks = { // todo: сделать функцию апдейта блоков, получать блоки из функции (в html тоже)
+            noBlocks: {
+              arrBlock: []
+            },
+            general: {
+              arrBlock: [
+                {label: 'Диагноз', block: 'diagnosis'},
+                {label: 'Активное посещение', block: 'activeVisitFK'},
+                {label: 'ЭКГ', block: 'ekg'}
+              ]
+            },
+            transport: {
+              arrBlock: [
+                {label: 'Диагноз', block: 'diagnosis'},
+                {label: 'ЭКГ', block: 'ekg'},
+                {label: 'Транспортировка', block: 'transporting'}
+              ]
+            },
+            transfer: {
+              arrBlock: [
+                {label: 'Диагноз', block: 'diagnosis'},
+                {label: 'Активное посещение', block: 'activeVisitFK'},
+                {label: 'ЭКГ', block: 'ekg'},
+                {label: 'Передача спецбригаде', block: 'transfer_patient'}
+              ]
+            },
+            deathTime: {
+              arrBlock: [
+                {label: 'смерть', block: 'deathTime'},
+                {label: 'Диагноз', block: 'diagnosis'},
+                {label: 'Транспортировка', block: 'transporting'}
+              ]
+            },
+            undef: {
+              arrBlock: []
+            }
+          };
         }
       ),
       this.formType.valueChanges.subscribe(
         ch => {
           Object.assign(this.cardItem, ch);
-          this.cas.formTypeResult = this.formType.invalid;
           this.cardItem.resultTypeFK ? this.setMode(this.cardItem.resultTypeFK.id) : true;
         }
       )
-  );
-  this.form.reset(this.cardItem.cardResultBean);
+    );
+    this.form.reset(this.cardItem.cardResultBean);
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
   }
 
-
-  resetTherapies(){  // формирование и обновление списков терапий
+  resetTherapies() {  // формирование и обновление списков терапий
     this.localTherapies = this.cardItem.cardResultBean.therapyList.filter(
       t => t.isLocal
     );
@@ -535,37 +628,33 @@ export class CardResultComponent implements OnInit, OnDestroy {
     );
   }
 
-  updateDataSource() {
-    // this.dataSourceLocal = {
-    //   get: (filter, offset, count) => {
-    //     return;
-    //   }
-    // };
-    // this.dataSourceTransport = {
-    //   get: (filter, offset, count) => {
-    //     return;
-    //   }
-    // };
-  }
+
   setMode(typeId) {
     console.log(typeId);
     switch (typeId) {
       case 0:
         this.mode = 'noBlocks';
-      case 337736:
-      case 337740:
+        break;
+      case 445331:
+      case 445326:
+      case 445313:
+      case 445314:
         this.mode = 'general';
         break;
-      case 337737:
-      case 337738:
+      case 445330:
+      case 445308:
+      case 445322:
+      case 445318:
         this.mode = 'transport';
         break;
-      case 337739:
+      case 445310:
+      case 445320:
         this.mode = 'transfer';
         break;
-      case 337742:
-      case 337741:
-      case 337747:
+      case 445319:
+      case 457562:
+      case 458619:
+      case 457564:
         this.mode = 'deathTime';
         break;
       default:
@@ -573,25 +662,21 @@ export class CardResultComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectTherapy(e) {
-    console.log(e);
-    this.selectedTherapy = e.data;
-  }
-
-  editTherapy(therapy: TherapyBean){
-    const thModal = this.modal.open(ModalCardResultTherapyComponent);
+  editTherapyWithBag(therapy: TherapyBean) {
+    const thModal = this.modal.open(ModalCardResultTherapyWithBagComponent);
     thModal.componentInstance.therapy = therapy;
     thModal.result.then(
       (_therapy: TherapyBean) => {
         therapy = _therapy;
         this.resetTherapies();
       },
-      error =>{}
+      error => {
+      }
     );
   }
 
-  createTherapy(location: 'local' | 'transport',){
-    const thModal = this.modal.open(ModalCardResultTherapyComponent);
+  createTherapyWithBag(location: 'local' | 'transport',) {
+    const thModal = this.modal.open(ModalCardResultTherapyWithBagComponent);
     thModal.result.then(
       (_therapy: TherapyBean) => {
         _therapy.isLocal = location === 'local';
@@ -600,65 +685,10 @@ export class CardResultComponent implements OnInit, OnDestroy {
         this.cardItem.cardResultBean.therapyList.push(_therapy);
         this.resetTherapies();
       },
-      error =>{}
+      error => {}
     );
   }
 
-  // addTherapy(local) {
-  //   const addTh = this.modal.open(ModalAddTherapyComponent, {size: 'lg'});
-  //   addTh.componentInstance.local = local;
-  //   addTh.componentInstance.therapyAct = true;
-  //   addTh.result.then(
-  //     (therapy: TherapyBean) => {
-  //       if (therapy){
-  //         if (local){
-  //           this.cardItem.cardResultBean.localTherapyList.push(therapy);
-  //           this.cardItem.cardResultBean.localTherapyList = [...this.cardItem.cardResultBean.localTherapyList]
-  //         } else {
-  //           this.cardItem.cardResultBean.transportTherapyList.push(therapy);
-  //           this.cardItem.cardResultBean.transportTherapyList = [...this.cardItem.cardResultBean.transportTherapyList]
-  //         }
-  //       }
-  //     }
-  //   )
-  // }
-  //
-  // editTherapy(local) {
-  //   const editTh = this.modal.open(ModalAddTherapyComponent, {size: 'lg'});
-  //   editTh.componentInstance.therapies = this.selectedTherapy;
-  //   editTh.result.then(
-  //     success => {
-  //       this.modalInstance.close();
-  //
-  //     },
-  //     rej => {
-  //       this.updateDataSource();
-  //     }
-  //   );
-  //   editTh.componentInstance.local = local;
-  //   editTh.componentInstance.therapyAct = false;
-  // }
-  //
-  // deleteTherapy() {
-  //   console.log(this.selectedTherapy);
-  //   this.cmodal.confirm('Удаление терапии', 'Вы уверены, что хотите удалить терапию' + '?').then(
-  //     res => {
-  //       if (res) {
-  //         this.cas.deleteTherapy(this.selectedTherapy.id).subscribe(
-  //           success => {
-  //             this.ns.success('Успешно', 'Данные удалены');
-  //             this.updateDataSource();
-  //           },
-  //           err => {
-  //             this.ns.error('Ошибка', 'Не удалось удалить данные на сервере');
-  //             console.log('Delete Therapy', err);
-  //           }
-  //         );
-  //       }
-  //     },
-  //     () => {}
-  //   );
-  // }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {
     return this.descriptions.filter(el => {
@@ -669,26 +699,27 @@ export class CardResultComponent implements OnInit, OnDestroy {
     });
   }
 
-  chooseMainDiagnosis(){
-    const chooseDiagnosis = this.modal.open(ModalMkb10DiagnosisComponent, {size: 'lg'});
+  chooseMainDiagnosis() {
+    const chooseDiagnosis = this.modal.open(ModalMkb10DiagnosisComponent, {size: 'lg', backdrop: 'static'});
     chooseDiagnosis.result.then(
       res => {
         if (res) {
           console.log(res);
           this.form.controls['mkbFK'].setValue(res);
         }
-      }
-    )
+      }, () => {}
+    );
   }
-  chooseConcomitantDiagnosis(){
-    const chooseConcomitantDiagnosis = this.modal.open(ModalMkb10DiagnosisComponent, {size: 'lg'});
+
+  chooseConcomitantDiagnosis() {
+    const chooseConcomitantDiagnosis = this.modal.open(ModalMkb10DiagnosisComponent, {size: 'lg', backdrop: 'static'});
     chooseConcomitantDiagnosis.result.then(
       res => {
         if (res) {
           console.log(res);
           this.form.controls['concomitantDiagnosisFK'].setValue(res);
         }
-      }
-    )
+      }, () => {}
+    );
   }
 }

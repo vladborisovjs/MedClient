@@ -1,0 +1,14 @@
+<div class="card full-height">
+  <div class="card-header">
+    <h5 class="center-me">
+      Списание медсредств
+    </h5>
+  </div>
+
+  <div class="card h-100">
+    <app-grid-table
+      [dataSource]="writeOffsSource"
+      [columnDefs]="colDef"
+    ></app-grid-table>
+  </div>
+</div>

@@ -10,9 +10,12 @@
         <div class="card-header toolbar justify-content-between">
           <div class="toolbar-left">
             <div class="btn-group">
-              <button type="button" class="btn btn-success " [disabled]="form.invalid"
+              <button type="button" [disabled]="isCreating" class="btn btn-success "
                       (click)="create()">Создать (shift+S)
               </button>
+              <!--              <button class="btn btn-warning btn-sm" (click)="resetForms()">-->
+              <!--                Очистить <i class="fas fa-eraser"></i>-->
+              <!--              </button>-->
             </div>
           </div>
         </div>
@@ -33,12 +36,15 @@
                 </app-simple-view>
               </li>
               <li class="list-group-item">
-                <div class="toolbar">
-                  <div class="card-title toolbar-left">
-                    Пациенты
-                  </div>
-                  <div class="toolbar-right">
-                    <div class="btn-group">
+                <div class="card-title">
+                  <div class="toolbar">
+                    <div class="toolbar-left">
+                      Пациенты
+                      <button class="btn btn-primary ml-2" (click)="openPatientArchive()">
+                        Архив
+                      </button>
+                    </div>
+                    <div class="toolbar-right">
                       <button class="btn btn-primary" (click)="addPatient()">Добавить пациента</button>
                     </div>
                   </div>
@@ -96,24 +102,29 @@
     </div>
     <div class="vertical-resizer" resizer="2px"></div>
     <div class="map-block-call-block" rightResizable fixed="200" resizable="vertical" (onResize)="resize($event)">
-      <div class="card repeated-calls-block" upResizable>
-        <div class="card">
-          <div class="card-header">
+      <div class="repeated-calls-block" upResizable>
+        <div class="card full-height">
+          <div class="card-header toolbar">
             <div class="card-title">
-              Повторные вызовы
+              {{filterRepeatedCalls.repeatedCall ? 'Повторные вызовы' : 'Похожие вызовы'}}
+            </div>
+            <div class="toolbar-right">
+              <button class="btn btn-primary" (click)="openRepCall()" [disabled]="!repeatedCallItem">Посмотреть</button>
             </div>
           </div>
-        </div>
-        <div class="card-body full-height p-0">
           <app-grid-table
             [dataSource]="dataSource"
             [columnDefs]="colDefs"
             [pagination]="true"
+            (onRowSelect)="selectRepCall($event)"
             [filter]="filterRepeatedCalls"
-            (onRowDblClick)="selectedRepeateCall($event)"
+            (onRowDblClick)="setRepeatedCall($event)"
             (onGridReady)="fitCol($event)">
           </app-grid-table>
         </div>
+        <!--        <div class="patch" *ngIf="!repeatedCall">-->
+        <!--          <i class="fas fa-phone-alt"></i>-->
+        <!--        </div>-->
       </div>
       <div class="horizontal-resizer" resizer="2px"></div>
       <div class="card map-new-call" bottomResizable fixed="400px">

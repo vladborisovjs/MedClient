@@ -1,79 +1,81 @@
 
-<div class="flexible default-bg">
-  <div class="col-4 full-width">
+<div class="flexible default-bg full-height">
+  <div class="col-4">
     <div class="card">
       <div class="card-header">
-        Основные данные
+        Выбор пациента
       </div>
       <div class="card-body">
         <app-simple-view
-          [descriptions]="getBlockDescriptions('general')"
+          [descriptions]="getBlockDescriptions('patient-template')"
           [row]="true"
           [preprocessed]="true"
-          [item]="card.patientFK"
-          [form]="formPatient">
-        </app-simple-view>
+          [item]="card"
+          [form]="formPatientTemplate"></app-simple-view>
       </div>
     </div>
     <div class="card">
-      <div class="card-header">
-        Трудовая деятельность
+      <div class="card-header flexible">
+        <div class="toolbar-left">
+          {{card.patientFK ? card.patientFK.id ? 'Пациент №'+ card.patientFK.id : 'Новый пациент' : ''}}
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-info" (click)="openPatientsArchive()" [disabled]="formPatientTemplate.disabled">
+            Найти пациента в архиве
+          </button>
+        </div>
       </div>
       <div class="card-body">
         <app-simple-view
-          [descriptions]="getBlockDescriptions('occupation')"
-          [item]="card.patientFK"
+          [descriptions]="getBlockDescriptions('patient-info')"
           [row]="true"
           [preprocessed]="true"
-          [form]="formPatient">
-        </app-simple-view>
+          [item]="card.patientFK"
+          [form]="formPatient"></app-simple-view>
       </div>
     </div>
   </div>
-  <div class="col-4 full-width">
+  <div class="col-4">
     <div class="card">
       <div class="card-header">
-        Документ, удостоверяющий личность
-      </div>
-    <div class="card-body">
-      <app-simple-view
-        [descriptions]="getBlockDescriptions('personalDoc')"
-        [item]="card.patientFK"
-        [row]="true"
-        [preprocessed]="true"
-        [form]="formPatient">
-      </app-simple-view>
-    </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        Данные о страховании
+        Дополнительная информация
       </div>
       <div class="card-body">
         <app-simple-view
-          [descriptions]="getBlockDescriptions('insurance')"
-          [item]="card.patientFK"
+          [descriptions]="getBlockDescriptions('patient-additional')"
           [row]="true"
           [preprocessed]="true"
-          [form]="formPatient">
-        </app-simple-view>
+          [item]="card"
+          [form]="formCard"></app-simple-view>
       </div>
     </div>
   </div>
-  <div class="col-4 full-width">
+  <div class="col-4">
     <div class="card">
       <div class="card-header">
-        Адрес постоянной регистрации
+       Документы
       </div>
-      <div class="card-body">
-        <app-simple-view
-          [descriptions]="getBlockDescriptions('address')"
-          [item]="card.patientFK"
-          [row]="true"
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item {{doc.document.isDeleted? 'bg-light' : ''}}" *ngFor="let doc of docForms; let i = index;">
+          <app-simple-view
+          [form]="doc.form"
+          [item]="doc.document"
           [preprocessed]="true"
-          [form]="formPatient">
-        </app-simple-view>
-      </div>
+          [row]="true"
+          [descriptions]="getBlockDescriptions('documents')"
+          ></app-simple-view>
+          <div class="toolbar-right">
+            <button class="btn btn-danger" [disabled]="doc.form.disabled"  (click)="deleteDocument(doc, i)">
+              Удалить
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <button class="btn btn-success" [disabled]="!formPatient.enabled"  (click)="addDocument()">
+            Добавить документ
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

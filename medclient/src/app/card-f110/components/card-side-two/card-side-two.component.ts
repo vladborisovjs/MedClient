@@ -17,7 +17,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
   cardId: any;
   liverLarge: boolean = false;
-  patientYear: number;
+  scoreGlasgow: number;
   objective: CardBean;
   patient: CallContainer;
   form: FormGroup;
@@ -59,23 +59,23 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       styleClass: 'line-form  col-12',
       selectList: [
         {
-          name: this.patientYear < 3 ? 'Ребенок улыбается, ориентируется на звук, следит за объектами, интерактивен' : 'Правильная речь',
+          name: 'Быстрый и правильный ответ на вопрос',
           id: 5
         },
         {
-          name: this.patientYear < 3 ?  'Ребенка при плаче можно успокоить, интерактивность неполноценная' : 'Спутанная речь',
+          name: 'Спутанная речь (словесная окрошка)',
           id: 4
         },
         {
-          name: this.patientYear < 3 ?  'При плаче успокаивается, но ненадолго, стонет' : 'Членораздельная речь (отдельный набор слов)',
+          name: 'Ответ не соответствует вопросу или наблюдается беспорядочный набор слов',
           id: 3
         },
         {
-          name: this.patientYear < 3 ?  'Не успокаивается при плаче, беспокоен' : 'Нечленораздельная речь (непонятные звуки)',
+          name: 'Нечленораздельные звуки',
           id: 2
         },
         {
-          name: this.patientYear < 3 ?  'Плач и интерактивность отсутствуют' : 'Отсутствие речевой продукции',
+          name: 'Вербальная реакция отсутсвует',
           id: 1
         },
       ],
@@ -89,12 +89,12 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       type: 'select',
       styleClass: 'line-form  col-12',
       selectList: [
-        {name: 'По команде', id: 6},
-        {name: 'Локализация боли', id: 5},
-        {name: 'Удаление конечности от источника раздражения', id: 4},
-        {name: 'Аномальное сгибание (декортикационная ригидность)', id: 3},
-        {name: 'Аномальное разгибание (децеребрационная ригидность)', id: 2},
-        {name: 'Отсутствие реакции на боль', id: 1},
+        {name: 'Выполнение движений по команде', id: 6},
+        {name: 'Отталкивание болевых раздражителей', id: 5},
+        {name: 'Отдергивание ноги или руки при боли', id: 4},
+        {name: 'Патологическое сгибание конечностей', id: 3},
+        {name: 'Патологическое разгибание конечностей', id: 2},
+        {name: 'Отсутствие движений', id: 1},
       ],
       additional: {
         block: 'glasgow'
@@ -107,9 +107,9 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       styleClass: 'line-form  col-12',
       selectList: [
         {name: 'Произвольное', id: 4},
-        {name: 'На окрик', id: 3},
-        {name: 'На боль', id: 2},
-        {name: 'Отсутствие реакции', id: 1},
+        {name: 'Реакция на голос', id: 3},
+        {name: 'Реакция на боль', id: 2},
+        {name: 'Реакция отсутствует', id: 1},
       ],
       additional: {
         block: 'glasgow'
@@ -124,7 +124,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Локализ',
+      label: 'Локализация',
       key: 'titlesText',
       type: 'text',
       additional: {
@@ -227,9 +227,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'ЧСС: ',
       key: 'heartChss',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'в сек.',
       additional: {
@@ -239,9 +237,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'PS: ',
       key: 'heartPs',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'в сек.',
       additional: {
@@ -251,9 +247,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'АД: ',
       key: 'heartAd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'мм Hg',
       additional: {
@@ -263,9 +257,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'АДN: ',
       key: 'heartAdn',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'мм Hg',
       additional: {
@@ -275,9 +267,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'АД max: ',
       key: 'heartAdMax',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'мм Hg',
       additional: {
@@ -287,9 +277,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 't тела: ',
       key: 'heartBodyTemp',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: '°C',
       additional: {
@@ -299,9 +287,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'ЧД: ',
       key: 'heartChd',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'в сек.',
       additional: {
@@ -311,9 +297,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'Глюкометрия: ',
       key: 'glucometry',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: 'ммоль',
       additional: {
@@ -323,9 +307,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'Sat O2: ',
       key: 'pulseOximetry',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      type: 'text',
       styleClass: 'line-form col-12',
       postLabel: '%',
       additional: {
@@ -362,7 +344,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Анизокрия',
+      label: 'Анизокория',
       key: 'penaltiesAnisocoria',
       type: 'tricheckbox',
       styleClass: 'col-4',
@@ -388,7 +370,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Локализ',
+      label: 'Локализация',
       key: 'lymphNodesText',
       type: 'text',
       additional: {
@@ -404,7 +386,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Увеличины',
+      label: 'Увеличены',
       key: 'almondsNormalLarge',
       type: 'tricheckbox',
       styleClass: 'col-6',
@@ -435,7 +417,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Перкуторно над легким звук',
+      label: 'Перкуторный звук над легкими',
       key: 'percLungsSoundFK',
       type: 'dict',
       dict: 'getReferenceTypeListPercLungsSoundUsingGET',
@@ -444,7 +426,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Локализ',
+      label: 'Локализация',
       key: 'percLungsSoundText',
       type: 'text',
       additional: {
@@ -524,7 +506,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Перетонит',
+      label: 'Перитонит',
       key: 'stomachPeritonit',
       type: 'tricheckbox',
       styleClass: 'col-6',
@@ -595,7 +577,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'отсутсвует',
+      label: 'отсутствует',
       key: 'breathAbsent',
       type: 'checkbox',
       styleClass: 'col-6',
@@ -613,7 +595,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Локализ измен. дых.',
+      label: 'Локализ. измен. дых.',
       key: 'breathText',
       type: 'textarea',
       rows: 4,
@@ -631,7 +613,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Локализ',
+      label: 'Локализация',
       key: 'lungsWheezingText',
       type: 'text',
       additional: {
@@ -659,9 +641,9 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'Размер: ',
       key: 'liverSizeText',
-      type: 'number',
+      type: 'text',
       pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      errorText: 'Только числа',
       postLabel: 'см',
       styleClass: 'col-6',
       additional: {
@@ -741,7 +723,7 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'гематургия',
+      label: 'гематурия',
       key: 'diuresisHematuria',
       type: 'checkbox',
       styleClass: 'col-6',
@@ -817,9 +799,9 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     {
       label: 'Частота',
       key: 'excretaText',
-      type: 'number',
+      type: 'text',
       pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
+      errorText: 'Только числа',
       postLabel: 'раз в сутки',
       additional: {
         block: 'excreta'
@@ -891,15 +873,27 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
     this.sbscs.push(
+      this.cas.isEditingSub.subscribe(s =>{
+        if (s === 'disable' || s === 'loading'){
+          this.form.disable({emitEvent: false});
+        } else {
+          this.form.enable({emitEvent: false});
+        }
+      }),this.cas.isEditingSub.subscribe(s =>{
+        if (s === 'disable' || s === 'loading'){
+          this.form.disable({emitEvent: false});
+        } else {
+          this.form.enable({emitEvent: false});
+        }
+      }),
       this.cas.cardItemSub.subscribe(objective => {
         this.objective = objective;
         console.log(this.objective);
-        this.patientYear = this.objective.patientFK ? this.objective.patientFK.ageYears : undefined;
-        console.log(this.patientYear);
       }),
       this.form.valueChanges.subscribe( ch => {
         Object.assign(this.objective.cardObjectiveBean, ch);
-        this.cas.formObjectives = this.form.invalid;
+        this.scoreGlasgow = ch.verbalResponse + ch.motorResponse + ch.eyeOpening;
+        console.log(this.scoreGlasgow);
         this.liverLarge = ch.liverNormalLarge; // если печень увеличена, то появляется поле ввода
       }),
     );
@@ -910,6 +904,17 @@ export class CardSideTwoComponent implements OnInit, OnDestroy {
     this.sbscs.forEach(el => el.unsubscribe());
   }
 
+  setInterpretation(score: number) {
+      switch (score) {
+        case 3: return 'терминальная кома, смерть мозга';
+        case 4: case 5: return 'глубокая кома';
+        case 6: case 7: return 'умеренная кома';
+        case 8: case 9: case 10: return 'сопор';
+        case 11: case 12: return 'глубокое оглушение';
+        case 13: case 14: return 'умеренное оглушение';
+        case 15: return 'сознание ясное';
+      }
+  }
   getBlockDescriptions(block: string): ISimpleDescription[] {
     return this.descriptions.filter(el => {
       if (el.additional) {

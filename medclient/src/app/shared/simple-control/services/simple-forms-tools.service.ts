@@ -317,8 +317,6 @@ export class SimpleFormsToolsService {
     });
     return sbscs;
   }
-
-
   constructor() {
   }
 }

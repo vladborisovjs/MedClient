@@ -1,0 +1,36 @@
+<div class="card default-bg">
+  <div class="card-header">
+    <div class="card-title">
+      Добавление транспорта
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="flexible flex-column" *ngIf="!loading && transports && transports.length">
+      <div class="card-subtitle">
+        Выберите транспорт:
+      </div>
+      <app-simple-view
+        [form]="form"
+        [descriptions]="description"
+        [row]="true"
+      ></app-simple-view>
+      <button class="btn btn-primary mt-2" *ngFor="let t of filteredTransports" (click)="selectTransport(t)">
+        <span class="mr-3">
+          {{t.transportFK.name}}
+        </span>
+        <span class="card-subtitle">
+          {{t.transportFK.code}}
+        </span>
+      </button>
+    </div>
+    <div class="alert alert-warning" role="alert" *ngIf="!loading && (!transports || !transports.length)">
+      Не найдено свободных транспортов в этот период
+    </div>
+    <div class="patch" *ngIf="loading">
+      <i class="fas fa-spin fa-spinner"></i>
+    </div>
+  </div>
+</div>

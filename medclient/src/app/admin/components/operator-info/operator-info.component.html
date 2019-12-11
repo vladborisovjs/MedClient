@@ -1,0 +1,43 @@
+<div class="card full-height">
+  <div class="card-header">
+    <h5 class="center-me">
+      Конфигурация ЦОВ
+    </h5>
+  </div>
+  <table *ngIf="configList" class="table table-bordered">
+    <thead>
+    <tr>
+      <th scope="col">ip</th>
+      <th scope="col">Домен</th>
+      <th scope="col">Сотрудник</th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let con of configList">
+      <td><input class="form-control" placeholder="ip" [(ngModel)]="con.ip"></td>
+      <td><input class="form-control" placeholder="ip" [(ngModel)]="con.aor"></td>
+      <td>{{con?.performerFK?.surname}} {{con?.performerFK?.name}}</td>
+      <td><button class="btn btn-success" (click)="updateConfig(con)" >Cохранить</button></td>
+    </tr>
+    <tr>
+      <td><input class="form-control" placeholder="ip" [(ngModel)]="newConfig.ip"></td>
+      <td><input class="form-control" placeholder="Домен" [(ngModel)]="newConfig.domain"></td>
+      <td></td>
+      <td>
+        <button
+          class="btn btn-success"
+          [disabled]="!newConfig.domain || !newConfig.ip"
+          (click)="createConfig()">
+          Добавить
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!configList" class="patch">
+    <div class="icon-container">
+      <i class="fas fa-spin fa-spinner"></i>
+    </div>
+  </div>
+</div>

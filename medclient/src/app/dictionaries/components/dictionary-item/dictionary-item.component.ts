@@ -4,28 +4,23 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {
-  ISimpleDescription,
-  SimpleDescriptionService
-} from '../../../shared/simple-control/services/simple-description.service';
+import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
-import {
-  BrigadeStatusBean,
-  BrigadeTypeBean, DrugBean,
-  MedApi,
-  PerformerBean,
-  ReferenceTypeBean,
-  UnitBean
-} from '../../../../../swagger/med-api.service';
+import {MedApi} from '../../../../../swagger/med-api.service';
 import {NotificationsService} from 'angular2-notifications';
 import {IDictItem} from '../../models/dictionary-structure';
 import {DictionaryService} from '../../services/dictionary.service';
-import {CheckConditionService} from "../../../shared/services/check-condition.service";
+import {CheckConditionService} from '../../../shared/services/check-condition.service';
+import {LogService} from "../../../shared/logs/log.service";
+import {MedMapService} from "../../../shared/best-map/services/med-map.service";
+import {RoleAccessService} from "../../../services/role-access.service";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-dictionary-item',
   templateUrl: './dictionary-item.component.html',
-  styleUrls: ['./dictionary-item.component.scss']
+  styleUrls: ['./dictionary-item.component.scss'],
+  providers: [MedMapService]
 })
 export class DictionaryItemComponent implements OnInit {
   desc: ISimpleDescription[];
@@ -34,18 +29,21 @@ export class DictionaryItemComponent implements OnInit {
   form: FormGroup;
   dictItem: IDictItem;
   reason: string;
+  lockSettingPoint = true; // флаг - надо ли считывать клик с карты для сохранения координат
   constructor(private route: ActivatedRoute,
               private router: Router,
               private api: MedApi,
               private ns: NotificationsService,
               private sds: SimpleDescriptionService,
               private dicService: DictionaryService,
+              private logS: LogService,
+              private ms: MedMapService,
+              public access: RoleAccessService,
               private ccs: CheckConditionService) {
   }
 
   ngOnInit() {
-    this.route.data.subscribe(data => {
-      console.log(data);
+    this.route.data.pipe(take(1)).subscribe(data => {
       this.desc = data.itemWithContent.item.descriptions;
       this.item = data.itemWithContent.content;
       this.title = data.itemWithContent.item.title;
@@ -58,6 +56,22 @@ export class DictionaryItemComponent implements OnInit {
       this.checkConditions();
     }
 
+  }
+
+  initMapPoint() {
+    if (this.item.location) {
+      this.ms.setPointLonLat(JSON.parse(this.item.location));
+      this.ms.setMapViewOnPoint(JSON.parse(this.item.location));
+    } else {
+      this.ms.setDefaultView();
+    }
+  }
+
+  setLocationFromClick(geometry) {
+    if (!this.lockSettingPoint) {
+      this.item.location = JSON.stringify(geometry);
+      this.ms.setPointLonLat(geometry);
+    }
   }
 
   resetForms() {
@@ -104,7 +118,7 @@ export class DictionaryItemComponent implements OnInit {
     }
   }
 
-  create() {
+  create() { // todo: перепроверить логику, отличие деревенного от табличного
     let savingItem;
     if (this.item.data) {
       savingItem = Object.assign(this.item.data, this.form.getRawValue());
@@ -112,9 +126,11 @@ export class DictionaryItemComponent implements OnInit {
     } else {
       savingItem = Object.assign(this.item, this.form.getRawValue());
     }
-    savingItem.deleted = false;
+    savingItem.isDeleted = false;
     savingItem.parentId = this.dicService.nodeParentId; // Через сервис пробрасываем parentid для создания потомка
-    console.log(this.dicService.nodeParentId);
+    if (savingItem.isHelicopter) {
+      savingItem.subdivision = 1;
+    }
     console.log(savingItem);
     this.api[this.dictItem.saveMethod](savingItem).subscribe(
       res => {
@@ -167,6 +183,10 @@ export class DictionaryItemComponent implements OnInit {
       }
       return false;
     });
+  }
+
+  openLog(){
+    this.logS.openLog(this.item.id, this.dictItem.recordType)
   }
 
 }

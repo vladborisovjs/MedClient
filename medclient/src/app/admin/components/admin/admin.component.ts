@@ -14,6 +14,16 @@ export class AdminComponent implements OnInit {
       routerLink: 'users',
       iconClass: 'fas fa-users-cog'
     },
+    {
+      label: 'Конфигурация ЦОВ',
+      routerLink: 'operator-info',
+      iconClass: 'far fa-file-code'
+    },
+    {
+      label: 'Журнал',
+      routerLink: 'logs',
+      iconClass: 'fas fa-list'
+    }
   ];
   constructor() { }
 

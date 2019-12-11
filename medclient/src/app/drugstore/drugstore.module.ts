@@ -17,6 +17,9 @@ import {FormsModule} from '@angular/forms';
 import { DrugBagTemplatesItemComponent } from './components/drug-bag-templates-item/drug-bag-templates-item.component';
 import { DrugBagTemplatesListComponent } from './components/drug-bag-templates-list/drug-bag-templates-list.component';
 import { ModalAddDrugsFromTemplateComponent } from './components/modal-add-drugs-from-template/modal-add-drugs-from-template.component';
+import { RequestsForDrugsComponent } from './components/requests-for-drugs/requests-for-drugs.component';
+import {InfoPlateModule} from '../shared/info-plate/info-plate.module';
+import { MovementsComponent } from './components/movements/movements.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +32,8 @@ import { ModalAddDrugsFromTemplateComponent } from './components/modal-add-drugs
     DrugBagTemplatesItemComponent,
     DrugBagTemplatesListComponent,
     ModalAddDrugsFromTemplateComponent,
+    RequestsForDrugsComponent,
+    MovementsComponent,
   ],
   imports: [
     CommonModule,
@@ -40,6 +45,7 @@ import { ModalAddDrugsFromTemplateComponent } from './components/modal-add-drugs
     NgbModule,
     ModalModule,
     FormsModule,
+    InfoPlateModule
   ],
   entryComponents: [
     ModalAddDrugToBagComponent,

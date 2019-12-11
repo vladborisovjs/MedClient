@@ -12,11 +12,24 @@
 <div class="card" *ngIf="featureType === 'call'">
   <div class="card-header p-1">
     <div class="card-title">
-      <i class="fas fa-phone-square-alt"></i> {{call.id}}
+      <i class="fas fa-phone-square-alt"></i> {{call.number}}
     </div>
   </div>
   <div class="card-body p-1">
     <a [href]="'./#/calls/' + call.id" target="_blank">{{call.reasonFK.reason}}</a>
     <p class="text-secondary m-0">{{call.date | date: 'dd.MM.yyyy HH:mm'}}</p>
+  </div>
+</div>
+
+<div class="card" *ngIf="featureType === 'transport'">
+  <div class="card-header p-1">
+    <div class="card-title">
+     Бригада: {{transport.brigadeContainer.brigade.name}} ({{transport?.brigadeContainer?.brigade?.subdivisionFK?.shortName}})
+    </div>
+  </div>
+  <div class="card-body p-1">
+    <b>Статус: </b> {{transport.brigadeContainer.brigade.brigadeStatusFK.name}}<br>
+    <b>Транспорт: </b>{{transport.brigadeContainer.transportBean.name}} - {{transport.brigadeContainer.transportBean.code}}<br>
+    <b>Движение: </b> {{transport.transportMonitoringBean.isInMotion ? transport.transportMonitoringBean.speed + ' км/ч' : 'на месте'}}
   </div>
 </div>

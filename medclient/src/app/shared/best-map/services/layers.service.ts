@@ -22,6 +22,8 @@ export class LayersService implements ILayersService {
         source:new TileWMS({
           url: '/geoserver/wms',
           params: {'LAYERS': 'telda:tcmk-base', 'TILED': true},
+          // params: {'LAYERS': 'telda:tcmk_test', 'TILED': true},
+          // params: {'LAYERS': 'telda:water, telda:water_line, telda:landuse, telda:park, telda:settlements, telda:highways, telda:railway, telda:roads, telda:bridges', 'TILED': true},
           serverType: 'geoserver',
           transition: 0
         })

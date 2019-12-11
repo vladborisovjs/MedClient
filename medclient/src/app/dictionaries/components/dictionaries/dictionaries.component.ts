@@ -13,6 +13,7 @@ export class DictionariesComponent implements OnInit {
   drugList: IDictionaryInfo[];
   objectivesList: IDictionaryInfo[]; // справочники объективных данных
   drugStoreList: IDictionaryInfo[];
+  drugStoreList2: IDictionaryInfo[];
 
   constructor() { }
 
@@ -23,6 +24,7 @@ export class DictionariesComponent implements OnInit {
     this.drugList = getListOfDictionaries('drugs');
     this.objectivesList = getListOfDictionaries('objectives');
     this.drugStoreList = getListOfDictionaries('drugStore');
+    this.drugStoreList2 = getListOfDictionaries('drugStore2');
   }
 
 }

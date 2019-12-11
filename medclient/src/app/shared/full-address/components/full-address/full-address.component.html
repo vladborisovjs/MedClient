@@ -12,6 +12,8 @@
       bindLabel="fullName"
       [items]="streets"
       [searchFn]="search"
+      [addTag]="addStreet"
+      addTagText="Выбрать улицу"
       class="archive-select"
       [placeholder]="'Введите улицу'"
       loadingText="Загрузка..."
@@ -38,8 +40,10 @@
       bindLabel="houseNumber"
       class="archive-select"
       [placeholder]="'№'"
+      [addTag]="addBuilding"
       loadingText="Загрузка..."
       notFoundText="Не найдено"
+      addTagText="Добавить №"
     >
       <!--<ng-template ng-label-tmp let-item="item">-->
       <!--<span [title]="item.houseNumber">{{item.houseNumber}}</span>-->

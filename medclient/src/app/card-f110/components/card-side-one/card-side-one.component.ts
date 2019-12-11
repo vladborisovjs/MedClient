@@ -3,11 +3,15 @@ import {Subscription} from 'rxjs';
 import {CallContainer, CardBean} from '../../../../../swagger/med-api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {CardItemService} from '../../services/card-item.service';
 import {NotificationsService} from 'angular2-notifications';
 import {CallItemService} from '../../../calls/services/call-item.service';
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-card-side-one',
@@ -27,10 +31,10 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
       title: 'Дата и время: ', field: 'date', type: 'date', block: 'card', datePipeFormat: 'dd.MM.yyyy HH:mm'
     },
     {
-      title: 'Подразделение: ', field: 'subdivisionFK', subField: 'name',  type: 'bean', block: 'card'
+      title: 'Подразделение: ', field: 'subdivisionFK', subField: 'name', type: 'bean', block: 'card'
     },
     {
-      title: 'Сотрудник: ', field: 'performerFK', subField: 'surname',  type: 'bean', block: 'card'
+      title: 'Сотрудник: ', field: 'performerFK', subField: 'surname', type: 'bean', block: 'card'
     },
 
     // call
@@ -46,27 +50,18 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
     {
       title: 'Описание: ', field: 'reasonComment', type: 'text', block: 'call'
     },
-    // {
-    //   title: 'Приоритет: ', field: 'priority', type: 'text', block: 'call'
-    // },
     {
-      title: 'Место получения: ', field: 'brigadeReceivingPlaceFK', subField: 'name', type: 'bean', block: 'call'
+      title: 'Место получения: ', field: 'placeTypeFK', subField: 'name', type: 'bean', block: 'call'
     },
 
     // patient
-    // {
-    //   title: 'Фио: ', field: 'patient_secondname',  type: 'text', block: 'patient'
-    // },
-    // {
-    //   title: 'Пол: ', field: 'gender',   type: 'text', block: 'patient'
-    // },
     {
-      title: 'Возраст: ', field: 'ageYears',   type: 'text', block: 'patient'
+      title: 'Возраст: ', field: 'ageYears', type: 'text', block: 'patient'
     },
 
     // address
     {
-      title: 'Мето вызова: ', field: 'placeTypeFK',subField:'name', type: 'bean', block: 'address'
+      title: 'Место вызова: ', field: 'placeTypeFK', subField: 'name', type: 'bean', block: 'address'
     },
     {
       title: 'Адрес: ', field: 'address', type: 'text', block: 'address'
@@ -86,120 +81,69 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
 
     // declarant
     {
-      title: 'Фио: ', field: 'declarantName',   type: 'text', block: 'declarant'
+      title: 'Фио: ', field: 'declarantName', type: 'text', block: 'declarant'
     },
     {
-      title: 'Телефон: ', field: 'declarantPhone',   type: 'text', block: 'declarant'
+      title: 'Телефон: ', field: 'declarantPhone', type: 'text', block: 'declarant'
     },
     {
-      title: 'Тип: ', field: 'declarantTypeFK', subField: 'name',  type: 'bean', block: 'declarant'
+      title: 'Тип: ', field: 'declarantTypeFK', subField: 'name', type: 'bean', block: 'declarant'
     },
 
     // brigade
     {
-      title: 'Название: ', field: 'name',   type: 'text', block: 'brigade'
+      title: 'Название: ', field: 'name', type: 'text', block: 'brigade'
     },
 
     // briPerformer
     {
-      title: 'Имя:', field: 'name',   type: 'text', block: 'briPerformer'
+      title: 'Имя:', field: 'name', type: 'text', block: 'briPerformer'
     },
     {
-      title: 'Должность:', field: 'typeFK', subField: 'name',  type: 'bean', block: 'briPerformer'
+      title: 'Должность:', field: 'typeFK', subField: 'name', type: 'bean', block: 'briPerformer'
     },
 
     // time
     {
-      title: 'Превышено время прибытия:', field: 'arriveTimeExceed',   type: 'boolean', block: 'time'
+      title: 'Превышено время прибытия:', field: 'arriveTimeExceed', type: 'boolean', block: 'time'
     },
     {
-      title: 'Превышено время приема:', field: 'receivingTimeExceed',   type: 'boolean', block: 'time'
+      title: 'Превышено время приема:', field: 'receivingTimeExceed', type: 'boolean', block: 'time'
     },
 
-    ];
-  descriptions: ISimpleDescription[] = [
-    {
-      label: 'Вызов принят:',
-      key: 'brigadeReceivingDate',
-      type: 'date',
-      styleClass: 'col-6'
-    },
-    {
-      label: 'Бригада выехала:',
-      key: 'brigadeDepartureDate',
-      type: 'date',
-      styleClass: 'col-6'
-    },
-    {
-      label: 'Бригада прибыла:',
-      key: 'brigadeArriveDate',
-      type: 'date',
-      styleClass: 'col-6'
-    },
-    {
-      label: 'Начало транспортировки:',
-      key: 'brigade_transport_begin_date',
-      type: 'date',
-      styleClass: 'col-6'
-    },
-    {
-      label: 'Окончание транспортировки:',
-      key: 'brigade_transport_end_date',
-      type: 'date',
-      styleClass: 'col-6'
-    },
-    {
-      label: 'Завершение вызова:',
-      key: 'brigadeDoneDate',
-      type: 'date',
-      styleClass: 'col-6'
-    },
-    {
-      label: 'Возвращение на станцию:',
-      key: 'brigadeReturnDate',
-      type: 'date',
-      styleClass: 'col-6'
-    },
   ];
-  form: FormGroup;
+  messagesHistory = [];
   role: string;
+
   constructor(
     private cas: CardItemService,
     private cs: CallItemService,
     private route: ActivatedRoute,
     private sds: SimpleDescriptionService,
     private router: Router,
-    private ns: NotificationsService) { }
+    private ns: NotificationsService) {
+  }
 
   ngOnInit() {
-    // this.form = this.sds.makeForm(this.descriptions);
-    this.role = this.router.url.includes('armBrigade') ? 'armBrigade' : undefined;
+    this.role = this.router.url.includes('armBrigade') ? 'armBrigade' : undefined; // todo:разобраться зачем это, есле не нужно то вырезать
     this.sbscs.push(
       this.cs.callItemSub.subscribe(call => this.callContainer = call),
-      this.cas.cardItemSub.subscribe(card => this.card = card),
+      this.cas.cardItemSub.subscribe(card => {
+          this.card = card;
+          this.cs.getBrigadesMessages(this.card.brigadeFK.id, this.callContainer.call.id).pipe(take(1)).subscribe( // todo: мб перенсти в резолвер
+            h => {
+              this.messagesHistory = h;
+              console.log(this.messagesHistory);
+            }
+          );
+
+        }
+      ),
     );
-    console.log(this.card);
-    console.log(this.callContainer);
-    // this.updatePatient();
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
-  }
-
-
-  updateCD() {
-    // console.log(this.form.getRawValue());
-    // Object.assign(this.cardInfoSideOne.general.basic_dates, this.form.getRawValue());
-    // this.cas.updateChronology(this.cardInfoSideOne.general.card_id, this.cardInfoSideOne.general.basic_dates).subscribe(
-    //   res => {
-    //     this.ns.success('Успешно', 'Данные обновлены');
-    //   },
-    //   err => {
-    //     this.ns.error('Ошибка', 'Не удалось сохранить изменения на сервере');
-    //     console.log('Save Dates', err);
-    //   }
-    // );
   }
 
   getPlateDescriptions(block: string): IPlateInfo[] {
@@ -210,6 +154,4 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
       return false;
     });
   }
-
-
 }

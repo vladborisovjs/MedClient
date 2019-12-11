@@ -1,0 +1,24 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      {{report.title}}
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="descriptions"
+      [form]="form"
+      [item]="options"
+      [row]="true"
+    ></app-simple-view>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" [disabled]="form.invalid" (click)="print()">Скачать</button>
+      <button class="btn btn-secondary" (click)="back()">Отмена</button>
+    </div>
+  </div>
+</div>

@@ -11,17 +11,22 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {SimpleControlModule} from '../shared/simple-control/simple-control.module';
 import { PatientsArchiveComponent } from './components/patients-archive/patients-archive.component';
 import {LightResizerModule} from '../shared/light-resizer/light-resizer.module';
+import { PatientInfoComponent } from './components/patient-info/patient-info.component';
+import {ModalModule} from '../shared/modal/modal.module';
+import {ModalMkb10DiagnosisModule} from '../shared/modal-mkb10-diagnosis/modal-mkb10-diagnosis.module';
 
 @NgModule({
-  declarations: [ArchiveComponent, CallsArchiveComponent, F110ArchiveComponent, PatientsArchiveComponent],
+  declarations: [ArchiveComponent, CallsArchiveComponent, F110ArchiveComponent, PatientsArchiveComponent, PatientInfoComponent],
   imports: [
     CommonModule,
+    ModalModule,
     ArchiveRoutingModule,
     NavigationModule,
     GridTableModule,
     ReactiveFormsModule,
     SimpleControlModule,
-    LightResizerModule
+    LightResizerModule,
+    ModalMkb10DiagnosisModule
   ]
 })
 export class ArchiveModule { }

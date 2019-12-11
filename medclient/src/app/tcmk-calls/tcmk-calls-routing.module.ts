@@ -9,7 +9,7 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Модуль ТЦМК'
+      title: 'Управление вызовами ТЦМК'
     },
 
     children: [
@@ -28,7 +28,7 @@ const routes: Routes = [
         }
       },
       {
-        path: ':callId', //todo: newcall
+        path: ':callId',
         resolve: {
           callItem: AviationCallItemResolverService
         },

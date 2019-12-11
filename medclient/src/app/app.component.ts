@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {SocketService} from './services/socket.service';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +6,7 @@ import {SocketService} from './services/socket.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private mss: SocketService) {
+  constructor() {
   }
 
   notificationsOptions = {

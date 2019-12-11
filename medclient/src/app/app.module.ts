@@ -12,10 +12,11 @@ import localeRu from '@angular/common/locales/ru';
 import {AuthInceptor} from './services/auth-inceptor';
 import {UserService} from './services/user.service';
 import {SimpleNotificationsModule} from 'angular2-notifications';
-import {SocketService} from './services/socket.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CheckConditionService} from "./shared/services/check-condition.service";
 import {HotkeyModule} from 'angular2-hotkeys';
+import {SocketTopicModule} from "./shared/socket-topic/socket-topic.module";
+
 
 const LOCATION_REF = new InjectionToken('LOCATION_REF');
 registerLocaleData(localeRu);
@@ -30,7 +31,9 @@ registerLocaleData(localeRu);
     AppRoutingModule,
     HttpClientModule,
     SimpleNotificationsModule.forRoot(),
-    HotkeyModule.forRoot()
+    HotkeyModule.forRoot(),
+    SocketTopicModule,
+
   ],
   providers: [
     {
@@ -55,10 +58,9 @@ registerLocaleData(localeRu);
       multi: true
     },
     UserService,
-    SocketService,
     MedApi,
     NgbActiveModal,
-    CheckConditionService
+    CheckConditionService,
   ],
   bootstrap: [AppComponent]
 })

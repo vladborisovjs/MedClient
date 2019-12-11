@@ -1,12 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ColDef} from 'ag-grid-community';
+import {ColDef, GridApi} from 'ag-grid-community';
 import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
 import {AdminUsersService} from '../services/admin-users.service';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
-import {FormGroup} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import {PerformerBean} from '../../../../../swagger/med-api.service';
+import {UserService} from '../../../services/user.service';
+import {RoleAccessService} from "../../../services/role-access.service";
+import {MedUtilitesService} from "../../../services/med-utilites.service";
 
 @Component({
   selector: 'app-admin-users-list',
@@ -28,12 +31,39 @@ export class AdminUsersListComponent implements OnInit, OnDestroy {
       field: 'patronymic',
     },
     {
+      headerName: 'Телефон',
+      field: 'phone',
+    },
+    {
       headerName: 'Должность',
       field: 'typeFK.name',
     },
     {
-      headerName: 'Место работы',
-      field: 'workplaceSubdivisionFK.name',
+      headerName: 'Район',
+      field: 'subdivisionFK.shortName',
+    },
+    {
+      headerName: 'Специализация',
+      field: 'specializationFK.name',
+    },
+    {
+      headerName: 'Выполняемые роли',
+      valueGetter: p => {
+        if (p.data && p.data.roleList.length) {
+          let role = '';
+          p.data.roleList.forEach(
+            el => {
+              if (el.name) {
+                role = role + el.name + ', '
+              }
+            }
+          );
+          role = role.slice(0, -2);
+          return role;
+        } else {
+          return '';
+        }
+      },
     },
     {
       headerName: 'Логин',
@@ -48,41 +78,62 @@ export class AdminUsersListComponent implements OnInit, OnDestroy {
   filters: any = {
     deleted: false,
   };
+  subdivisionList: any[] = [];
   descriptions: ISimpleDescription[] = [
-    {
-      key: 'name',
-      label: 'Имя',
-      type: 'text',
-      styleClass: 'col-4'
-    },
     {
       key: 'surname',
       label: 'Фамилия',
       type: 'text',
-      styleClass: 'col-4'
+      styleClass: 'col-3'
     },
     {
-      key: 'type',
-      label: 'Тип',
+      key: 'name',
+      label: 'Имя',
+      type: 'text',
+      styleClass: 'col-3'
+    },
+    {
+      label: 'Район:',
+      key: 'subdivisionFK',
       type: 'dict',
-      bindValue: 'id',
-      dict: 'getPerformerTypeListUsingGET',
-      styleClass: 'col-4'
+      dict: 'getDistrictListUsingGET',
+      bindLabel: 'shortName',
+      shortDict: true,
+      dictFilters: {rootId: [this.user.mePerformer.performer.subdivisionFK.id]},
+      dictFiltersOrder: ['rootId'],
+      styleClass: 'col-6',
+      additional: {
+        block: 'general'
+      }
     },
   ];
   form: FormGroup;
   sbscs: Subscription[] = [];
 
-
-  constructor(private users: AdminUsersService, private sds: SimpleDescriptionService) {
+  constructor(private users: AdminUsersService,
+              private user: UserService,
+              public access: RoleAccessService,
+              private sds: SimpleDescriptionService,
+              private utility: MedUtilitesService) {
 
   }
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
-    this.sbscs.push(this.form.valueChanges.pipe(debounceTime(300)).subscribe(
-      f => this.filters = f
-      )
+    this.sbscs.push(
+      // this.utility.getSubdivisionFilters().subscribe(
+      //   list => {
+      //     this.subdivisionList.push(...list);
+      //     this.descriptions[2] = Object.assign({}, this.descriptions[2]);
+      //     this.descriptions = [...this.descriptions]
+      //   }
+      // ),
+
+      this.form.valueChanges.pipe(debounceTime(300)).subscribe(
+      f => {
+        this.filters = f
+      }
+      ),
     );
   }
 
@@ -101,4 +152,7 @@ export class AdminUsersListComponent implements OnInit, OnDestroy {
     this.users.selectUser(e.data);
   }
 
+  onGridReady(params) {
+    this.users.initGridApi(params.api);
+  }
 }

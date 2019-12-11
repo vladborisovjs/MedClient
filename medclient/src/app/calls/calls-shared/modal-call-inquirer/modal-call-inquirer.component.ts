@@ -1,38 +1,46 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AndyTreeNodeOfInquirerBean, InquirerBean, MedApi} from '../../../../../swagger/med-api.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-modal-call-inquirer',
   templateUrl: './modal-call-inquirer.component.html',
   styleUrls: ['./modal-call-inquirer.component.scss']
 })
-export class ModalCallInquirerComponent implements OnInit {
+export class ModalCallInquirerComponent implements OnInit, OnDestroy {
   loading = true;
   currentNodes: any[] = [];
   previousNodes: any[] = [];
+  rootLevel: number = 0;
+  sbscs: Subscription[] = [];
   constructor(
     private modalInstance: NgbActiveModal,
     private api: MedApi) {
   }
 
   ngOnInit() {
-    this.api.getFullNodeUsingGET(false).subscribe(
-      questions => {
-        this.loading = false;
-        this.makeAns(questions);
-      }
-    );
+    this.getInquirer(this.rootLevel);
   }
 
   makeAns(node: AndyTreeNodeOfInquirerBean) {
     if (node.data.reason){
       this.modalInstance.close(node.data);
     } else {
-      this.currentNodes = node.children;
-      this.previousNodes.push(this.currentNodes);
+      this.getInquirer(node.data.id);
     }
-    return;
+  }
+
+  getInquirer(dataId) {
+    this.sbscs.push(
+      this.api.getBranchNodeUsingGET(dataId,false).subscribe(
+        questions => {
+          this.loading = false;
+          this.currentNodes = questions.children;
+          this.previousNodes.push(this.currentNodes);
+        }
+      )
+    );
   }
 
   backToPreviousQuestion() {
@@ -44,4 +52,7 @@ export class ModalCallInquirerComponent implements OnInit {
     this.modalInstance.dismiss();
   }
 
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
 }

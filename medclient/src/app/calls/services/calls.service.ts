@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CallContainer, CallStatusList, MedApi} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
+import {map} from "rxjs/operators";
 
 
 @Injectable({providedIn: 'root'})
@@ -11,43 +12,58 @@ export class CallsService {
   }
 
 
-  getCallsList(from, count, orderBy, isAsc, brigadeId) {
+  getCallsList(from, count, filter) {
     return this.api.getCallListUsingGET(
       from, count,
-      orderBy ? orderBy : 'date', isAsc,
-      [CallStatusList.UNDONE, CallStatusList.ACTIVE, CallStatusList.CONFIRM, CallStatusList.UNCONFIRM, CallStatusList.UNFOUNDED],
-      undefined, undefined, undefined, undefined,
-      brigadeId
+      filter['orderBy'] ? filter['orderBy'] : undefined, filter.isAsc,
+      filter.statuses,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      filter.brigadeId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      filter.subdivisionId,
+      true
     );
   }
+
+  getSubdivisions(subId) {
+    return this.api.getFullSubdivisionNodeUsingGET(subId, false);
+  }
+
 
   getCall(callId) {
     return this.api.getCallContainerUsingGET(callId);
   }
-  getActiveCardsList(from, count, brigadeId) {
+
+  getActiveCardsList(from, count, filter) {
     return this.api.getCardListUsingGET(
       from, count,
       'date', false,
       undefined, undefined, undefined,
-      brigadeId
+      filter.brigadeId, filter.subdivisionId
     );
   }
 
-  getRepeatedCalls(from, count, orderBy, isAsc, patientName, patientSurname, patientPatronymic) {
+  getRepeatedCalls(from, count, filter) {
     return this.api.getCallListUsingGET_1(
-      patientName ? patientName : '',
-      patientSurname ? patientSurname : '',
-      patientPatronymic ? patientPatronymic : '',
+      filter.name ? filter.name : '',
+      filter.surname ? filter.surname : '',
+      filter.patronymic ? filter.patronymic : '',
       from, count,
-      orderBy ? orderBy : 'date', isAsc
+      filter.orderBy ? filter.orderBy : 'date', filter.isAsc
     );
   }
 
   createCall(callItem: CallContainer) {
-    callItem.call.isEmergency = this.mode === 'aviation'; // если вызов создается из модуля ТЦМК то ему выставляется признак ЧС
+    // callItem.call.isEmergency = this.mode === 'tcmk'; // если вызов создается из модуля ТЦМК то ему выставляется признак ЧС // обновление "признак чс"
     callItem.call.isDeleted = false;
+    callItem.call.priority = this.mode === 'tcmk' ? 1 : callItem.call.priority;
     callItem = CallContainer.fromJS(callItem);
-    console.log(callItem);
     return this.api.updateCallContainerUsingPOST(callItem);
   }
 

@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {ArmBrigadeComponent} from './components/arm-brigade/arm-brigade.component';
 import {CallItemComponent} from '../calls/calls-shared/call-item/call-item.component';
 import {ArmBrigadeCallItemResolverService} from './services/resolvers/arm-brigade-call-item-resolver.service';
+import {ArmCallItemGuard} from "./guards/arm-call-item.guard";
 
 const routes: Routes = [
   {
@@ -29,6 +30,8 @@ const routes: Routes = [
             resolve: {
               callItem: ArmBrigadeCallItemResolverService
             },
+            canActivate: [ArmCallItemGuard]
+            ,
             data: {
               title: 'Вызов'
             },

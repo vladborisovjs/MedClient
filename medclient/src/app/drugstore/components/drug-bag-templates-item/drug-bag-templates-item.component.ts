@@ -60,6 +60,16 @@ export class DrugBagTemplatesItemComponent implements OnInit {
       width: 170
     },
     {
+      headerName: 'Категория',
+      field: 'drugFK.categoryFK.name',
+      width: 250
+    },
+    {
+      headerName: 'Вид',
+      field: 'drugFK.groupFK.name',
+      width: 250
+    },
+    {
       headerName: 'Примечания',
       field: 'additionally',
       width: 220

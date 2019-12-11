@@ -1,17 +1,17 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {API_BASE_URL, MedApi} from '../../../swagger/med-api.service';
+import {API_BASE_URL, MedApi, PerformerContainer} from '../../../swagger/med-api.service';
 import {Router} from '@angular/router';
 import {map, tap} from 'rxjs/operators';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   authSub: Subject<boolean>;
-  subdivisionId: number;
-  token: string;
+  token: string; //WebSocket  token
+  mePerformer: PerformerContainer;
   redirectedUrl: any;
   constructor(private http: HttpClient,
               private router: Router,
@@ -24,7 +24,7 @@ export class UserService {
   login(loginPair) {
     return this.api.loginUsingPOST(loginPair).pipe(tap(
       login => {
-        this.initUser(login);
+        this.authSub.next(true);
         if (this.redirectedUrl){
           this.router.navigate([this.redirectedUrl]);
         }  else {
@@ -34,17 +34,16 @@ export class UserService {
     ));
   }
 
-  initUser(user) {
-    // this.subdivisionId = user.subdivisionId;
-    // this.token = user.token;
+  initUser(user: PerformerContainer) {
+    this.mePerformer = user;
+    console.log('Hello ', user);
     this.authSub.next(true);
   }
 
   checkAuth(): Observable<boolean> | Promise<boolean> | boolean {
     this.api.getPerformerByMeUsingGET().subscribe(
-      login => {
-        console.log(login);
-        this.initUser(login);
+      user => {
+        this.initUser(user);
       },
       err => {
         this.router.navigate(['/auth']);
@@ -53,8 +52,23 @@ export class UserService {
     return this.authSub;
   }
 
-  getMeWithBrigade() {
-    return this.api.getPerformerByMeWithBrigadeUsingGET();
+  // getMeWithBrigade() {
+  //   return this.api.getPerformerByMeWithBrigadeUsingGET().pipe(tap(
+  //     user => this.initUser(user)
+  //   ));
+  // }
+
+  checkAssignedBrigade(): Observable<boolean>{
+    if (this.mePerformer.brigadeBean){
+      return of(true)
+    }
+    return this.api.getPerformerByMeWithBrigadeUsingGET().pipe(map(
+      user => {
+        this.mePerformer.brigadeBean = user.brigadeBean;
+        this.mePerformer.brigadeSchedule = user.brigadeSchedule;
+        return !!this.mePerformer.brigadeBean
+      }
+    ))
   }
 
   logout(){

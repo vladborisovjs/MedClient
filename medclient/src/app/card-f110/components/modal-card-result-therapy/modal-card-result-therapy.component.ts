@@ -47,7 +47,7 @@ export class ModalCardResultTherapyComponent implements OnInit {
       label: 'Кол-во',
       key: 'count',
       type: 'number',
-      pattern: '^[1-9]*',
+      pattern: '^[1-9][0-9]*',
       required: true,
       styleClass: 'col-2'
     }

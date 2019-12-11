@@ -73,11 +73,13 @@ export class DictionaryComponent implements OnInit {
   }
 
   private setList() {
+    console.log(this.filters);
     if (!this.disabled && typeof this.api[`${this.dict}`] !== 'undefined') {
       let method = this.api[`${this.dict}`].bind(this.api);
       let orderedFilters = [];
       this.filtersOrder.forEach(el => {
         orderedFilters.push(this.filters[el]);
+        console.log(el, '-->', this.filters[el]);
       });
       this.loading = true;
       if (this.short) {
@@ -186,11 +188,10 @@ export class DictionaryComponent implements OnInit {
       if (this.scrollable) {
         let orderedFilters = [];
         this.filtersOrder.forEach(el => {
-
           orderedFilters.push(this.filters[el]);
         });
         this.from += 50;
-        this.api[`${this.dict}`](this.from, this.count, ...orderedFilters).toPromise().then(el => {
+        this.api[`${this.dict}`](this.from, this.count, false , ...orderedFilters).toPromise().then(el => {
           this.list = [...this.list, ...el.list];
           this.scrollable = (this.from + 50) < el.total;
         });

@@ -1,9 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {_AccessLevels} from "../../../models/user-roles";
+import {RoleAccessService} from "../../../services/role-access.service";
 
 export class ICardMenuItem {
   label: string;
   routerLink?;
   iconClass: string;
+  accessLevel?: _AccessLevels
 }
 
 @Component({
@@ -14,8 +17,7 @@ export class ICardMenuItem {
 export class CardMenuComponent implements OnInit {
   @Input() items: ICardMenuItem[];
   @Input() headerLabel: string;
-
-  constructor() { }
+  constructor(public access: RoleAccessService) { }
 
   ngOnInit() {
   }

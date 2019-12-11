@@ -1,6 +1,6 @@
 <div class="card full-height">
   <div class="card-header toolbar">
-    <div class="toolbar-left">
+    <div class="toolbar-left filter-wrapper">
       <button *ngIf="dict.type === 'list'" class="btn btn-primary" (click)="showDelete()">Показать {{showDeleted? 'активные':'удаленные'}}</button>
       <button *ngIf="dict.type === 'tree'" class="btn btn-primary" (click)="showFullTree()">Показать {{showDeleted? 'активные':'все'}}</button>
     </div>
@@ -8,7 +8,7 @@
       Справочник «{{dict.title}}»
     </div>
     <div class="toolbar-right">
-      <div class="btn-group">
+      <div class="btn-group filter-wrapper" *ngIf="access.checkAccessWrite({level: 'dictModule'})">
         <button class="btn btn-danger" *ngIf="selectedItem && !selectedItem.isDeleted" (click)="deleteItem()">
           <i class="fas fa-trash-alt"></i> Удалить
         </button>
@@ -21,17 +21,24 @@
       </div>
     </div>
   </div>
+  <div class="card-header">
+    <app-simple-view *ngIf="dict.filters"
+      [form]="form"
+      [row]="true"
+      [descriptions]="dict.filters"
+    ></app-simple-view>
+  </div>
   <div class="card-body p-0 full-height">
-    <app-grid-table *ngIf="dict.type === 'list'"
+    <app-grid-table *ngIf="dict.type === 'list' && dataSource"
                     [columnDefs]="dict.colDef"
                     [dataSource]="dataSource"
-                    [filter]="filter"
+                    [filter]="filters"
                     [sorting]="false"
                     (onRowSelect)="selectItem($event)"
                     (onRowDblClick)="goToItem($event)"
     ></app-grid-table>
 
-    <p-treeTable [value]="tree" *ngIf="dict.type === 'tree'" class="subdev-tree">
+    <p-treeTable [value]="tree" *ngIf="dict.type === 'tree' && (tree && tree[0]?.children?.length)" class="subdev-tree">
       <ng-template pTemplate="header">
         <tr style="visibility: collapse">
           <th *ngFor="let el of dict.headers" style="visibility: hidden"
@@ -85,8 +92,11 @@
         </tr>
       </ng-template>
     </p-treeTable>
-    <div *ngIf="dict.type === 'tree' && !this.tree" class="patch" >
-      <h2>Загрузка...</h2>
+    <div *ngIf="dict.type === 'tree' && loading" class="patch" >
+      <h2>Загрузка... <i class="fa fa-cog fa-spin" spin="true"></i></h2>
+    </div>
+    <div *ngIf="tree && !tree[0]?.children?.length && !loading" class="patch" >
+      <h2>Ничего не найдено</h2>
     </div>
   </div>
 </div>

@@ -1,6 +1,4 @@
 <div class="flexible default-bg h-100">
-
-
   <div class="col-6 full-width">
     <div class="card">
       <div class="card-body">
@@ -54,14 +52,14 @@
               <div class="therapies">
                 <app-grid-table
                   [columnDefs]="colDefs"
-                  (onRowDblClick)="editTherapy($event.data)"
+                  (onRowDblClick)="editTherapyWithBag($event.data)"
                   [pagination]="false"
                   [listSource]="localTherapies">
                 </app-grid-table>
               </div>
               <div class="toolbar-right m-2">
                 <div class="btn-group">
-                  <button class="btn btn-sm btn-success" (click)="createTherapy('local')">Добавить</button>
+                  <button class="btn btn-sm btn-success" (click)="createTherapyWithBag('local')" [disabled]="form.disabled">Добавить</button>
               </div>
               </div>
               <div class="card">
@@ -85,14 +83,14 @@
               <div class="therapies">
                 <app-grid-table
                   [columnDefs]="colDefs"
-                  (onRowDblClick)="editTherapy($event.data)"
+                  (onRowDblClick)="editTherapyWithBag($event.data)"
                   [pagination]="false"
                   [listSource]="transportTherapies">
                 </app-grid-table>
               </div>
               <div class="toolbar-right m-2">
                 <div class="btn-group">
-                  <button class="btn btn-sm btn-success" (click)="createTherapy('transport')">Добавить</button>
+                  <button class="btn btn-sm btn-success" (click)="createTherapyWithBag('transport')"  [disabled]="form.disabled">Добавить</button>
                 </div>
               </div>
               <div class="card">

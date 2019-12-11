@@ -18,6 +18,16 @@ export class DrugstoreComponent implements OnInit {
       routerLink: 'bags-templates',
       iconClass: 'fas fa-first-aid'
     },
+    {
+      label: 'Заявки',
+      routerLink: 'requests',
+      iconClass: 'fas fa-tasks'
+    },
+    {
+      label: 'Движение медсредств',
+      routerLink: 'movements',
+      iconClass: 'fas fa-random'
+    },
   ];
 
   constructor() { }

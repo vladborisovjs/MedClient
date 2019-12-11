@@ -1,0 +1,11 @@
+@import "../../../../styles/variables";
+
+:host {
+  height: 100%;
+  overflow: auto;
+  background-color: $yellow-sand;
+}
+
+.drug-desc-table {
+  height: 100%;
+}

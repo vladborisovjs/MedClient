@@ -2,7 +2,6 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MainComponent} from './components/main/main.component';
 import {StartComponent} from './components/start/start.component';
-import {ArmBrigadeModule} from '../arm-brigade/arm-brigade.module';
 
 const routes: Routes = [
   {
@@ -28,13 +27,13 @@ const routes: Routes = [
         path: 'archive',
         loadChildren: '../archive/archive.module#ArchiveModule'
       },
-      {
-        path: 'schedule',
-        loadChildren: '../schedule/schedule.module#ScheduleModule',
-        data: {
-          title: 'Управление сотрудниками и бригадами',
-        },
-      },
+      // {
+      //   path: 'schedule',
+      //   loadChildren: '../schedule/schedule.module#ScheduleModule',
+      //   data: {
+      //     title: 'Управление сотрудниками и бригадами',
+      //   },
+      // },
       {
         path: 'dictionaries',
         loadChildren: '../dictionaries/dictionaries.module#DictionariesModule'
@@ -47,16 +46,20 @@ const routes: Routes = [
         path: 'map',
         loadChildren: '../map/map.module#MapModule'
       },
+      // {
+      //   path: 'drugstore',
+      //   loadChildren: '../drugstore/drugstore.module#DrugstoreModule'
+      // },
       {
-        path: 'drugstore',
-        loadChildren: '../drugstore/drugstore.module#DrugstoreModule'
+        path: 'drugstore2',
+        loadChildren: '../drugstore2/drugstore-bag.module#DrugstoreBagModule'
       },
       {
         path: 'admin',
         loadChildren: '../admin/admin.module#AdminModule'
       },
       {
-        path: 'armBrigade',
+        path: 'arm-brigade',
         loadChildren: '../arm-brigade/arm-brigade.module#ArmBrigadeModule'
       },
       {
@@ -66,6 +69,14 @@ const routes: Routes = [
       {
         path: 'aviation',
         loadChildren: '../aviation/aviation.module#AviationModule'
+      },
+      {
+        path: 'info-exchange',
+        loadChildren: '../info-exchange/info-exchange.module#InfoExchangeModule'
+      },
+      {
+        path: 'shift-control',
+        loadChildren: '../shift-control/shift-control.module#ShiftControlModule',
       },
     ]
   }

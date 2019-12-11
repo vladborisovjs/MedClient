@@ -1,0 +1,30 @@
+<div class="wrapper">
+
+  <button class="btn btn-tiny btn-outline-info mx-1" [ngbTooltip]="ss.socketStatus === 'opened' ? socketTipLink : socketTipUnlink" placement="left"
+          (click)="test()">
+    <i *ngIf="ss.socketStatus === 'opened'" class="fas fa-link"></i>
+    <i *ngIf="ss.socketStatus === 'connecting'" class="fas fa-spin fa-spinner"></i>
+    <i *ngIf="ss.socketStatus === 'closed'" class="fas fa-unlink text-danger"></i>
+  </button>
+
+  <ng-template #socketTipLink>
+    Подключено обновление данных в реальном времени
+  </ng-template>
+  <ng-template #socketTipUnlink>
+    Нет связи с сервером
+  </ng-template>
+
+
+  <button class="btn btn-tiny btn-outline-info mx-1"  [ngbTooltip]="user.mePerformer.callOperatorInfoBean ? phoneTipLink : phoneTipUnlink">
+    <i *ngIf="user.mePerformer.callOperatorInfoBean" class="fas fa-phone"></i>
+    <i *ngIf="!user.mePerformer.callOperatorInfoBean" class="fas fa-phone-slash text-danger"></i>
+  </button>
+
+  <ng-template #phoneTipLink>
+    К рабочему месту подключен телефон {{user.mePerformer.callOperatorInfoBean.aor}}
+  </ng-template>
+  <ng-template #phoneTipUnlink>
+   Телефон не подключен
+  </ng-template>
+</div>
+

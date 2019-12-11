@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {TransportMonitoringData} from "../../../../../../swagger/med-api.service";
 
 
 @Component({
@@ -8,11 +9,12 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class PopupComponent implements OnInit {
 
-  @Input() featureType: string; // 'subdivision' 'call';
+  @Input() featureType: string; // 'subdivision' 'call' 'transport';
 
 
   @Input() call;
   @Input() subdivision;
+  @Input() transport: TransportMonitoringData;
 
   constructor() {
   }

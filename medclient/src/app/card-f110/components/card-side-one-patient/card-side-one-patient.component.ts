@@ -1,18 +1,28 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {NotificationsService} from 'angular2-notifications';
 import {CardItemService} from '../../services/card-item.service';
 import {
-  CallBean,
   CallContainer,
-  CardBean,
-  PatientBean,
-  PatientTemplateBean
+  CardBean, DocumentBean,
 } from '../../../../../swagger/med-api.service';
 import {CallItemService} from '../../../calls/services/call-item.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ModalAddPatientToCardComponent} from '../modal-add-patient-to-card/modal-add-patient-to-card.component';
+import {CustomModalService} from '../../../shared/modal/services/custom-modal.service';
+import {debounceTime} from "rxjs/operators";
+
+export interface IDocForm {
+  form: FormGroup,
+  subscription: Subscription,
+  document: DocumentBean
+}
 
 @Component({
   selector: 'app-card-side-one-patient',
@@ -23,7 +33,9 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
   callContainer: CallContainer;
   card: CardBean;
-  formPatient: FormGroup;
+  formPatient: FormGroup; // форма для полей patientBean
+  formCard: FormGroup; // форма для полей cardBean
+  formPatientTemplate: FormGroup;
   pList: any[] = [];
   descriptionPatient: ISimpleDescription[] = [
     {
@@ -33,9 +45,10 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       selectList: this.pList,
       styleClass: 'col-12',
       additional: {
-        block: 'general'
+        block: 'patient-template'
       }
-    },
+    }, // patient-template
+
     {
       label: 'Фамилия',
       key: 'surname',
@@ -44,9 +57,9 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-12',
       additional: {
-        block: 'general'
+        block: 'patient-info'
       }
-    },
+    }, // patient-info
     {
       label: 'Имя',
       key: 'name',
@@ -55,9 +68,9 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-12',
       additional: {
-        block: 'general'
+        block: 'patient-info'
       }
-    },
+    }, // patient-info
     {
       label: 'Отчество',
       key: 'patronymic',
@@ -66,42 +79,9 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       pattern: '^[а-яА-ЯёЁ\\s-]*',
       styleClass: 'col-12',
       additional: {
-        block: 'general'
+        block: 'patient-info'
       }
-    },
-    {
-      label: 'Возраст лет',
-      key: 'ageYears',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
-      styleClass: 'col-12',
-      additional: {
-        block: 'general'
-      }
-    },
-    {
-      label: 'Месяцев',
-      key: 'ageMonths',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
-      styleClass: 'col-12',
-      additional: {
-        block: 'general'
-      }
-    },
-    {
-      label: 'Дней',
-      key: 'ageDays',
-      type: 'number',
-      pattern: '^[0-9]*',
-      errorText: 'Поле не может быть отрицательным',
-      styleClass: 'col-12',
-      additional: {
-        block: 'general'
-      }
-    },
+    }, // patient-info
     {
       label: 'Пол',
       key: 'gender',
@@ -113,242 +93,334 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       ],
       styleClass: 'col-4',
       additional: {
-        block: 'general'
+        block: 'patient-info'
       }
-    },
+    }, // patient-info
     {
-      label: 'Социальный статус',
-      key: 'patientFK',
+      label: 'Дата рождения',
+      key: 'birthday',
+      type: 'date',
+      showTime: false,
+      styleClass: 'col-8',
+      yearNavigator: true,
+      additional: {
+        block: 'patient-info'
+      }
+    }, // patient-info
+    {
+      label: 'Тип пациента',
+      key: 'patientTypeFK',
       type: 'dict',
-      dict: 'getReferenceTypeListPatientSocialTypeUsingGET',
+      dropdownPosition: 'top',
+      dict: 'getReferenceTypeListPatientTypeUsingGET',
+      styleClass: 'col-12',
+      additional: {
+        block: 'patient-info'
+      }
+    }, // patient-info
+
+    {
+      label: 'Регион',
+      key: 'region',
+      type: 'text',
+      styleClass: 'col-6',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Населенный пункт',
+      key: 'town',
+      type: 'text',
+      styleClass: 'col-6',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Улица',
+      key: 'street',
+      type: 'text',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Дом №',
+      key: 'houseNum',
+      type: 'text',
       styleClass: 'col-4',
       additional: {
-        block: 'general'
+        block: 'patient-additional'
       }
-    },
+    }, // patient-additional
+    {
+      label: 'Корпус',
+      key: 'buildingNum',
+      type: 'text',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Квартира',
+      key: 'flatNum',
+      type: 'text',
+      styleClass: 'col-4',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Социальный статус',
+      key: 'patientSocialStatusFK',
+      type: 'dict',
+      dict: 'getReferenceTypeListPatientSocialTypeUsingGET',
+      styleClass: 'col-12',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Место работы/учебы',
+      key: 'workplace',
+      type: 'text',
+      styleClass: 'col-6',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+    {
+      label: 'Должность',
+      key: 'post',
+      type: 'text',
+      styleClass: 'col-6',
+      additional: {
+        block: 'patient-additional'
+      }
+    }, // patient-additional
+
     {
       label: 'Место рождения',
       key: 'alien_birthplace',
       type: 'text',
-      styleClass: 'col-4',
+      styleClass: 'col-8',
       additional: {
         block: 'general'
       }
     },
+
     {
-      label: 'Тип',
-      key: 'source_type_name',
+      label: 'тип',
+      key: 'typeFK',
       type: 'dict',
-      bindValue: 'id',
-      dict: 'getReferenceTypeListPatientSourceTypeUsingGET',
+      dict: 'getDocumentTypeListUsingGET',
+      styleClass: '',
       additional: {
-        block: 'personalDoc'
+        block: 'documents'
       }
     },
     {
       label: 'Серия',
-      key: 'document_serial',
+      key: 'series',
       type: 'number',
       pattern: '^[0-9]*',
       errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-6',
       additional: {
-        block: 'personalDoc'
+        block: 'documents'
       }
-    },
+    }, //documents
     {
       label: 'Номер',
-      key: 'document_number',
+      key: 'num',
       type: 'number',
       pattern: '^[0-9]*',
       errorText: 'Поле не может быть отрицательным',
       styleClass: 'col-6',
       additional: {
-        block: 'personalDoc'
+        block: 'documents'
       }
-    },
+    }, //documents
     {
       label: 'Дата выдачи',
-      key: 'document_date',
+      key: 'date',
+      showTime: false,
       type: 'date',
       additional: {
-        block: 'personalDoc'
+        block: 'documents'
       }
-    },
+    }, //documents
     {
-      label: 'Страна',
-      key: 'registry_country',
-      type: 'text',
-      styleClass: 'col-6',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Регион',
-      key: 'registry_region',
-      type: 'text',
-      styleClass: 'col-6',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Город/село',
-      key: 'registry_city',
-      type: 'text',
-      styleClass: 'col-6',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Район',
-      key: 'registry_district',
-      type: 'text',
-      styleClass: 'col-6',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Улица',
-      key: 'registry_street',
+      label: 'Кем выдан',
+      key: 'organization',
       type: 'text',
       additional: {
-        block: 'address'
+        block: 'documents'
       }
-    },
+    }, //documents
     {
-      label: 'Дом',
-      key: 'registry_house',
-      type: 'text',
-      styleClass: 'col-4',
+      label: 'Примечания',
+      key: 'description',
+      type: 'textarea',
       additional: {
-        block: 'address'
+        block: 'documents'
       }
-    },
-    {
-      label: 'Корпус',
-      key: 'registry_building',
-      type: 'text',
-      styleClass: 'col-4',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Квартира',
-      key: 'registry_flat',
-      type: 'text',
-      styleClass: 'col-4',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Тип',
-      key: 'patient_type_name',
-      type: 'dict',
-      dict: 'getReferenceTypeListPatientTypeUsingGET',
-      additional: {
-        block: 'address'
-      }
-    },
-    {
-      label: 'Место работы/учебы',
-      key: 'job_place',
-      type: 'text',
-      additional: {
-        block: 'occupation'
-      }
-    },
-    {
-      label: 'Должность',
-      key: 'job_position',
-      type: 'text',
-      additional: {
-        block: 'occupation'
-      }
-    },
-    {
-      label: 'Полис ОМС',
-      key: 'insurance_OMS',
-      type: 'text',
-      additional: {
-        block: 'insurance'
-      }
-    },
-    {
-      label: 'СМО',
-      key: 'insurance_SMO',
-      type: 'text',
-      additional: {
-        block: 'insurance'
-      }
-    },
-    {
-      label: 'Полис ДМС, СМО',
-      key: 'insurance_DMS_SMO',
-      type: 'text',
-      additional: {
-        block: 'insurance'
-      }
-    },
+    }, //documents
   ];
+  docForms: IDocForm[] = [];
 
   constructor(private route: ActivatedRoute, private router: Router,
               private cas: CardItemService,
               private cs: CallItemService,
+              private modal: NgbModal,
+              private cmodal: CustomModalService,
               private ns: NotificationsService,
               private sds: SimpleDescriptionService) {
   }
 
   ngOnInit() {
-    this.formPatient = this.sds.makeForm(this.descriptionPatient);
+    this.formCard = this.sds.makeForm(this.getBlockDescriptions('patient-additional'));
+    this.formPatientTemplate = this.sds.makeForm(this.getBlockDescriptions('patient-template'));
+    this.formPatient = this.sds.makeForm(this.getBlockDescriptions('patient-info'));
+
     this.sbscs.push(
-      this.cs.callItemSub.subscribe(call => {
+      this.cas.isEditingSub.subscribe(s => {
+        console.log(this.card);
+        if (s === 'disable' || s === 'loading') {
+          this.formPatientTemplate.disable({emitEvent: false});
+          this.formCard.disable({emitEvent: false});
+          this.formPatient.disable({emitEvent: false});
+          this.docForms.forEach( df=> df.form.disable({}))
+        } else {
+          this.formPatientTemplate.enable({emitEvent: false});
+          if (this.card && this.card.patientFK) {
+            this.formCard.enable({emitEvent: false});
+            this.formPatient.enable({emitEvent: false});
+            this.docForms.forEach( df=> df.form.enable({}))
+          }
+        }
+      }),
+      this.cs.callItemSub.pipe().subscribe(call => {
           this.callContainer = call;
           if (this.callContainer.call.patientList) {
             this.callContainer.call.patientList.forEach(
-              p => this.pList.push(
-                {name: p.surname + ' ' + p.name + ' ' + p.patronymic, id: p}
-              )
+              p => {
+                if (!p.isDeleted) {
+                  this.pList.push(
+                    {
+                      name: (p.surname || p.name || p.patronymic) ? (p.surname || '') + ' ' + (p.name || '') + ' ' + (p.patronymic || '') : 'Не заполнено',
+                      id: p.id
+                    }
+                  );
+                }
+              }
             );
           }
         }
       ),
       this.cas.cardItemSub.subscribe(card => {
           this.card = card;
-          this.card.patientFK = this.card.patientFK ? this.card.patientFK : PatientBean.fromJS({isDeleted: false, id: 0});
-
-          this.formPatient.reset(this.card.patientFK);
+          if (card.patientTemplateFK) { // Если выбран пациент карты отображаем соответсвуещее значение из pList
+            this.formPatientTemplate.controls['patientTemplateFK'].setValue(this.pList.find((v) => v.id === this.card.patientTemplateFK.id).id);
+          }
+          if (this.card.patientFK) {
+            this.formPatient.reset(this.card.patientFK);
+            this.formCard.reset(this.card);
+            this.resetDocForms();
+          } else {
+            this.formPatient.disable({emitEvent: false});
+            this.formCard.disable({emitEvent: false});
+          }
         }
       ),
-      this.formPatient.valueChanges.subscribe(ch => {
-        this.cas.formPatient = this.formPatient.invalid;
-        Object.assign(this.card.patientFK, ch);
+      this.formCard.valueChanges.subscribe(ch => Object.assign(this.card, ch)),
+      this.formPatientTemplate.valueChanges.subscribe(ch => {
+        this.card.patientTemplateFK = this.callContainer.call.patientList.find(p => p.id === ch.patientTemplateFK);
       }),
-      this.formPatient.controls['patientTemplateFK'].valueChanges.subscribe( // todo: сделалать гибкую ллогику
-       patientTemplate => {
-         this.card.patientTemplateFK = PatientTemplateBean.fromJS({});
-         Object.assign(this.card.patientTemplateFK, patientTemplate);
-         patientTemplate.id = 0;
-         Object.assign(this.card.patientFK, PatientBean.fromJS(patientTemplate));
-         this.formPatient.reset(this.card.patientFK, {emitEvent: false});
-         this.cas.getSimularPatients(this.card.patientTemplateFK);
-       }
-      )
+      this.formPatient.valueChanges.subscribe(ch => Object.assign(this.card.patientFK, ch))
     );
 
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
+    this.docForms.forEach(f => f.subscription.unsubscribe());
+  }
+
+  resetDocForms() {
+    this.docForms.forEach(f => f.subscription.unsubscribe());
+    this.docForms = [];
+    this.card.patientFK.documentList.forEach(
+      doc => {
+        if (!doc.isDeleted) {
+          let form = this.sds.makeForm(this.getBlockDescriptions('documents'));
+          let subscription: Subscription;
+          doc.date = new Date(doc.date);
+          form.reset(doc);
+          subscription = form.valueChanges.subscribe(ch => {
+            Object.assign(doc, ch);
+          });
+          this.formCard.enabled ? form.enable({emitEvent: false}) : form.disable({emitEvent: false});
+          this.docForms.push({document: doc, form: form, subscription: subscription});
+        }
+      }
+    );
+  }
+
+  addDocument() {
+    let doc = DocumentBean.fromJS({id: 0, isDeleted: false, patient: this.card.patientFK.id});
+    let form = this.sds.makeForm(this.getBlockDescriptions('documents'));
+    let subscription: Subscription;
+    form.reset(doc);
+    subscription = form.valueChanges.subscribe(ch => {
+      Object.assign(doc, ch);
+      console.log(this.card.patientFK.documentList);
+    });
+    this.card.patientFK.documentList.push(doc);
+    this.docForms.push({document: doc, form: form, subscription: subscription});
+    this.ns.warn('Документ добален', 'Для сохрания данных, необходимо сохранить карту!');
+  }
+
+  deleteDocument(doc: IDocForm, i: number) {
+    this.cmodal.confirm('Удаление документа', 'Вы уверены, что хотите удалить документ' + '?').then(
+      res => {
+        doc.document.isDeleted = true;
+        this.resetDocForms();
+        this.ns.warn('Документ удален', 'Для сохрания данных, необходимо сохранить карту!');
+      },
+      () => {
+      }
+    );
   }
 
   back() {
     this.router.navigate(['../'], {relativeTo: this.route.parent});
+  }
+
+  openPatientsArchive() {
+    const archive = this.modal.open(ModalAddPatientToCardComponent, {size: 'lg'});
+    archive.componentInstance.filter = this.card.patientTemplateFK || {};
+    archive.result.then(
+      res => {
+        if (res) {
+          res.birthday = new Date(res.birthday);
+          this.card.patientFK = res;
+          if (res.id) {
+            this.formPatient.reset(this.card.patientFK);
+            this.resetDocForms();
+          } else {
+            // this.formPatient.reset(this.card.patientTemplateFK);
+            this.formPatient.reset(this.card.patientFK);
+          }
+          this.formPatient.enable({emitEvent: false});
+          this.docForms.forEach(df => df.form.enable({emitEvent: false}));
+          this.formCard.enable({emitEvent: false});
+          this.ns.warn('Пациент добален', 'Для сохрания данных пациента, необходимо сохранить карту!');
+        }
+      }
+    );
   }
 
 

@@ -7,6 +7,7 @@ import {DatePipe} from '@angular/common';
 import {offset} from 'ol/sphere';
 import {ArchiveService} from '../../services/archive.service';
 import {tap} from 'rxjs/operators';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-patients-archive',
@@ -15,9 +16,16 @@ import {tap} from 'rxjs/operators';
 })
 export class PatientsArchiveComponent implements OnInit {
   colDefs: ColDef[] = [
+    // {
+    //   headerName: '№',
+    //   field: 'id',
+    //   sortable: true,
+    //   filter: true,
+    //   width: 90,
+    // },
     {
-      headerName: '№',
-      field: 'id',
+      headerName: 'Фамилия',
+      field: 'surname',
       sortable: true,
       filter: true,
       width: 90,
@@ -32,13 +40,6 @@ export class PatientsArchiveComponent implements OnInit {
     {
       headerName: 'Отчество',
       field: 'patronymic',
-      sortable: true,
-      filter: true,
-      width: 90,
-    },
-    {
-      headerName: 'Фамилия',
-      field: 'surname',
       sortable: true,
       filter: true,
       width: 90,
@@ -142,6 +143,28 @@ export class PatientsArchiveComponent implements OnInit {
       }
     },
     {
+      key: 'name',
+      label: 'Имя',
+      type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      styleClass: 'col-12',
+      additional: {
+        block: 'patient'
+      }
+    },
+    {
+      key: 'patronymic',
+      label: 'Отчество',
+      type: 'text',
+      errorText: 'Только кириллица',
+      pattern: '^[а-яА-ЯёЁ\\s-]*',
+      styleClass: 'col-12',
+      additional: {
+        block: 'patient'
+      }
+    },
+    {
       key: 'patientType',
       label: 'Тип пациента',
       bindValue: 'id',
@@ -152,12 +175,35 @@ export class PatientsArchiveComponent implements OnInit {
         block: 'patient'
       }
     },
+    {
+      label: 'Дата рождения',
+      key: 'dateBirth',
+      type: 'date',
+      showTime: false,
+      yearNavigator: true,
+      styleClass: 'col-12',
+      additional: {
+        block: 'patient'
+      }
+    },
+    // {
+    //   key: 'subdivisionId',
+    //   label: 'Район',
+    //   type: 'dict',
+    //   dict: 'getSubdivisionListUsingGET',
+    //   dictFilters: {type: [448641]},
+    //   dictFiltersOrder: ['type'],
+    //   bindValue: 'id',
+    //   additional:{
+    //     block: 'patient'
+    //   }
+    // },
   ];
   loading = true;
   datePipe = new DatePipe('ru');
 
   dateFormatter(params) {
-    return params.value ? this.datePipe.transform(params.value, 'dd.MM.yyyy HH:mm') : '-';
+    return params.value ? this.datePipe.transform(params.value, 'dd.MM.yyyy') : '';
   }
 
   dataSource = {
@@ -167,7 +213,7 @@ export class PatientsArchiveComponent implements OnInit {
     }
   };
 
-  constructor(private arch: ArchiveService, private sds: SimpleDescriptionService) {
+  constructor(private arch: ArchiveService, private sds: SimpleDescriptionService, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -183,8 +229,17 @@ export class PatientsArchiveComponent implements OnInit {
     this.form.reset(this.filters);
   }
 
+  goToPatient(e) {
+    this.router.navigate([`archive/patient/${e.data.id}`]);
+  }
+
   search() {
     this.filters = this.form.getRawValue();
+    if (this.filters.dateBirth){
+      this.filters.dateBirth.setHours(new Date().getTimezoneOffset() / (-60));
+      this.filters.dateBirth = this.filters.dateBirth.toISOString().slice(0, 19);
+    }
+    console.log(this.filters);
   }
 
   getBlockDescriptions(block: string): ISimpleDescription[] {

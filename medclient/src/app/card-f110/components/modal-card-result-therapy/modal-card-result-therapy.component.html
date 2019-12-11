@@ -21,10 +21,11 @@
       ></app-simple-view>
       <button class="btn btn-primary" (click)="addDrug()" [disabled]="drugForm.invalid">Добавить</button>
     </div>
-    <div *ngIf="!(bagDrugList.length > 0 && newItem)">
+    <div *ngIf="!(bagDrugList.length > 0) && newItem">
       <i class="fas fa-spin fa-spinner"></i> Загрузка медикаментов...
     </div>
-    <table *ngIf="therapy.therapyItemList && therapy.therapyItemList.length" class="table table-sm table-striped table-bordered mt-2">
+    <table *ngIf="therapy.therapyItemList && therapy.therapyItemList.length"
+           class="table table-sm table-striped table-bordered mt-2">
       <thead>
       <tr>
         <th scope="col">№</th>

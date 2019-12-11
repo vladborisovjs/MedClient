@@ -171,7 +171,7 @@ export class SimpleViewComponent implements OnInit, OnChanges, OnDestroy, AfterV
     }
     this.createDates();
     this.descriptions.forEach(el => {
-      if (el.presetValue) {
+      if (el.presetValue !== undefined) {
         Object.assign(this.presetValues, {[el.key]: el.presetValue})
       }
     })

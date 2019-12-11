@@ -4,6 +4,8 @@ import {ArchiveComponent} from './components/archive/archive.component';
 import {CallsArchiveComponent} from './components/calls-archive/calls-archive.component';
 import {F110ArchiveComponent} from './components/f110-archive/f110-archive.component';
 import {PatientsArchiveComponent} from './components/patients-archive/patients-archive.component';
+import {PatientInfoComponent} from './components/patient-info/patient-info.component';
+import {PatientInfoResolverService} from './services/resolvers/patient-info-resolver.service';
 
 const routes: Routes = [
   {
@@ -39,7 +41,61 @@ const routes: Routes = [
         data: {
           title: 'Пациенты',
         },
+        // children: [
+        //   {
+        //     path:'patient',
+        //     data: {
+        //       title: null
+        //     },
+        //     children: [
+        //       {
+        //         path: ':patId',
+        //         resolve: {
+        //           patItem: PatientInfoResolverService
+        //         },
+        //         data: {
+        //           title: 'Пациент'
+        //         },
+        //         children: [
+        //           {
+        //             path: '',
+        //             component: PatientInfoComponent,
+        //             data: {
+        //               title: null
+        //             }
+        //           }
+        //         ]
+        //       }
+        //     ]
+        //   }
+        // ]
       },
+      {
+        path: 'patient',
+        data: {
+          title: null
+        },
+        children: [
+          {
+            path: ':patId',
+            resolve: {
+              patItem: PatientInfoResolverService
+            },
+            data: {
+              title: 'Пациент'
+            },
+            children: [
+              {
+                path: '',
+                component: PatientInfoComponent,
+                data: {
+                  title: null
+                }
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 ];

@@ -1,0 +1,49 @@
+<div class="patch" *ngIf="!bagTmpItem">
+  <i class="fas fa-briefcase-medical"></i>
+</div>
+
+<div class="card default-bg flexible flex-column full-height" *ngIf="bagTmpItem">
+  <div class="card full-height m-2" *ngIf="bagTmpItem.id">
+    <div class="card-header toolbar">
+      <div class="toolbar-right"></div>
+      <div class="card-title">
+        {{bagTmpItem.name}}
+      </div>
+      <div class="toolbar-left"></div>
+    </div>
+    <div class="card full-height">
+      <div class="card-header">
+        <ngb-tabset [justify]="'fill'" class="full-height" (tabChange)="changeMode($event.nextId)">
+          <ngb-tab title="Лекарственные препараты" [id]="modes.DRUGS">
+          </ngb-tab>
+          <ngb-tab title="Медицинские изделия" [id]="modes.WARES">
+          </ngb-tab>
+          <ngb-tab title="Прочие средства" [id]="modes.OTHER">
+          </ngb-tab>
+        </ngb-tabset>
+      </div>
+      <div class="card-body full-height p-0">
+        <div class="drug-desc-table">
+          <app-grid-table *ngIf="mode === 'OTHER'"
+                          (onRowSelect)="selectDrugFromTable($event)"
+                          [columnDefs]="colDefOthers"
+                          [listSource]="bagTmpItem.othersInBagBeanFK">
+          </app-grid-table>
+          <app-grid-table *ngIf="mode === 'WARES'"
+                          (onRowSelect)="selectDrugFromTable($event)"
+                          [columnDefs]="colDefWares"
+                          [listSource]="bagTmpItem.waresInBagBeanFK">
+          </app-grid-table>
+          <app-grid-table *ngIf="mode === 'DRUGS'"
+                          (onRowSelect)="selectDrugFromTable($event)"
+                          [columnDefs]="colDefDrugs"
+                          [listSource]="bagTmpItem.drugsInBagBeanFK">
+          </app-grid-table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="patch" *ngIf="!bagTmpItem.id">
+    <i class="fas fa-pills"></i>
+  </div>
+</div>

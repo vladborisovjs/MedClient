@@ -50,13 +50,14 @@
         </button>
       </div>
       <div class="toolbar-right">
+        <button class="btn btn-success mr-2" (click)="refill()">
+          Создать заявку на пополнение
+        </button>
         <div class="btn-group">
           <!--<button class="btn btn-outline-danger" *ngIf="selectedDrug" (click)="deleteDrug()">-->
             <!--Удалить-->
           <!--</button>-->
-          <button class="btn btn-success" (click)="refill()">
-            Пополнить укладку
-          </button>
+
           <button class="btn btn-success" (click)="addDrug2bag()">
             Добавить лекарство
           </button>

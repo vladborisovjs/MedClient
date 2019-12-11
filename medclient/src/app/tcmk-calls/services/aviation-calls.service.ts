@@ -5,21 +5,23 @@ import {UserService} from '../../services/user.service';
 
 @Injectable()
 export class AviationCallsService extends CallsService {
-  mode = 'aviation';
+  mode = 'tcmk';
 
   constructor(api: MedApi, user: UserService) {
     super(api, user);
-    console.log('aviation call item service', this.mode)
   }
 
-  getCallsList(from, count, orderBy, isAsc, brigadeId) {
-    return this.api.getCallListUsingGET(
+  getCallsList(from, count, filter) {
+    return this.api.getTcmkCallListUsingGET(
       from, count,
-      orderBy ? orderBy : 'date', isAsc,
-      [CallStatusList.UNDONE, CallStatusList.ACTIVE, CallStatusList.CONFIRM, CallStatusList.UNCONFIRM, CallStatusList.UNFOUNDED],
-      undefined, undefined, undefined, undefined,
-      brigadeId, undefined, undefined, true
+      filter['orderBy'] ? filter['orderBy'] : undefined, filter.isAsc,
+      filter.statuses,
+      undefined,
+      undefined,
+      filter.subdivisionId ? filter.subdivisionId :undefined,
+      true,
     );
+
   }
 
 

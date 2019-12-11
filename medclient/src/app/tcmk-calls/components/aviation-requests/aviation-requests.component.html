@@ -1,50 +1,81 @@
-<div class="card h-100">
-  <div class="card-header">
-    <div class="card-title center-me">
-      Заявки на санавиацию
+<div class="flexible  h-100">
+  <div class="card w-75 h-100">
+    <div class="card-header toolbar">
+      <div class="toolbar-left">
+
+      </div>
+      <div class="card-title">
+        Заявки на санавиацию
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-primary" (click)="openRequests()">
+          Перейти к заявкам
+        </button>
+      </div>
+    </div>
+    <div class="h-100 scrollable">
+      <table class="table table-sm table-hover h-100" *ngIf="requestsList && requestsList.length">
+        <thead>
+        <tr>
+          <th scope="col">№</th>
+          <th scope="col">Дата</th>
+          <th scope="col">Вызов</th>
+          <!--<th scope="col">Пункт отправки</th>-->
+          <!--<th scope="col">Пункт назначения</th>-->
+          <th scope="col">Описание</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let req of requestsList">
+          <th>
+            {{req.id}}
+            <span *ngIf="req.isInterHospital"><i class="fas fa-hospital"></i> <i class="fas fa-long-arrow-alt-right"></i> <i
+              class="fas fa-hospital"></i></span>
+            <span *ngIf="!req.isInterHospital"><i class="fas fa-map-marker-alt"></i> <i
+              class="fas fa-long-arrow-alt-right"></i> <i class="fas fa-hospital"></i></span>
+          </th>
+          <td>{{req.date | date : 'dd.MM HH:mm'}}</td>
+          <td><a class="btn btn-tiny btn-outline-primary" target="_blank" [href]="'#/tcmk-calls/' + req.call">Открыть вызов</a></td>
+          <!--<td>-->
+          <!--{{req.isInterHospital ?-->
+          <!--req.departureSubdivisionFK.name :-->
+          <!--req.departureAddress + 'д. ' + req.departureHouseNum}}-->
+          <!--</td>-->
+          <!--<td>{{req.destinationSubdivisionFK ? req.destinationSubdivisionFK.name : '-'}}</td>-->
+          <td>{{req.description}}</td>
+          <td>
+            {{req.isAccept ? 'Одобрена' : req.isAccept === false ? 'Отказ' : 'Не обработана'}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!requestsList || !requestsList.length" class="patch">
+      <h4>Список заявок пуст</h4>
     </div>
   </div>
+  <div class="card w-25 h-100">
+    <div class="card-header toolbar">
+      <div class="toolbar-left">
 
-  <table class="table table-sm table-hover" *ngIf="requestsList && requestsList.length">
-    <thead>
-    <tr>
-      <th scope="col">№</th>
-      <th scope="col">Дата</th>
-      <th scope="col">Вызов</th>
-      <th scope="col">Пункт отправки</th>
-      <th scope="col">Пункт назначения</th>
-      <th scope="col">Описание</th>
-      <th scope="col"></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let req of requestsList">
-      <th>
-        {{req.id}}
-        <span *ngIf="req.isInterHospital"><i class="fas fa-hospital"></i><i class="fas fa-long-arrow-alt-right"></i><i class="fas fa-hospital"></i></span>
-        <span *ngIf="!req.isInterHospital"><i class="fas fa-map-marker-alt"></i><i class="fas fa-long-arrow-alt-right"></i><i class="fas fa-hospital"></i></span>
-      </th>
-      <td>{{req.date}}</td>
-      <td>{{req.call}}</td>
-      <td>
-        {{req.isInterHospital ?
-        req.departureSubdivisionFK.name :
-        req.departureAddress + 'д. ' + req.departureHouseNum}}
-      </td>
-      <td>{{req.destinationSubdivisionFK ? req.destinationSubdivisionFK.name : '-'}}</td>
-      <td>{{req.description}}</td>
-      <td>
-        {{req.isAccept ? 'Одобрена' : req.isAccept === false ? 'Отказ' : ''}}
-        <button class="btn btn-primary" *ngIf="req.isAccept !== true && req.isAccept !== false">
-          Открыть
-        </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-
-  <div *ngIf="!requestsList || !requestsList.length" class="patch">
-    <h4>Список заявок пуст</h4>
+      </div>
+      <div class="card-title">
+        Авиабригады на смене
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-primary" [routerLink]="'/aviation/brigades'"><i class="fas fa-calendar-day"></i></button>
+      </div>
+    </div>
+    <ul class="list-group list-group-flush" *ngIf="actualBrigades">
+      <li class="list-group-item" *ngFor="let bri of actualBrigades">
+        <b>Бригада:</b> {{bri.brigade.name}}<br> <b>Статус:</b> {{bri.brigade.brigadeStatusFK.name}}<br>
+        <button class="btn btn-success" (click)="sendOnBase(bri.brigade.id)" *ngIf="bri.brigade.brigadeStatusFK.code==='RETURNING'">На станции</button>
+      </li>
+    </ul>
   </div>
-
 </div>
+
+
+

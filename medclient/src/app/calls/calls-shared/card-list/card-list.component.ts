@@ -1,21 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import {ColDef, GridApi} from 'ag-grid-community';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ColDef} from 'ag-grid-community';
 import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
 import {CallsService} from '../../services/calls.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe} from '@angular/common';
+import {SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {debounceTime} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {UserService} from '../../../services/user.service';
+import {FormControl, FormGroup} from '@angular/forms';
+import {MedUtilitesService} from "../../../services/med-utilites.service";
 
 @Component({
   selector: 'app-card-list',
   templateUrl: './card-list.component.html',
   styleUrls: ['./card-list.component.scss']
 })
-export class CardListComponent implements OnInit {
-  dataSource: IGridTableDataSource;
+export class CardListComponent implements OnInit, OnDestroy {
+  dataSource: IGridTableDataSource = {
+    get: (filter, offset, count) => {
+      return this.calls.getActiveCardsList(offset, count, filter);
+    }
+  };
   colDefs: ColDef[] = [
     {
       headerName: '№',
-      field: 'id',
+      field: 'number',
       sortable: true,
       filter: true,
       width: 80,
@@ -29,7 +39,7 @@ export class CardListComponent implements OnInit {
     },
     {
       headerName: 'Повод к вызову',
-      field: 'callFK.reasonFK.name',
+      field: 'callFK.reasonFK.reason',
       sortable: true,
       filter: true,
       width: 220,
@@ -47,57 +57,85 @@ export class CardListComponent implements OnInit {
       sortable: true,
       filter: true,
       width: 120,
-      valueFormatter: (v)=> {
-        return (v.value.name ? v.value.name : '')  + ' ' + ( v.value.patronymic ? v.value.patronymic : '' )+ ' '+ (v.value.surname ? v.value.surname : '');
+      valueFormatter: (v) => {
+        return (v.value.surname ? v.value.surname : '') +
+          ' ' + (v.value.name ? v.value.name : '')  + ' ' + ( v.value.patronymic ? v.value.patronymic : '' ) + ' ';
       }
     },
     {
       headerName: 'Заявитель',
-      field: 'callFK',
+      field: 'callFK.declarantName',
       sortable: true,
       filter: true,
       width: 120,
     },
     {
       headerName: 'Исполнитель',
-      valueGetter: params => params.data.performerFK.surname + ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
+      valueGetter: params => params.data.performerFK.surname +
+        ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
       sortable: true,
       filter: true,
       width: 120,
     },
     {
-      headerName: 'Отработка',
-      field: 'card_status_name',
+      headerName: 'Статус', // todo: pipe карточек
+      valueGetter: params => {
+        if (params.data.cardStatus === 1) {
+          return 'Проверена';
+        } else if ( params.data.cardStatus === 2) {
+          return 'Готова к отправке в ЕГИСЗ';
+        } else if (params.data.cardStatus === 4) {
+          return 'Отправлено в ЕГИСЗ';
+        } else if (params.data.cardStatus === 0) {
+          return 'Создана';
+        } else {
+          return 'Статус не установлен';
+        }
+      },
       sortable: true,
       filter: true,
       width: 120,
     },
     {
       headerName: 'Результат',
-      field: 'result_name',
+      field: 'resultTypeFK.name',
       sortable: true,
       filter: true,
       width: 120,
     },
 
   ];
-  filters: any = {};
+  filter = {
+    subdivisionId: undefined
+  };
   datePipe = new DatePipe('ru');
+  sbscs: Subscription[] = [];
+  subdivisionList = [];
+  form = new FormGroup({
+    subdivision: new FormControl(this.user.mePerformer.performer.subdivisionFK.id)
+  });
   constructor(private calls: CallsService,
               private router: Router,
-              private route: ActivatedRoute,) { }
+              private user: UserService,
+              private sds: SimpleDescriptionService,
+              private route: ActivatedRoute,
+              private utilite: MedUtilitesService) { }
 
   ngOnInit() {
-    this.updateDataSource()
+    this.sbscs.push(
+      this.utilite.getSubdivisionFilters().subscribe(list => {
+        this.subdivisionList = list;
+      }),
+      this.form.valueChanges.pipe(debounceTime(300)).subscribe(
+        f => {
+          console.log(f);
+          this.filter.subdivisionId = f['subdivision'] || undefined;
+          this.updateFilter();
+        }
+      ),
+    );
   }
 
-  updateDataSource() {
-    this.dataSource = {
-      get: (filter, offset, count) => {
-        return this.calls.getActiveCardsList(offset, count, filter.brigadeId);
-      }
-    }
-  }
 
   fitCol(e) {
     e.api.sizeColumnsToFit();
@@ -108,8 +146,15 @@ export class CardListComponent implements OnInit {
     this.router.navigate([card.data.call + '/card/' + card.data.id], {relativeTo: this.route});
   }
 
+  updateFilter() {
+    this.filter = Object.assign({}, this.filter);
+  }
+
   selectCard(e) {
     console.log(e);
   }
 
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
 }

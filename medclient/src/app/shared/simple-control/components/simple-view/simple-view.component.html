@@ -21,14 +21,16 @@
                       [rows]="el.rows"
                       [timeOnlyWithDate]="el.timeOnlyWithDate === undefined ? false: el.timeOnlyWithDate"
                       [showTime]="el.showTime === undefined ? true : el.showTime"
+                      [yearNavigator]="el.yearNavigator === undefined ? false : el.yearNavigator"
                       [maxDate]="maxDate? maxDate: null"
                       [minDate]="minDate? minDate: null"
                       [errorText]="el.errorText"
                       [isError]="form.controls[el.key].invalid && form.controls[el.key].touched"
-                      [presetValue]="el.presetValue? el.presetValue : null"
+                      [presetValue]="el.presetValue !== undefined ? el.presetValue : null"
                       [readonly]="el.readonly? el.readonly: false"
                       [btnClass]="el.btnClass"
                       [action]="el.action"
                       [addLabel]="el.addLabel"
+                      [mask]="el.mask ? el.mask : '8 (999) 999-99-99'"
   ></app-simple-control>
 </div>

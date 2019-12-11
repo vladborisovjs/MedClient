@@ -1,109 +1,114 @@
-import {Component, OnInit} from '@angular/core';
-import {ColDef} from 'ag-grid-community';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ColDef, GridApi} from 'ag-grid-community';
 import {DatePipe} from '@angular/common';
 import {CallsService} from '../../services/calls.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
-import {CallBean} from '../../../../../swagger/med-api.service';
+import {CallBean, CallStatusList} from '../../../../../swagger/med-api.service';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
+import {FormControl, FormGroup} from '@angular/forms';
+import {debounceTime, tap} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {UserService} from '../../../services/user.service';
+import {SocketTopicsService} from "../../../shared/socket-topic/services/socket-topics.service";
+import {RoleAccessService} from "../../../services/role-access.service";
+import {CallStatusPipe} from "../../../shared/med-pipes/pipes/call-status.pipe";
+import {FullnameShorterPipe} from "../../../shared/med-pipes/pipes/fullname-shorter.pipe";
+import {MedUtilitesService} from "../../../services/med-utilites.service";
 
 @Component({
   selector: 'app-calls-list',
   templateUrl: './calls-list.component.html',
   styleUrls: ['./calls-list.component.scss']
 })
-export class CallsListComponent implements OnInit {
+export class CallsListComponent implements OnInit, OnDestroy {
   colDefs: ColDef[] = [
     {
       headerName: '№',
-      field: 'id',
+      field: 'number',
       sortable: true,
-      filter: true,
-      width: 130,
+      filter: false,
+      width: 200,
       filterParams: {
         suppressAndOrCondition: true,
         filterOptions: ['contains']
       },
-      cellRenderer: (p) => {
-        if (p.value === 427006 || p.value === 427165) {
-          return '<div class="text-danger blinking">НЕ ТРОГАТЬ!</div>';
-        }
-        return p.value;
-      }
     },
     {
       headerName: 'Статус',
       field: 'status',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       width: 300,
       cellRenderer: (p) => {
-        switch (p.value) {
-          case 0:
-            return '<i class="fas fa-exclamation-circle blinking text-danger"></i> Бригада не назначена';
-            break;
-          case 1:
-            return '<i class="fas fa-exclamation-circle text-warning"></i> Не принят бригадой';
-            break;
-          case 2:
-            return '<i class="fas fa-cog text-primary fa-spin"></i> Принят бригадой';
-            break;
-          case 3:
-            return '<i class="fas fa-cog text-primary fa-spin"></i> В работе';
-            break;
-          case 4:
-            return '<i class="fas fa-check-circle text-success"></i> Завершен';
-            break;
-          case 5:
-            return '<i class="fas fa-ban text-secondary"></i>  Отменен';
-            break;
-        }
-        return p.value;
+        return this.callStatusPipe.transform(p.value);
       },
     },
     {
       headerName: 'Дата',
       field: 'date',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       valueFormatter: (p) => {
-        return this.dateFormatter(p);
+        try {
+          return this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm');
+        } catch {
+          return p.value;
+        }
       },
       width: 180
     },
     {
+      headerName: 'Район',
+      field: 'subdivisionFK.shortName',
+      filter: false,
+      sortable: false,
+      width: 200
+    },
+    {
       headerName: 'Заявитель',
       field: 'declarantName',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       width: 200,
     },
     {
       headerName: 'Телефон',
       field: 'declarantPhone',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       width: 200,
     },
     {
       headerName: 'Повод к вызову',
-      field: 'reasonFK.reason',
-      filter: true,
-      width: 220,
+      field: 'reasonFK',
       sortable: false,
+      filter: false,
+      width: 220,
+      cellRenderer: params => {
+        if (!params.data.reasonFK || !params.data.reasonFK.reason || !params.data.reasonFK.primaryInquirerFK.answer) {
+          return 'не указан';
+        } else {
+          return params.data.reasonFK.primaryInquirerFK.answer + ': ' + params.data.reasonFK.reason;
+        }
+      }
     },
     {
       headerName: 'Адрес',
       field: 'address',
-      filter: true,
       sortable: false,
+      filter: false,
       width: 220,
     },
     {
       headerName: 'Пациенты',
       field: 'patientList',
       sortable: false,
-      filter: true,
+      filter: false,
       width: 250,
       valueGetter: params => {
         if (params.data.patientList && params.data.patientList.length) {
@@ -111,12 +116,7 @@ export class CallsListComponent implements OnInit {
           if (!params.data.patientList[0].call) {
             return ' ';
           }
-          params.data.patientList.forEach(
-            p => {
-              pat = pat + (p.surname ? p.surname : '') + ' ' + (p.name ? p.name : '') + ', ';
-            }
-          );
-          pat = pat.slice(0, -2);
+          pat = this.nameShorterPipe.transform(params.data.patientList);
           return pat;
         } else {
           return ' ';
@@ -128,7 +128,7 @@ export class CallsListComponent implements OnInit {
       headerName: 'Бригады',
       field: 'brigades',
       sortable: false,
-      filter: true,
+      filter: false,
       width: 180,
       valueGetter: params => {
         if (!params.data.assignedBrigadeList || !params.data.assignedBrigadeList[0].call) {
@@ -144,30 +144,62 @@ export class CallsListComponent implements OnInit {
         return bris;
       },
     },
-    // {
-    //   headerName: 'Сотрудник',
-    //   // valueGetter: params => {
-    //   //   console.log('/--->', params)
-    //   // },
-    //   field: 'performerFK.name',
-    //   sortable: true,
-    //   filter: true,
-    //   width: 180,
-    // },
   ];
   datePipe = new DatePipe('ru');
+  callStatusPipe = new CallStatusPipe();
+  nameShorterPipe = new FullnameShorterPipe();
   selectedCall: CallBean;
   callsCards: any[] = [];
   cardLoading: boolean;
-  filters: any = {};
+  subdivisionList = [];
+  form = new FormGroup({
+    subdivision: new FormControl(this.user.mePerformer.performer.subdivisionFK.id)
+  });
   mode: string = 'calls'; // cards
-  firstLoaded = false; // для индикатора загрузки карточек
   dateFormatter(params) {
     return params.value ? this.datePipe.transform(params.value, 'dd.MM HH:mm') : '-';
   }
 
+  gridOptions = {
+    getRowClass: (params) => {
+      if (params.data && params.data.isEmergency === true) {
+        return 'emergency-row';
+      } else if (params.data && params.data.priority === 1) {
+        return 'priority-row';
+      }
+    }
+  };
+
+  callStatusList = CallStatusList;
+  sbscs: Subscription[] = [];
+  filter = {
+    orderBy: undefined,
+    isAsc: true,
+    statuses: [
+      CallStatusList.UNDONE,
+      CallStatusList.CONFIRM,
+      CallStatusList.ACTIVE,
+      CallStatusList.UNCONFIRM,
+      CallStatusList.TRANSPORTING,
+      CallStatusList.EVACUATION_REQUIRED
+    ],
+    subdivisionId: this.user.mePerformer.performer.subdivisionFK.id,
+    IsChildrenIncluded: true
+  };
   timeControlValue: { minutes: number, seconds: number } = {minutes: null, seconds: null};
-  dataSource: IGridTableDataSource;
+  callCount: number;
+  dataSource: IGridTableDataSource = {
+    get: (filter, offset, count) => {
+      delete this.callCount;
+      return this.calls.getCallsList(offset, count, filter).pipe(tap(
+        res => {
+          this.callCount = res.total
+        }
+      ));
+    }
+  };
+
+  callsGridApi: GridApi;
 
   hotkeys: Hotkey[] = [
     new Hotkey('shift+n', () => {
@@ -184,17 +216,50 @@ export class CallsListComponent implements OnInit {
     })
   ];
 
-  constructor(private calls: CallsService,
+  constructor(public calls: CallsService,
+              private user: UserService,
               private router: Router,
               private route: ActivatedRoute,
-              private hotkeysService: HotkeysService,) {
+              private sds: SimpleDescriptionService,
+              private sTopics: SocketTopicsService,
+              public access: RoleAccessService,
+              private hotkeysService: HotkeysService,
+              private utility: MedUtilitesService) {
     this.hotkeys.forEach(key => this.hotkeysService.add(key));
   }
 
   ngOnInit() {
-    this.updateDataSource();
     setInterval(this.timeControl.bind(this), 500);
-    console.log(this.calls.mode);
+    this.sbscs.push(
+      this.utility.getSubdivisionFilters().subscribe(list => {
+        this.subdivisionList = list;
+      }),
+      this.form.valueChanges.pipe(debounceTime(300)).subscribe(
+        f => {
+          this.filter.subdivisionId = f['subdivision'] || undefined;
+          this.updateFilter();
+        }
+      ),
+      this.sTopics.callUpdatedSub.subscribe(
+        update => {
+          let node = this.callsGridApi.getRenderedNodes().find(node => node.data.id === update.id);
+          if (node) {
+            update.date = node.data.date; // todo: костыль, убрать после исправлении даты в сокете
+            node.updateData(update);
+          }
+        }
+      ),
+      this.sTopics.callStatusSub.subscribe(
+        update => {
+          let node = this.callsGridApi.getRenderedNodes().find(node => node.data.id === update.callId);
+          if (node) {
+            let updateData = node.data;
+            updateData.status = update.callStatus;
+            node.updateData(updateData);
+          }
+        }
+      ),
+    );
   }
 
   timeControl() {
@@ -205,25 +270,27 @@ export class CallsListComponent implements OnInit {
     }
   }
 
-  updateDataSource() {
-    this.dataSource = {
-      get: (filter, offset, count) => {
-        this.firstLoaded = true;
-        return this.calls.getCallsList(offset, count, filter.order, filter.isAsc, filter.brigadeId);
-      }
-    };
-  }
 
   filterSource(e) {
   }
 
   sortSource(e) {
     if (e[0]) {
-      this.filters.order = e[0].colId;
-      this.filters.isAsc = e[0].sort === 'asc';
+      console.log(e[0]);
+      this.filter.orderBy = e[0].colId;
+      this.filter.isAsc = e[0].sort === 'asc';
     } else {
-      this.filters.order = this.filters.isAsc = undefined;
+      this.filter.orderBy = this.filter.isAsc = undefined;
     }
+  }
+
+  updateFilter() {
+    if (this.calls.mode === 'original') {
+      this.filter.subdivisionId = this.filter.subdivisionId || this.user.mePerformer.performer.subdivisionFK.id; // todo: Костыль на ограничение видимости
+    } else {
+      this.filter.subdivisionId = this.filter.subdivisionId || undefined;
+    }
+    this.filter = Object.assign({}, this.filter);
   }
 
   goToCall(call) {
@@ -265,8 +332,12 @@ export class CallsListComponent implements OnInit {
   }
 
   fitCol(e) {
-    e.api.sizeColumnsToFit();
+    this.callsGridApi = e.api;
+    this.callsGridApi.sizeColumnsToFit();
+    console.log(this.callsGridApi);
   }
 
-
+  ngOnDestroy() {
+    this.sbscs.forEach(el => el.unsubscribe());
+  }
 }

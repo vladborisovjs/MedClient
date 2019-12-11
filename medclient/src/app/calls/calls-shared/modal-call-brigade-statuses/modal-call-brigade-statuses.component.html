@@ -11,7 +11,7 @@
     <h6 class="center-me">История сообщения</h6>
     <ol>
       <li *ngFor="let s of messagesHistory">
-        {{s.messageTypeFK.name}} - {{s.receivingTypeFK.name}}
+        {{s.messageTypeFK.name}} - {{s.receivingTypeFK.name}} - {{s.date | date: "dd.MM HH:mm:ss"}}
       </li>
     </ol>
   </div>

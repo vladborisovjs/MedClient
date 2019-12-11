@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
-import {UserResolverService} from './services/resolvers/user-resolver.service';
 import {AuthGuard} from './services/auth.guard';
 
 
@@ -13,9 +12,6 @@ const routes: Routes = [
       title: 'Главная'
     },
     canActivate: [AuthGuard],
-    // resolve: {
-    //   user: UserResolverService
-    // }
   },
    {
     path: 'auth',

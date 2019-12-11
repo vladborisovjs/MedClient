@@ -1,0 +1,20 @@
+.table-wrapper{
+  height: 500px;
+}
+.header-wrapper{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.control-wrapper{
+  display: flex;
+  align-items: center;
+  input{
+    width: 7rem;
+  }
+}
+
+.drug-info{
+  margin-right: 1rem;
+  font-weight: 500;
+}

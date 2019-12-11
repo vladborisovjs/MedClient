@@ -3,6 +3,7 @@ import {AviaRequestBean, CallBean} from '../../../../../swagger/med-api.service'
 import {FormGroup} from '@angular/forms';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {UserService} from '../../../services/user.service';
 
 @Component({
   selector: 'app-modal-aviation-request',
@@ -36,6 +37,8 @@ descriptions: ISimpleDescription[] = [
     key: 'departureSubdivisionFK',
     type: 'dict',
     dict: 'getSubdivisionListUsingGET',
+    dictFilters: {type: [1558]},
+    dictFiltersOrder: ['type'],
     additional: {
       block: 'interHospital'
     }
@@ -45,12 +48,15 @@ descriptions: ISimpleDescription[] = [
     key: 'destinationSubdivisionFK',
     type: 'dict',
     dict: 'getSubdivisionListUsingGET',
+    dictFilters: {type: [1558]},
+    dictFiltersOrder: ['type'],
     additional: {
       block: 'interHospital'
     }
   },
 ];
   constructor(private sds: SimpleDescriptionService,
+              private user: UserService,
               private modalInstance: NgbActiveModal) { }
 
   ngOnInit() {
@@ -60,7 +66,8 @@ descriptions: ISimpleDescription[] = [
         id: 0,
         departureHouseNum: this.call.houseNum,
         departureAddress: this.call.address,
-        departureLocation: this.call.location
+        departureLocation: this.call.location,
+        performerFK: this.user.mePerformer.performer // тот кто создал заявку
       }
       );
     this.form  = this.sds.makeForm(this.descriptions);

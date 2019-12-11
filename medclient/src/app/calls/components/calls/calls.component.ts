@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {MedApi} from '../../../../../swagger/med-api.service';
 import {HttpClient} from '@angular/common/http';
 
 

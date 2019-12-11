@@ -1,18 +1,18 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ColDef} from 'ag-grid-community';
+import {ColDef, GridApi} from 'ag-grid-community';
 import {DatePipe} from '@angular/common';
 import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
 import {CallsService} from '../../../calls/services/calls.service';
 import {UserService} from '../../../services/user.service';
-import {PerformerContainer} from '../../../../../swagger/med-api.service';
+import {BrigadeBean, BrigadeScheduleBean, CallStatusList} from '../../../../../swagger/med-api.service';
 import {Subscription} from 'rxjs';
 import {BrigadeDutyService} from '../../../calls/services/brigade-duty.service';
 import {NotificationsService} from 'angular2-notifications';
-import {tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {ArmBrigadeService} from '../../services/arm-brigade.service';
+import {SocketTopicsService} from '../../../shared/socket-topic/services/socket-topics.service';
 
 @Component({
   selector: 'app-arm-brigade',
@@ -23,7 +23,7 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
   colDefsCalls: ColDef[] = [
     {
       headerName: '№',
-      field: 'id',
+      field: 'number',
       sortable: true,
       filter: true,
       width: 130,
@@ -31,12 +31,6 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
         suppressAndOrCondition: true,
         filterOptions: ['contains']
       },
-      cellRenderer: (p) => {
-        if (p.value === 427006 || p.value === 427165){
-          return '<div class="text-danger blinking">НЕ ТРОГАТЬ!</div>'
-        }
-        return p.value;
-      }
     },
     {
       headerName: 'Статус',
@@ -48,22 +42,18 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
         switch (p.value) {
           case 0:
             return '<i class="fas fa-exclamation-circle blinking text-danger"></i> Бригада не назначена';
-            break;
           case 1:
             return '<i class="fas fa-exclamation-circle text-warning"></i> Не принят бригадой';
-            break;
           case 2:
-            return '<i class="fas fa-cog text-primary fa-spin"></i> Принят бригадой';
-            break;
+            return '<i class="fas fa-clipboard-check text-primary"></i> Принят бригадой';
           case 3:
             return '<i class="fas fa-cog text-primary fa-spin"></i> В работе';
-            break;
           case 4:
             return '<i class="fas fa-check-circle text-success"></i> Завершен';
-            break;
           case 5:
             return '<i class="fas fa-ban text-secondary"></i>  Отменен';
-            break;
+          case 6:
+            return '<i class="fas fa-ambulance text-primary"></i>  Транспортировка';
         }
         return p.value;
       },
@@ -113,14 +103,14 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
       filter: true,
       width: 250,
       valueGetter: params => {
-        if (params.data.callPatientList && params.data.callPatientList.length) {
+        if (params.data.patientList && params.data.patientList.length) {
           let pat = '';
-          if (!params.data.callPatientList[0].call) {
+          if (!params.data.patientList[0].call) {
             return ' ';
           }
-          params.data.callPatientList.forEach(
+          params.data.patientList.forEach(
             p => {
-              pat = pat + p.patientFK.surname + ' ' + p.patientFK.name + ', ';
+              pat = pat + (p.surname ? p.surname : '') + ' ' + (p.name ? p.name[0] : '') + '. ' + (p.patronymic ? p.patronymic[0] : '') + '., ';
             }
           );
           pat = pat.slice(0, -2);
@@ -135,21 +125,21 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
   colDefsCards: ColDef[] = [
     {
       headerName: '№',
-      field: 'id',
+      field: 'number',
       sortable: true,
       filter: true,
       width: 80,
     },
     {
       headerName: 'Повод к вызову',
-      field: 'callFK.reasonFK.name',
+      field: 'callFK.reasonFK.reason',
       sortable: true,
       filter: true,
       width: 220,
     },
     {
       headerName: 'Заявитель',
-      field: 'callFK',
+      field: 'callFK.declarantName',
       sortable: true,
       filter: true,
       width: 120,
@@ -162,29 +152,42 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
       width: 120,
     },
     {
-      headerName: 'Отработка',
-      field: 'card_status_name',
+      headerName: 'Статус',
+      valueGetter: params => {
+        if (params.data.cardStatus === 1) {
+          return 'Проверена'
+        } else if( params.data.cardStatus === 2) {
+          return 'Готова к отправке в ЕГИСЗ';
+        } else if (params.data.cardStatus === 4) {
+          return 'Отправлено в ЕГИСЗ'
+        } else if (params.data.cardStatus === 0) {
+          return 'Создана'
+        } else {
+          return 'Статус не установлен'
+        }
+      },
       sortable: true,
       filter: true,
       width: 120,
     },
     {
       headerName: 'Результат',
-      field: 'result_name',
+      field: 'resultTypeFK.name',
       sortable: true,
       filter: true,
       width: 120,
     },
 
   ];
-  brigadeAssigned: PerformerContainer;
-  statusBrigade: any = {};
+  isInBrigade: boolean; // признак если сотрудник в бригаде
+  currentBrigade: BrigadeBean; // текущая бригада сотрудника
+  currentBrigadeSchedule: BrigadeScheduleBean; // текущая смена бригада сотрудника
+  statusBrigade: any;
   datePipe = new DatePipe('ru');
-  filters: any = {};
-  loading: boolean = false;
+  loading: boolean = true;
   descriptions: ISimpleDescription[] = [
     {
-      placeholder: 'Укажите причину ',
+      placeholder: 'Укажите причину',
       key: 'brigadeStatusFK',
       type: 'dict',
       dict: 'getBrigadeStatusListUsingGET',
@@ -194,81 +197,122 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
   ];
   form: FormGroup;
   sbscs: Subscription[] = [];
+
   dateFormatter(params) {
     return params.value ? this.datePipe.transform(params.value, 'dd.MM HH:mm') : '-';
   }
 
+  callStatusList = CallStatusList;
+  filter = <any>{
+    orderBy: undefined,
+    isAsc: true,
+    statuses: [CallStatusList.UNDONE, CallStatusList.CONFIRM, CallStatusList.ACTIVE, CallStatusList.UNCONFIRM],
+  };
+
   dataSourceCalls: IGridTableDataSource;
   dataSourceCards: IGridTableDataSource;
+  callsGridApi: GridApi;
+  cardsGridApi: GridApi;
   constructor(private calls: CallsService,
               private bs: BrigadeDutyService,
               private ns: NotificationsService,
               private sds: SimpleDescriptionService,
+              private sTopics: SocketTopicsService,
               private arms: ArmBrigadeService,
               private router: Router,
               private route: ActivatedRoute,
-              private user: UserService) { }
+              private user: UserService) {
+  }
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
-    this.form.valueChanges.subscribe(
-      el => {
+    this.sbscs.push(
+      this.form.valueChanges.subscribe(
+        el => {
           this.statusBrigade = el.brigadeStatusFK;
+        }
+      ),
+      this.sTopics.callUpdatedSub.subscribe(
+        update => {
+          let node = this.callsGridApi.getRenderedNodes().find(node => node.data.id === update.id);
+          if (node){
+            update.date = node.data.date;
+            node.updateData(update);
+          }
+        }
+      ),
+      this.sTopics.callStatusSub.subscribe(
+        update => {
+          let node = this.callsGridApi.getRenderedNodes().find(node => node.data.id === update.callId);
+          if (node){
+            let updateData = node.data;
+            updateData.status = update.callStatus;
+            this.ns.warn(`Статус вызова ${updateData.number} изменен`,`${this.setStatusCall(updateData.status)}`);
+            node.updateData(updateData);
+          }
+        }
+      ),
+    );
+    this.user.checkAssignedBrigade().subscribe(
+      (res: boolean) => {
+        this.loading = false;
+        this.isInBrigade = res;
+        if (this.isInBrigade){
+          this.filter.brigadeId = this.user.mePerformer.brigadeBean.id;
+          this.currentBrigade = this.user.mePerformer.brigadeBean;
+          this.currentBrigadeSchedule = this.user.mePerformer.brigadeSchedule;
+        }
+
       }
     );
-    this.getMeWithBrigade();
     this.updateDataSource();
-    this.form.reset(this.brigadeAssigned);
   }
 
-  getMeWithBrigade() {
-    this.loading = true;
-    this.sbscs.push(
-      this.user.getMeWithBrigade()
-        .pipe(tap(() => this.loading = false))
-        .subscribe(
-        el => {
-          this.brigadeAssigned = el;
-          console.log(this.brigadeAssigned);
-        }
-      )
-    );
-  }
 
   updateDataSource() {
     this.dataSourceCalls = {
       get: (filter, offset, count) => {
-        return this.calls.getCallsList(offset, count, filter.order, filter.isAsc, this.brigadeAssigned.brigadeBean.id);
+        return this.calls.getCallsList(offset, count, filter);
       }
     };
     this.dataSourceCards = {
       get: (filter, offset, count) => {
-        return this.calls.getActiveCardsList(offset, count, this.brigadeAssigned.brigadeBean.id);
+        return this.calls.getActiveCardsList(offset, count, filter);
       }
     };
   }
 
+  updateFilter() {
+    this.filter = Object.assign({}, this.filter);
+  }
+
   notReady() {
-    this.sbscs.push(
-      this.bs.brigadeIsNotReady(this.brigadeAssigned.brigadeBean.id, this.statusBrigade.code).subscribe(
-        res => {
-          console.log(res);
-          this.ns.success('Статус обновлен', `Бригада ${this.brigadeAssigned.brigadeBean.name} не готова. Причана: ${this.statusBrigade.name}`);
-        },
-        err => {
-          console.log(err);
-          this.ns.error('Ошибка', 'Не удалось установить статус');
-        }
-      )
-    );
+    if (this.statusBrigade) {
+      console.log(this.statusBrigade);
+      this.sbscs.push(
+        this.bs.brigadeIsNotReady(this.currentBrigade.id, this.statusBrigade.code).subscribe(
+          res => {
+            console.log(res);
+            this.ns.success('Статус обновлен', `Бригада ${this.currentBrigade.name} не готова. Причина: ${this.statusBrigade.name}`);
+          },
+          err => {
+            console.log(err);
+            this.ns.error('Ошибка', 'Не удалось установить статус');
+          }
+        )
+      );
+    }
+    else {
+      this.ns.error('Не указана причина');
+    }
   }
 
   returnOnBase() {
     this.sbscs.push(
-      this.bs.brigadeReturningOnBase(this.brigadeAssigned.brigadeBean.id).subscribe(
+      this.bs.brigadeReturningOnBase(this.currentBrigade.id).subscribe(
         res => {
           console.log(res);
-          this.ns.success('Статус обновлен', `Бригада ${this.brigadeAssigned.brigadeBean.name} в пути на станцию`);
+          this.ns.success('Статус обновлен', `Бригада ${this.currentBrigade.name} в пути на станцию`);
         },
         err => {
           console.log(err);
@@ -280,10 +324,10 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
 
   sendAlarm() {
     this.sbscs.push(
-      this.bs.brigadeAlarm(this.brigadeAssigned.brigadeBean.id).subscribe(
-        res=>{
+      this.bs.brigadeAlarm(this.currentBrigade.id).subscribe(
+        res => {
           console.log(res);
-          this.ns.success('Статус обновлен', `Подан сигнал тревоги бригады ${this.brigadeAssigned.brigadeBean.name}`);
+          this.ns.success('Статус обновлен', `Подан сигнал тревоги бригады ${this.currentBrigade.name}`);
         },
         err => {
           console.log(err);
@@ -295,10 +339,10 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
 
   freeOnBase() {
     this.sbscs.push(
-      this.bs.brigadeOnBase(this.brigadeAssigned.brigadeBean.id).subscribe(
-        res=>{
+      this.bs.brigadeOnBase(this.currentBrigade.id).subscribe(
+        res => {
           console.log(res);
-          this.ns.success('Статус обновлен', `Бригада ${this.brigadeAssigned.brigadeBean.name} свободна на станции`);
+          this.ns.success('Статус обновлен', `Бригада ${this.currentBrigade.name} свободна на станции`);
         },
         err => {
           console.log(err);
@@ -316,8 +360,34 @@ export class ArmBrigadeComponent implements OnInit, OnDestroy {
     this.router.navigate([`${this.router.url}/calls/${card.data.call}/card/${card.data.id}`], {relativeTo: this.route});
   }
 
-  fitCol(e) {
-    e.api.sizeColumnsToFit();
+  fitColCalls(e) {
+    this.callsGridApi = e.api;
+    this.callsGridApi.sizeColumnsToFit();
+  }
+
+  fitColCards(e) {
+    this.cardsGridApi = e.api;
+    this.cardsGridApi.sizeColumnsToFit();
+  }
+
+  setStatusCall(status) {
+    switch (status) {
+      case 0:
+        return 'Бригада не назначена';
+      case 1:
+        return 'Не принят бригадой';
+      case 2:
+        return 'Принят бригадой';
+      case 3:
+        return 'В работе';
+      case 4:
+        return 'Завершен';
+      case 5:
+        return 'Отменен';
+      case 6:
+        return 'Транспортировка';
+    }
+    return '';
   }
 
   ngOnDestroy() {

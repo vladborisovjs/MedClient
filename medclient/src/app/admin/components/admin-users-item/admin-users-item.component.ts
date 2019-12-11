@@ -1,10 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AdminUsersService} from '../services/admin-users.service';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
-import {FormGroup} from '@angular/forms';
-import {PerformerBean} from '../../../../../swagger/med-api.service';
+import {FormControl, FormGroup} from '@angular/forms';
+import {PerformerBean, RecordType} from '../../../../../swagger/med-api.service';
 import {NotificationsService} from 'angular2-notifications';
 import {Subscription} from 'rxjs';
+import {UserService} from '../../../services/user.service';
+import {RoleAccessService} from "../../../services/role-access.service";
+import {LogService} from "../../../shared/logs/log.service";
 
 @Component({
   selector: 'app-admin-users-item',
@@ -21,6 +24,7 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
       type: 'text',
       errorText: 'Только кириллица',
       pattern: '^[а-яА-ЯёЁ\\s-]*',
+      required: true,
       styleClass: 'col-4',
       additional: {
         block: 'general'
@@ -32,6 +36,7 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
       type: 'text',
       errorText: 'Только кириллица',
       pattern: '^[а-яА-ЯёЁ\\s-]*',
+      required: true,
       styleClass: 'col-4',
       additional: {
         block: 'general'
@@ -43,6 +48,7 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
       type: 'text',
       errorText: 'Только кириллица',
       pattern: '^[а-яА-ЯёЁ\\s-]*',
+      required: true,
       styleClass: 'col-4',
       additional: {
         block: 'general'
@@ -53,6 +59,19 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
       key: 'typeFK',
       dict: 'getPerformerTypeListUsingGET',
       type: 'dict',
+      required: true,
+      styleClass: 'col-6',
+      additional: {
+        block: 'general'
+      }
+    },
+    {
+      label: 'Группа:',
+      key: 'typeFK',
+      dict: 'getPerformerTypeListUsingGET',
+      bindLabel: 'groupName',
+      type: 'dict',
+      alwaysDisabled: true,
       styleClass: 'col-6',
       additional: {
         block: 'general'
@@ -61,17 +80,34 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
     {
       label: 'Телефон:',
       key: 'phone',
-      type: 'text',
+      type: 'mask',
+      styleClass: 'col-6',
+      additional: {
+        block: 'general'
+      }
+    },
+
+    {
+      label: 'Специализация:',
+      key: 'specializationFK',
+      dict: 'getSkillListUsingGET',
+      type: 'dict',
       styleClass: 'col-6',
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'Подразделение:',
+      label: 'Район:',
       key: 'subdivisionFK',
-      dict: 'getSubdivisionListUsingGET',
       type: 'dict',
+      dict: 'getDistrictListUsingGET',
+      bindLabel: 'shortName',
+      shortDict: true,
+      dictFilters: {rootId: [this.user.mePerformer.performer.subdivisionFK.id]},
+      dictFiltersOrder: ['rootId'],
+      required: true,
+      errorText: 'Обязательное поле',
       styleClass: 'col-12',
       additional: {
         block: 'general'
@@ -114,18 +150,24 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
 
   constructor(private users: AdminUsersService,
+              private user: UserService,
               private sds: SimpleDescriptionService,
+              private logS: LogService,
+              public access: RoleAccessService,
               private ns: NotificationsService) {
   }
 
   ngOnInit() {
+    this.users.initRoles();
     this.sbscs.push(
       this.users.userSub.subscribe(
         user => {
           this.userItem = user;
-          this.form ? this.form.reset(this.userItem) : false;
-          this.loginForm ? this.loginForm.reset(this.userItem) : false;
-          this.updateRolesInterface();
+          if (user){
+            this.form ? this.form.reset(this.userItem) : false;
+            this.loginForm ? this.loginForm.reset(this.userItem) : false;
+            this.updateRolesInterface();
+          }
         }
       ),
       this.users.rolesSub.subscribe(
@@ -150,6 +192,9 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
             this.samePassword = true;
           }
         }
+      ),
+      this.form.valueChanges.subscribe(
+        ch => this.form.reset(ch, {emitEvent: false}) //todo: для обновления групкода, проверить на ошибки
       )
     );
   }
@@ -162,7 +207,6 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
 
   updateCurrentRoles(roles) {
     this.rolesDescriptions = [];
-    console.log(roles);
     roles.forEach(
       role => {
         this.allRolesDict[role.code] = role;
@@ -184,12 +228,12 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
     }
     this.sbscs.push(this.rolesForm.valueChanges.subscribe(
       ch => {
-        this.userItem.roleList = [];
-        Object.keys(ch).forEach(
-          key => {
-            ch[key] ? this.userItem.roleList.push(this.allRolesDict[key]) : false;
-          }
-        );
+          this.userItem.roleList = [];
+          Object.keys(ch).forEach(
+            key => {
+              ch[key] ? this.userItem.roleList.push(this.allRolesDict[key]) : false;
+            }
+          );
       }
       )
     );
@@ -215,7 +259,6 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
   saveUserItem() {
     this.users.saveUser(Object.assign(this.userItem, this.form.getRawValue(), this.loginForm.getRawValue())).subscribe(
       s => {
-        console.log('savedof', s);
         this.ns.success('Пользователь обновлен');
       },
       error1 => {
@@ -226,7 +269,7 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
   }
 
   deleteUserItem() {
-    this.users.deleteUser(this.userItem.id).subscribe(
+    this.users.deleteUser(this.userItem).subscribe(
       s => {
         this.ns.success('Пользователь удален');
       },
@@ -237,6 +280,7 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
     );
   }
 
+
   getBlockDescriptions(block: string): ISimpleDescription[] {
     return this.descriptions.filter(el => {
       if (el.additional) {
@@ -244,6 +288,10 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
       }
       return false;
     });
+  }
+
+  showLog() {
+    this.logS.openLog(this.userItem.id, RecordType.PERFORMER);
   }
 
 }

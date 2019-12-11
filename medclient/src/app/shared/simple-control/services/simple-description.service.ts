@@ -3,10 +3,11 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 export interface ISimpleDescription {
   key: string; // наименование поля (ключ объекта)
-  type: string; // text, number, textarea, dict, template, select
+  type: string; // text, number, textarea, dict, template, select, mask, tricheckbox, checkbox
   label?: string; // название
   postLabel?: string; // лэйбл после формы (например единицы измерения)
   showTime?: boolean // выбор времени на датапикере
+  yearNavigator?: boolean // выадающий список лет
   timeOnlyWithDate?: Date;
   errorText?: string; // текст для вывода ошибки
   placeholder?: string;
@@ -16,10 +17,10 @@ export interface ISimpleDescription {
   readonly?: boolean;
   alwaysDisabled?: boolean;
   dictFilters?: any; // объект фильтров
-  dictFiltersOrder?: string[]; // порядок фильтров
+  dictFiltersOrder?: any[]; // порядок фильтров
   dictSearchField?: string; // поля по которому происходит поиск в словаре
   shortDict?: boolean;
-  dropdownPosition?: string;
+  dropdownPosition?: string; // bottom | top | default: auto
   hide?: boolean; // скрыть
   bindLabel?: string; // поле для отображение
   addLabel?: string; // Дополнительное поле для лэбла (чтобы составить из 2 полей)
@@ -36,10 +37,11 @@ export interface ISimpleDescription {
     selectList?: any; // поле со стрелочной функцией, которую просчитываем по аргументу родителя и вставляем в selectList
     funcParam?: any; // поле из родителя, подставляемое в аргумент функции
   }[];
-  additional?: any;
+  additional?: any; // любое дополнительное поле
   order?: number;
-  selectList?: any[];
+  selectList?: {id: any, name: string}[]; // лист опций для type: 'select'
   presetValue?: any;
+  mask?: string; // маска ng-prime
 }
 
 @Injectable()

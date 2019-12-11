@@ -5,7 +5,8 @@
     </h5>
   </div>
   <div class="flexible full-height" resizable="horizontal" saveName="calls-archive">
-    <div class="card filter-calls-block" leftResizable>
+    <div class="card filter-calls-block" leftResizable fixed="400">
+      <div class="scrollable full-height">
       <div class="card-header">
         <div class="card-subtitle">
           Вызов
@@ -33,13 +34,13 @@
             [row]="true"
             [item]="filters">
           </app-simple-view>
-          <app-simple-view
-            [descriptions]="getBlockDescriptions('address')"
-            [preprocessed]="true"
-            [form]="form"
-            [row]="true"
-            [item]="filters">
-          </app-simple-view>
+          <!--<app-simple-view-->
+            <!--[descriptions]="getBlockDescriptions('address')"-->
+            <!--[preprocessed]="true"-->
+            <!--[form]="form"-->
+            <!--[row]="true"-->
+            <!--[item]="filters">-->
+          <!--</app-simple-view>-->
         </div>
       <div class="card-header">
         <div class="card-subtitle">
@@ -55,7 +56,7 @@
           [item]="filters">
         </app-simple-view>
       </div>
-      <div class="card-body btn-group btn-group-block p-1">
+      <div class="btn-group w-100 p-1">
         <button class="btn btn-success" [disabled]="loading || form.invalid" (click)="searchCalls()">
           <i class="fas fa-search" *ngIf="!loading"></i>
           <i class="fas fa-cog fa-spin" *ngIf="loading"></i>
@@ -63,9 +64,10 @@
         </button>
         <button class="btn btn-warning" (click)="eraseFilters()"><i class="fas fa-eraser"></i> Очистить</button>
       </div>
+      </div>
     </div>
     <div class="vertical-resizer" resizer="2px"></div>
-    <div class="card table-calls-block" rightResizable fixed="300">
+    <div class="card table-calls-block" rightResizable>
       <app-grid-table
         [dataSource]="dataSource"
         [columnDefs]="colDefs"

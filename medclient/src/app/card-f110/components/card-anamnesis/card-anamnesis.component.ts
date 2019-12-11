@@ -95,7 +95,7 @@ export class CardAnamnesisComponent implements OnInit, OnDestroy {
     },
     //illnes
     {
-      label: 'Анемнез',
+      label: 'Анамнез',
       key: 'illnessAnamnesis',
       rows: 3,
       type: 'textarea',
@@ -124,7 +124,14 @@ export class CardAnamnesisComponent implements OnInit, OnDestroy {
     this.form = this.sds.makeForm(this.descriptions);
     this.sbscs.push(
       this.cas.cardItemSub.subscribe(card => this.card = card),
-      this.form.valueChanges.subscribe(ch => Object.assign(this.card.cardObjectiveBean, ch))
+      this.cas.isEditingSub.subscribe(s =>{
+        if (s === 'disable' || s === 'loading'){
+          this.form.disable({emitEvent: false});
+        } else {
+          this.form.enable({emitEvent: false});
+        }
+      }),
+      this.form.valueChanges.subscribe(ch => Object.assign(this.card.cardObjectiveBean, ch)),
     );
   }
 

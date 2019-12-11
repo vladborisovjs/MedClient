@@ -7,6 +7,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ISimpleDescription} from '../../../shared/simple-control/services/simple-description.service';
 import {ModalCallConfirmBrigadeComponent} from '../../components/modal-call-confirm-brigade/modal-call-confirm-brigade.component';
 import {Subscription} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-call-appoint-brigade',
@@ -34,18 +35,6 @@ export class ModalCallAppointBrigadeComponent implements OnInit, OnDestroy {
       sortable: true,
       filter: true
     },
-    // {
-    //   headerName: 'Дистанция',
-    //   field: 'distanse',
-    //   sortable: true,
-    //   filter: true
-    // },
-    // {
-    //   headerName: 'Время',
-    //   field: 'time',
-    //   sortable: true,
-    //   filter: true
-    // },
   ];
   findBriControls = new FormGroup({
     radius: new FormControl('')
@@ -54,6 +43,7 @@ export class ModalCallAppointBrigadeComponent implements OnInit, OnDestroy {
   listSource: any[] = [];
   radius = 0;
   sbscs: Subscription[] = [];
+  loading: boolean = false;
   constructor(private cs: CallItemService,
               private modalInstance: NgbActiveModal,
               private modal: NgbModal) { }
@@ -68,8 +58,11 @@ export class ModalCallAppointBrigadeComponent implements OnInit, OnDestroy {
   }
 
   updateListSource(){
+    this.loading = true;
     this.sbscs.push(
-      this.cs.findBrigadesToAppoint().subscribe(
+      this.cs.findBrigadesToAppoint()
+        .pipe(tap(() => this.loading = false))
+        .subscribe(
         list => {
           this.listSource = list;
           console.log(this.listSource, this.callItem.brigadeList);

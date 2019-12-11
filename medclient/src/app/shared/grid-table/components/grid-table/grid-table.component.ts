@@ -134,7 +134,6 @@ export class GridTableComponent implements OnInit, OnChanges {
   onFirstDataRendered(params) { // подгон  колонок под ширину экрана
     if (this.sizeColumnsToFit) {
       params.api.sizeColumnsToFit();
-      console.log('подгонка');
     }
     this.firstDataRendered.emit(params);
   }
@@ -164,7 +163,6 @@ export class GridTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes) {
-
     if (changes.filter || changes.dataSource || changes.listSource) {
       this.updateDataSource();
     }

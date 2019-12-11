@@ -4,7 +4,7 @@ import {CallsComponent} from './components/calls/calls.component';
 import {CallsRoutingModule} from './calls-routing.module';
 import {MatExpansionModule} from '@angular/material';
 import {GridTableModule} from '../shared/grid-table/grid-table.module';
-import {AccordionModule, TreeTableModule} from 'primeng/primeng';
+import {AccordionModule, CheckboxModule, TreeTableModule} from 'primeng/primeng';
 import {BrigagesListComponent} from './components/brigages-list/brigages-list.component';
 import {HttpClientModule} from '@angular/common/http';
 import {SimpleControlModule} from '../shared/simple-control/simple-control.module';
@@ -48,7 +48,8 @@ import {CallsSharedModule} from './calls-shared/calls-shared.module';
     LightResizerModule,
     FullAddressModule,
     BestMapModule,
-    CallsSharedModule
+    CallsSharedModule,
+
   ],
   entryComponents: [
     ModalCallConfirmBrigadeComponent,

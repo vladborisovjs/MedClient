@@ -14,9 +14,19 @@ export class AviationComponent implements OnInit {
       iconClass: 'far fa-list-alt'
     },
     {
-      label: 'Управление авиабригадой',
-      routerLink: 'requests',
-      iconClass: 'fas fa-user-nurse'
+      label: 'Графики сотрудников авиабригад',
+      routerLink: 'employees',
+      iconClass: 'fas fa-user-md'
+    },
+    {
+      label: 'Смены авиабригад',
+      routerLink: 'brigades',
+      iconClass: 'fas fa-helicopter'
+    },
+    {
+      label: 'Управление авиабригадами',
+      routerLink: 'brigades-control',
+      iconClass: 'fas fa-cog'
     },
   ];
 

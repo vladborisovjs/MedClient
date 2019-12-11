@@ -61,6 +61,16 @@ export class DrugBagsItemComponent implements OnInit, OnDestroy {
       width: 170
     },
     {
+      headerName: 'Категория',
+      field: 'drugFK.categoryFK.name',
+      width: 250
+    },
+    {
+      headerName: 'Вид',
+      field: 'drugFK.groupFK.name',
+      width: 250
+    },
+    {
       headerName: 'Примечания',
       field: 'drugFK.additionally',
       width: 220
@@ -159,7 +169,7 @@ export class DrugBagsItemComponent implements OnInit, OnDestroy {
     this.ds.saveBag(Object.assign(this.bagItem, this.form.getRawValue())).subscribe(
       s => {
         this.bagItem = s;
-        this.bagItem.bagDrugList = this.bagItem.bagDrugList ? this.bagItem.bagDrugList : [];
+        //this.bagItem.bagDrugList = this.bagItem.bagDrugList ? this.bagItem.bagDrugList : [];
         this.ns.success('Укладка сохранена');
       },
       error1 => {
@@ -180,30 +190,54 @@ export class DrugBagsItemComponent implements OnInit, OnDestroy {
   }
 
   refill(){
-    let filled: {drug: DrugBean, fill: number}[] = [];
+    let canFill: boolean;
     this.bagItem.bagDrugList.forEach(
-      drug=> {
-        if (drug.drugFK && drug.drugFK.amount && drug.counter > -1  ){
-          filled.push({drug: drug.drugFK, fill: drug.drugFK.amount - drug.counter});
-          drug.counter = drug.drugFK.amount;
+      drug => {
+        if(drug.counter === 0){
+         canFill = true;
         }
       }
     );
-    this.ds.saveBag(Object.assign(this.bagItem, this.form.getRawValue())).subscribe(
-      s => {
-        this.bagItem = s;
-        this.bagItem.bagDrugList = this.bagItem.bagDrugList ? this.bagItem.bagDrugList : [];
-        let fillText = '';
+    if (canFill){
+      this.ds.sendRechargRequest(this.bagItem.id).subscribe(
+        s => {
+          console.log(s);
+          this.ns.success('Успешно', 'Создана заявка на пополнение укладки')
+        },
+        error1 => {
+          console.log(error1);
+          this.ns.error('Ошибка', 'Не удалось создать заявку')
+        }
+      );
+    } else {
+      this.ns.warn('','В укладке нет пустых пачек, заявка не создана');
+    }
 
-        filled.forEach(
-          f =>  fillText += `+ ${f.drug.name} - ${f.fill} ${f.drug.measurementFK.name} <br>`
-        );
-        this.ns.success('Укладка пополнена', fillText);
-      },
-      error1 => {
-        this.ns.error('Ошибка сохранения')
-      }
-    );
+
+    // let filled: {drug: DrugBean, fill: number}[] = [];
+    // this.bagItem.bagDrugList.forEach(
+    //   drug=> {
+    //     if (drug.drugFK && drug.drugFK.amount && drug.counter > -1  ){
+    //       filled.push({drug: drug.drugFK, fill: drug.drugFK.amount - drug.counter});
+    //       drug.counter = drug.drugFK.amount;
+    //     }
+    //   }
+    // );
+    // this.ds.saveBag(Object.assign(this.bagItem, this.form.getRawValue())).subscribe(
+    //   s => {
+    //     this.bagItem = s;
+    //     this.bagItem.bagDrugList = this.bagItem.bagDrugList ? this.bagItem.bagDrugList : [];
+    //     let fillText = '';
+    //
+    //     filled.forEach(
+    //       f =>  fillText += `+ ${f.drug.name} - ${f.fill} ${f.drug.measurementFK.name} <br>`
+    //     );
+    //     this.ns.success('Укладка пополнена', fillText);
+    //   },
+    //   error1 => {
+    //     this.ns.error('Ошибка сохранения')
+    //   }
+    // );
 
   }
 

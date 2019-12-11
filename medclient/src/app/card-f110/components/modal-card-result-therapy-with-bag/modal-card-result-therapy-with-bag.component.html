@@ -1,0 +1,75 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      {{therapy.id ? 'Редактирование' : 'Добавление'}} терапии
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="descriptions"
+      [form]="form"
+      [item]="therapy"
+    ></app-simple-view>
+    <div *ngIf="bag.length && !loading">
+    <form [formGroup]="typeForm" novalidate autocomplete="off">
+      <div class="sc-label mb-2" >
+        Укладка: <b>{{bag[0].name}}</b>
+      </div>
+      <ng-select
+        [placeholder]="'Выберите тип'"
+        [bindLabel]="'name'"
+        [bindValue]="'id'"
+        [items]="bagTypeList"
+        class="archive-select mb-2"
+        [formControlName]="'typeForm'">
+      </ng-select>
+    </form>
+      <app-simple-view *ngIf="mode === 0"
+        [descriptions]="drugDescription"
+        [preprocessed]="true"
+        [form]="drugForm"
+        [row]="true"
+      ></app-simple-view>
+      <app-simple-view *ngIf="mode === 1"
+        [descriptions]="wareDescription"
+        [preprocessed]="true"
+        [form]="wareForm"
+        [row]="true"
+      ></app-simple-view>
+      <button class="btn btn-primary" *ngIf="mode === 0" (click)="addDrug()" [disabled]="drugForm.invalid">Списать препарат</button>
+      <button class="btn btn-primary" *ngIf="mode === 1" (click)="addWare()" [disabled]="wareForm.invalid">Списать изделие</button>
+    </div>
+    <div *ngIf="loading">
+      <i class="fas fa-spin fa-spinner"></i> Загрузка медикаментов...
+    </div>
+    <div *ngIf="!bag.length && !loading" class="alert alert-warning" role="alert">У бригады нет укладки</div>
+    <table *ngIf="therapy.therapyItemList && therapy.therapyItemList.length"
+           class="table table-sm table-striped table-bordered mt-2 tableSize">
+      <thead>
+      <tr>
+        <th scope="col">№</th>
+        <th scope="col">Что списано</th>
+        <th scope="col">Кол-во</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let d of therapy.therapyItemList; let i = index">
+        <td>{{i+1}}</td>
+        <td>{{d.wareFK ? d.wareFK.name : d.drugFK.name}}</td>
+        <td>{{d.count}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" [disabled]="form.invalid" (click)="submit()">Сохранить</button>
+        <button class="btn btn-secondary" (click)="back()">Назад</button>
+      </div>
+    </div>
+  </div>
+</div>

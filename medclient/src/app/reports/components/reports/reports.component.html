@@ -1,3 +1,35 @@
-<p>
-  reports works!
-</p>
+<div class="card h-100">
+  <div class="card-header flexible justify-content-around">
+    <h3>Отчеты</h3>
+  </div>
+  <div class="card-body p-4 flexible">
+    <div class="col-6 flexible flex-column">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Оперативные отчеты</div>
+        </div>
+        <div class="card-body p-1">
+          <div *ngFor="let el of commonList">
+            <button class=" mt-1 btn btn-primary w-100" (click)="printReport(el)">
+              {{el.title}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 flexible flex-column">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Статистическая отчетность о работе СМП по форме №30</div>
+        </div>
+        <div class="card-body p-1">
+          <div *ngFor="let el of statisticalList">
+            <button class=" mt-1 btn btn-primary w-100" (click)="printReport(el)">
+              {{el.title}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

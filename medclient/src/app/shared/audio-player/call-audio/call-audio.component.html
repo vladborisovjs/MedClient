@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Аудиозапись разговора
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="patch" *ngIf="loading">
+    <h3><i class="fas fa-spinner fa-pulse"></i> Загрузка...</h3>
+  </div>
+  <div class="patch" *ngIf="!loading && audioList && audioList.length === 0">
+    <h3>Список пуст</h3>
+  </div>
+  <div class="card-body" *ngIf="!loading && audioList && audioList.length !== 0">
+    <div *ngFor="let audio of audioList; let i = index">
+     <a [href]="apiUrl + '/api/andy/call/audio/preview/'+audio.id">{{i+1}}. Скачать</a>
+
+
+<!--        <audio-->
+<!--          controls-->
+<!--          class="call-player"-->
+<!--          [src]="audio.link + '.wav'">-->
+<!--        </audio>-->
+
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>
+

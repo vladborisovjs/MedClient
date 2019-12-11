@@ -106,6 +106,10 @@ export class DrugstoreService {
     return this.api.updateDrugInTemplateBagUsingPOST(bagId, drugPack);
   }
 
+  sendRechargRequest(bagId){
+    return this.api.createDrugRequestUsingPOST([bagId]);
+  }
+
   deleteDrugFromBag(){
 
   }

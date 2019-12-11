@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BrigadeStatusBean, CallStatusList, MedApi,} from '../../../../swagger/med-api.service';
+import {Injectable} from '@angular/core';
+import {MedApi, RecordType,} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
+import {LogService} from "../../shared/logs/log.service";
 
 @Injectable({
   providedIn: 'root'
@@ -8,30 +9,39 @@ import {UserService} from '../../services/user.service';
 export class BrigadeDutyService {
 
 
-  constructor(private api: MedApi,  private user: UserService,) { }
+  constructor(private api: MedApi,  private user: UserService, private logS: LogService) { }
 
   // получения списков смен бригад
   getBrigadesOnDuty(mode: string){
     if (mode === 'ONLINE'){
-      return this.api.getOnLineBrigadeScheduleMapUsingGET();
+      return this.api.getOnLineBrigadeScheduleMapUsingGET(this.user.mePerformer.performer.subdivisionFK.id);
     }else if(mode === 'OFFLINE') {
-      return this.api.getNotOnLineBrigadeScheduleMapUsingGET();
+      return this.api.getNotOnLineBrigadeScheduleMapUsingGET(this.user.mePerformer.performer.subdivisionFK.id);
     }
-    return this.api.getSoonBrigadeScheduleMapUsingGET();
-
-
-    // return this.api.readAllActualUsingGET(this.user.subdivisionId, mode)
+    return this.api.getSoonBrigadeScheduleMapUsingGET(false, this.user.mePerformer.performer.subdivisionFK.id);
   }
 
-  // журнал событий смены бригады
-  getBrigdeProtocol(briId){
-    // return this.api.getBrigadeScheduleCallTransferHistoryUsingGET(this.user.subdivisionId, briId)
+  getBrigadeCalls(briId){
+    return {
+      get: (filter, offset, count) =>{
+        return this.api.getCallListUsingGET(offset, count, undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          briId,
+          )
+      }
+    }
   }
+
+
 
   // занятость смены бригады (список вызовов c начала смены)
-  getBrigadeDoings(briId, dutyFrom){
-    return this.api.getCallListUsingGET(0,100, 'date', true, undefined,
-      undefined, undefined, undefined, undefined, briId, dutyFrom);
+  getBrigadeLogs(briId, dutyFrom){
+    return this.logS.getLogSource(briId, RecordType.BRIGADE);
   }
 
   // получение состава бригады

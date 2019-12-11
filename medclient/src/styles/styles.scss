@@ -1,20 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../styles/variables";
-@import "../../node_modules/bootstrap/scss/bootstrap";
-//@import 'ag-grid-variables';
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~bootstrap/scss/bootstrap";
 @import "~ag-grid-community/dist/styles/ag-grid.css";
 @import "~ag-grid-community/dist/styles/ag-theme-bootstrap.css";
-@import "../../node_modules/primeicons/primeicons.css";
-//@import "../../node_modules/primeng/resources/themes/bootstrap/theme.css";
-@import "../../node_modules/primeng/resources/primeng.min.css";
+
+@import "~primeicons/primeicons.css";
+@import "~primeng/resources/themes/omega/theme.css";
+@import "~primeng/resources/primeng.css";
+
 @import "~@ng-select/ng-select/themes/default.theme.css";
+
 
 .default-bg{
   background-color: $yellow-sand;
 }
-
-
 
 .ui-state-active {
   background-color: lighten($blue, 80%);
@@ -162,6 +161,8 @@ main {
       }
     }
     .sc-label {
+      font-weight: 600;
+      color: #000000;
       &.label-after {
         display: inline-block;
       }
@@ -251,6 +252,16 @@ main {
           }
         }
       }
+      .ng-select { //todo: hot-fix -
+        &.ng-select-focused {
+          .ng-select-container {
+            border-color: $red;
+          }
+        }
+        .ng-select-container {
+          background-color: rgba($red, 0.4);
+        }
+      }
     }
   }
 }
@@ -300,6 +311,9 @@ main {
       .ng-select-container {
         background-color: $gray-200;
         opacity: 1;
+      }
+      .ng-arrow-wrapper{
+        display: none;
       }
     }
     &.ng-select-focused {
@@ -398,12 +412,17 @@ ngb-tabset.flex-ngb-tabs {
 
 .patch {
   //background-color: rgba($black, .03);
+
+  .icon-container{
+    display: flex;
+    justify-content: center;
+  }
   background-color: $yellow-sand;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5, h6 {
     color: $gray-500;
     width: 100%;
     text-align: center;
@@ -487,6 +506,35 @@ ngb-tabset.flex-ngb-tabs {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
   background-color: $gray-500;
+}
+
+.emergency-row {
+  &.ag-row-even {
+    background-color: lighten(rgba($red, 0.5), 10%);
+  }
+  &.ag-row-odd {
+    background-color: rgba($red, 0.5);
+  }
+  &.ag-row-hover {
+    background-color: darken(rgba($red, 0.5), 10%);
+  }
+  &.ag-row-selected {
+    background-color: darken(rgba($red, 0.5), 20%);
+  }
+}
+.priority-row {
+  &.ag-row-even {
+    background-color: lighten(rgba($yellow, 0.5), 10%);
+  }
+  &.ag-row-odd {
+    background-color: rgba($yellow, 0.5);
+  }
+  &.ag-row-hover {
+    background-color: darken(rgba($yellow, 0.5), 10%);
+  }
+  &.ag-row-selected {
+    background-color: darken(rgba($yellow, 0.5), 20%);
+  }
 }
 
 

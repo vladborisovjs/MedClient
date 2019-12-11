@@ -12,11 +12,21 @@ export class CallItemService {
   callItemSub: BehaviorSubject<CallContainer>;
   currentCall: CallContainer;
   mode: string;
+  isEditingSub: BehaviorSubject<boolean>;
 
   constructor(protected api: MedApi, private user: UserService, private ns: NotificationsService, private router: Router) {
     this.callItemSub = new BehaviorSubject<CallContainer>(null);
+    this.isEditingSub = new BehaviorSubject<boolean>(false);
     this.callItemSub.subscribe(call => this.currentCall = call);
-    this.mode = 'DISPATCHER';
+    this.mode = 'original';
+  }
+
+  startEditing(){
+    this.isEditingSub.next(true);
+  }
+
+  endEditing(){
+    this.isEditingSub.next(false);
   }
 
   updateCall() { // обновляем вызов при его изменнии
@@ -35,7 +45,7 @@ export class CallItemService {
 
   saveCall() {
     this.currentCall = CallContainer.fromJS(this.currentCall);
-    this.currentCall.call.status = null;
+    // this.currentCall.call.status = null;
     return this.api.updateCallContainerUsingPOST(this.currentCall).pipe(
       tap(val => {
           this.callItemSub.next(val);
@@ -50,7 +60,15 @@ export class CallItemService {
   }
 
   findBrigadesToAppoint() {
-    return this.api.getActualBrigadeCrewListUsingGET(undefined, true);
+    return this.api.getActualBrigadeCrewListUsingGET(
+      undefined,
+      true,
+      this.user.mePerformer.performer.subdivisionFK.id === 1 ? undefined : this.user.mePerformer.performer.subdivisionFK.id, // я не хотел, меня нечай заставил
+      true);
+  }
+
+  getBrigade(briId) {
+    return this.api.getBrigadeUsingGET(briId);
   }
 
   getBrigadesCards(briId, callId) {
@@ -81,4 +99,19 @@ export class CallItemService {
     return this.api.updateAssignedBrigadeMessageListUsingPOST(briId, callId, recTypeId, mesTypeId, rejectCode);
   }
 
+  removeBrigade(callId, briId, reason){
+    return this.api.deleteBrigadeFromCallUsingPOST(callId, briId, reason);
+  }
+
+  findSimularPatient(offset, count, filter) {
+    return this.api.getSimilarPatientListUsingGET(
+      offset, count,
+      filter.name || undefined,
+      filter.surname || undefined,
+      filter.patronymic || undefined,
+      filter.fullAge || undefined,
+      filter.fullMonth || undefined,
+      filter.fullDay || undefined
+    );
+  }
 }

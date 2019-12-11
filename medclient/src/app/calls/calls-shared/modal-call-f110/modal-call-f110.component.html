@@ -7,7 +7,7 @@
       </button>
     </div>
   </div>
-  <div class="p-0 full-height">
+  <div class="p-0 full-height" *ngIf="!loading">
     <app-grid-table
       [columnDefs]="colDefs"
       [sizeColumnsToFit]="true"
@@ -17,9 +17,12 @@
     </app-grid-table>
 
   </div>
+  <div class="patch" *ngIf="loading">
+    <h2 class="center-me">Загрузка...</h2>
+  </div>
   <div class="card-footer toolbar-right">
     <div class="btn-group">
-      <button class="btn btn-success" (click)="createCard()">
+      <button class="btn btn-success"  *ngIf="access.checkAccessWrite({level: 'tcmkModule'}) || access.checkAccessWrite({level: 'callsModule'})" (click)="createCard()">
         Создать карту
       </button>
       <button class="btn btn-secondary" (click)="cancel()">

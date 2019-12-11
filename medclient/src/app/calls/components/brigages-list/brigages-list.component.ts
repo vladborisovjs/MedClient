@@ -6,14 +6,31 @@ import {DatePipe} from '@angular/common';
 import {BrigadeDutyService} from '../../services/brigade-duty.service';
 import {NotificationsService} from 'angular2-notifications';
 import {Subscription} from 'rxjs';
+import {IGridTableDataSource} from "../../../shared/grid-table/components/grid-table/grid-table.component";
+import {SocketTopicsService} from "../../../shared/socket-topic/services/socket-topics.service";
+import {RoleAccessService} from "../../../services/role-access.service";
+import {CallStatusPipe} from "../../../shared/med-pipes/pipes/call-status.pipe";
 
+enum ACTIONS_RU { // todo:  перенести в пайп или хз
+  'Cоздание',
+  'Редактирование',
+  'Удаление',
+  'Восстановление',
+  'Передача вызова',
+  'Бригада была назначена',
+  'Вызов принят',
+  'Не принят'
+}
 @Component({
   selector: 'app-brigages-list',
   templateUrl: './brigages-list.component.html',
   styleUrls: ['./brigages-list.component.scss']
 })
+
+
 export class BrigagesListComponent implements OnInit, OnDestroy {
   listSource = [];
+  callStatusPipe = new CallStatusPipe();
   colDefs: ColDef[] = [
     {
       headerName: 'Бригада',
@@ -41,27 +58,53 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
     {
       headerName: 'Дата',
       field: 'date',
-      sortable: true,
-      filter: true,
-      valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
-      width: 100
+      valueFormatter: (p) =>{
+        try{
+          return this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm')
+        } catch{
+          return p.value
+        }
+      }
+        ,
+    },
+    {
+      headerName: 'Действие',
+      field: 'actionType',
+      valueFormatter: params => ACTIONS_RU[params.value]
     },
     {
       headerName: 'Описание',
       field: 'description',
-      sortable: true,
-      filter: true,
-      width: 400
     },
     {
       headerName: 'Сотрудник',
-      field: 'performer_short_name',
-      sortable: true,
-      filter: true,
-      width: 100
+      field: 'performerFK',
+      valueFormatter: params =>params.value ? (params.value.name || '' + ' ' + params.value.surname || ''): ''
     }
   ];
-  listSourceLog: any[] = [];
+
+  colDefsCalls: ColDef[] = [
+    {
+      headerName: '№',
+      field: 'number',
+    },
+    {
+      headerName: 'Повод',
+      field: 'reasonFK.reason',
+    },
+    {
+      headerName: 'Статус',
+      field: 'status',
+      sortable: false,
+      filter: false,
+      width: 300,
+      cellRenderer: (p) => {
+        return this.callStatusPipe.transform(p.value)
+      },
+    },
+  ];
+  listSourceLog: IGridTableDataSource;
+  listSourceCalls: IGridTableDataSource;
   modes = {
     'OFFLINE': 'OFFLINE',
     'ONLINE': 'ONLINE',
@@ -74,13 +117,30 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
   transport: TransportBean;
   datePipe = new DatePipe('ru');
   sbscs: Subscription[] = [];
+
+  gridOptions = {
+    getRowClass: (params) => {
+      if (new Date(params.data && params.data.second[0].dateTo) < new Date()){
+        return 'text-secondary';
+      }
+    }
+  };
   constructor(private http: HttpClient,
               private bs: BrigadeDutyService,
+              private sTopics: SocketTopicsService,
+              public access: RoleAccessService,
               private ns: NotificationsService) {
   }
 
   ngOnInit() {
     this.updateBrigades();
+    this.sbscs.push(
+      this.sTopics.brigadeStatusSub.subscribe(
+        (bstatus)=>{
+          this.updateBrigades();
+        }
+      ),
+    );
   }
 
   ngOnDestroy() {
@@ -98,8 +158,8 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
   }
 
   changeMode(mode) {
-    this.selectedBrigade = null;
     this.listSourceLog = null;
+    this.selectedBrigade = null;
     this.crew = [];
     this.transport = null;
     this.mode = mode;
@@ -110,39 +170,16 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
   selectBri(bri) {
     console.log(bri.data);
     this.selectedBrigade = bri.data;
+    this.listSourceLog = this.bs.getBrigadeLogs(this.selectedBrigade.first.id, this.selectedBrigade.second[0].dateFrom);
+    this.listSourceCalls =this.bs.getBrigadeCalls(this.selectedBrigade.first.id);
     this.sbscs.push(
       this.bs.getBriCrew(this.selectedBrigade.first.id).subscribe(
         (crew) => {
-          console.log('crew', crew);
           this.crew = crew.performerList;
           this.transport = crew.transportBean;
         }
-      ),
-    this.bs.getBrigadeDoings(this.selectedBrigade.first.id, this.selectedBrigade.second[0].dateFrom).subscribe(
-      (doings) => {
-        console.log(doings);
-        this.doings = doings.list;
-      }
-    )
+      )
     );
-  }
-
-  statusFormatter(status: number) {
-    switch (status) {
-      case 0:
-        return 'Бригада не назначениа';
-      case 1:
-        return 'Не принят бригадой';
-      case 2:
-        return 'Принят бригадой';
-      case 3:
-        return 'В работе';
-      case 4:
-        return 'Завершен';
-      case 5:
-        return 'Отменен';
-    }
-    return status;
   }
 
   endDuty() {
@@ -166,7 +203,6 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
     this.sbscs.push(
       this.bs.startDuty(this.selectedBrigade.second[0].id).subscribe(
         res => {
-          console.log(res);
           this.ns.success('Успешно', `Бригада ${this.selectedBrigade.first.name} выведена на линию.`);
           this.updateBrigades();
         },
@@ -179,7 +215,6 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
     this.sbscs.push(
       this.bs.brigadeAlarm(this.selectedBrigade.first.id).subscribe(
         res=>{
-          console.log(res);
           this.ns.success('Успешно', `Подан сигнал тревоги бригады ${this.selectedBrigade.first.name}`);
           this.updateBrigades();
         },
@@ -206,21 +241,4 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
       )
     );
   }
-
-
-
-  // setBrigadeStatus(briStatus) {
-  //   this.bs.setBrigadeStatus(briStatus).subscribe(
-  //     res=>{
-  //       console.log(res);
-  //       this.ns.success('Успешно', `Бригаде ${this.selectedBrigade.first.name} установлен статус ${briStatus.name}`)
-  //       this.updateBrigades();
-  //     },
-  //     err => {
-  //       console.log(err);
-  //       this.ns.error('Ошибка', 'Не удалось установить статус');
-  //     }
-  //   );
-  // }
-
 }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {debounceTime} from "rxjs/operators";
 
 
@@ -23,6 +23,9 @@ export interface IConditions {
     second: string,
     result: string,
     separator: string
+  },
+  makeWorkCode?: {
+    true: boolean, // just jk
   }
 }
 
@@ -34,12 +37,14 @@ export class CheckConditionService {
   constructor() {
   }
 
+  // todo: переписать весь сервис с новыми гибкими интерфейсами для постпроцессинга форм
+
   checkCondition(form: FormGroup, condition: IConditions) {
     // console.log('form and condition', form, condition);
     form.valueChanges.pipe(debounceTime(300)).subscribe(res => {
       // type - тип условия
       Object.keys(condition).forEach(type => {
-        console.log(type);
+        // console.log(type);
         if (type === 'lower') {
           // console.log('form contoli', form.controls[condition[type].first].value, form.controls[condition[type].second].value);
           console.log(form.controls[condition[type].first].value < form.controls[condition[type].second].value)
@@ -64,13 +69,14 @@ export class CheckConditionService {
               let diff = Math.abs(val2 - val1);
               let workHours = new Date(diff).getUTCHours();
               let workMinutes = new Date(diff).getUTCMinutes();
-              if (workMinutes === 0) {
-                form.controls[condition[type].result].setValue(workHours + ':' + workMinutes + '0', {emitEvent: false});
-              } else {
-                form.controls[condition[type].result].setValue(workHours + ':' + workMinutes, {emitEvent: false});
-              }
+              form.controls[condition[type].result].setValue(workHours * 60 + workMinutes, {emitEvent: false});
             } else {
-              form.controls[condition[type].first].setErrors({'incorrect': true})
+              form.controls[condition[type].first].setErrors(null);
+              let diff = Math.abs(val2 - val1);
+              let workHours =24 - new Date(diff).getUTCHours();
+              let workMinutes = new Date(diff).getUTCMinutes();
+              form.controls[condition[type].result].setValue(workHours * 60 + workMinutes, {emitEvent: false});
+              // form.controls[condition[type].first].setErrors({'incorrect': true})
             }
           }
         }
@@ -79,6 +85,15 @@ export class CheckConditionService {
           let daysOff = form.controls[condition[type].second].value? form.controls[condition[type].second].value : '';
           form.controls[condition[type].result].setValue(
             worksDays + condition[type].separator + daysOff, {emitEvent: false})
+        }
+        if (type === 'makeWorkCode'){
+          console.log(!!form.controls['code']);
+          if (!form.controls['code']){
+            form.addControl('code', new FormControl(''));
+          }
+          let val = form.controls['timeFrom'].value + ' - ' + form.controls['timeTo'].value;
+          form.controls['code'].setValue(val, {emitEvent: false});
+          console.log(val);
         }
       })
     })

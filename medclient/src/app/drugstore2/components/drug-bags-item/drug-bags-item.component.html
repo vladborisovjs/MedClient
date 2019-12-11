@@ -1,0 +1,100 @@
+<div class="patch" *ngIf="!bagNewItem">
+  <i class="fas fa-briefcase-medical"></i>
+</div>
+
+<div class="card flexible flex-column full-height default-bg" *ngIf="bagNewItem">
+  <div class="card m-2">
+    <div class="card-header toolbar justify-content-between">
+      <div class="card-title m-2">{{bagNewItem.id ? 'Укладка' + (bagNewItem.brigadeBeanFK ? ' бригады ' +
+        bagNewItem.brigadeBeanFK.name: '') : 'Новая укладка'}}
+      </div>
+      <div class="toolbar-right m-2">
+        <button *ngIf="bagNewItem.id" class="btn btn-success mr-2" (click)="saveBag()">
+          <i class="fas fa-save"></i> Сохранить укладку
+        </button>
+        <button class="btn btn-danger" (click)="deleteBagFromTable()" *ngIf="bagNewItem.id">
+          <i class="fas fa-trash-alt"></i> Удалить укладку
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <app-simple-view
+        [form]="formBag"
+        [item]="bagNewItem"
+        [row]="true"
+        [descriptions]="descriptionBag"
+        [preprocessed]="true"></app-simple-view>
+    </div>
+    <div class="card-footer toolbar">
+      <div class="toolbar-left">
+      </div>
+      <div class="toolbar-right">
+        <div class="btn-group">
+          <button *ngIf="!bagNewItem.id" class="btn btn-success" (click)="saveBag()">
+            <i class="fas fa-plus"></i> Создать
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card m-2 full-height" *ngIf="bagNewItem.id">
+    <div class="card-header">
+      <ngb-tabset [justify]="'fill'" class="full-height" (tabChange)="changeMode($event.nextId)">
+        <ngb-tab title="Лекарственные препараты" [id]="modes.DRUGS">
+        </ngb-tab>
+        <ngb-tab title="Медицинские изделия" [id]="modes.WARES">
+        </ngb-tab>
+        <ngb-tab title="Прочие средства" [id]="modes.OTHER">
+        </ngb-tab>
+      </ngb-tabset>
+    </div>
+    <div class="card-body full-height p-0">
+      <div class="drug-desc-table">
+        <app-grid-table *ngIf="mode === 'OTHER'"
+                        (onRowSelect)="selectDrugFromTable($event)"
+                        [columnDefs]="colDefOthers"
+                        [listSource]="bagNewItem.othersInBagBeanFK">
+        </app-grid-table>
+        <app-grid-table *ngIf="mode === 'WARES'"
+                        (onRowSelect)="selectDrugFromTable($event)"
+                        [columnDefs]="colDefWares"
+                        [listSource]="bagNewItem.waresInBagBeanFK">
+        </app-grid-table>
+        <app-grid-table *ngIf="mode === 'DRUGS'"
+                        (onRowSelect)="selectDrugFromTable($event)"
+                        [columnDefs]="colDefDrugs"
+                        [listSource]="bagNewItem.drugsInBagBeanFK">
+        </app-grid-table>
+      </div>
+    </div>
+    <div class="card-footer toolbar pt-2 flex-wrap">
+      <div class="mr-auto">
+        <button class="btn btn-info m-2" (click)="addDrugsByTemplateFromTable()">
+          Шаблоны и наборы
+        </button>
+        <button class="btn  btn-success m-2" (click)="addItemToBag('drugs')">
+          <i class="fas fa-plus"></i>
+          Лекарственный препарат
+        </button>
+        <button class="btn btn-success m-2" (click)="addItemToBag('wares')">
+          <i class="fas fa-plus"></i>
+          Медицинское изделие
+        </button>
+        <button class="btn btn-success m-2" (click)="addItemToBag('other')">
+          <i class="fas fa-plus"></i>
+          Прочие средства
+        </button>
+      </div>
+        <div class="btn-group">
+          <button *ngIf="selectedItem" class="btn  btn-danger m-2" (click)="deleteItemFromBag()">
+            <i class="fas fa-minus"></i>
+            Удалить запись
+          </button>
+          <button class="btn  btn-danger m-2" (click)="clearBag()">
+            <i class="fas fa-trash-alt"></i>
+            Очистить таблицы
+          </button>
+        </div>
+    </div>
+  </div>
+</div>

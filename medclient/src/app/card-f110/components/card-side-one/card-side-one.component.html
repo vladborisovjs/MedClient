@@ -15,9 +15,6 @@
         <div class="toolbar justify-content-between">
           <div class="card-subtitle">Данные о вызове</div>
           <div class="toolbar-right">
-            <a routerLink="../../../" target="_blank">
-              <button class="btn btn-info btn-wide btn-sm"><i class="fas fa-phone-square fa-lg"></i></button>
-            </a>
           </div>
         </div>
       </div>
@@ -63,7 +60,7 @@
     </div>
     <div class="card">
       <div class="card-header">
-        Адресс вызова
+        Адрес вызова
       </div>
       <div class="card-body">
         <app-info-plate
@@ -101,10 +98,6 @@
             </div>
           </div>
         </div>
-        <!--<app-info-plate-->
-            <!--[item]="callContainer.brigadeList[0].performerList[0]"-->
-            <!--[properties]="getPlateDescriptions('briPerformer')">-->
-        <!--</app-info-plate>-->
       </div>
     </div>
     <div class="card">
@@ -112,16 +105,15 @@
         <div class="toolbar justify-content-between">
           <div class="card-subtitle">Хронология отработки</div>
           <div class="toolbar-right">
-            <button class="btn btn-success btn-sm" (click)="updateCD()">Cохранить</button>
           </div>
         </div>
       </div>
       <div class="card-body">
-        <app-simple-view
-          [descriptions]="descriptions"
-          [row]="true"
-          [item]="card"
-          [form]="form"></app-simple-view>
+        <ol>
+          <li *ngFor="let s of messagesHistory">
+            {{s.messageTypeFK.name}} - {{s.receivingTypeFK.name}} - {{s.date | date: "dd.MM HH:mm:ss"}}
+          </li>
+        </ol>
         <app-info-plate
           [item]="card"
           [properties]="getPlateDescriptions('time')"></app-info-plate>
@@ -158,13 +150,13 @@
             <!--<td>{{card.shiftSeniorDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
             <td>{{card.shiftSeniorDoctorComment}}</td>
           </tr>
-          <tr *ngIf="card.subdivisionHeadDoctorFK">
-            <td>Заведующий отделения</td>
-            <td>{{card.subdivisionHeadDoctorFK.surname + ' ' + card.subdivisionHeadDoctorFK.name + ' ' + card.subdivisionHeadDoctorFK.patronymic}}</td>
-            <td>{{card.subdivisionHeadDoctorIsChecked}}</td>
-            <!--<td>{{card.subdivisionHeadDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
-            <td>{{card.subdivisionHeadDoctorComment}}</td>
-          </tr>
+<!--          <tr *ngIf="card.subdivisionHeadDoctorFK">-->
+<!--            <td>Заведующий отделения</td>-->
+<!--            <td>{{card.subdivisionHeadDoctorFK.surname + ' ' + card.subdivisionHeadDoctorFK.name + ' ' + card.subdivisionHeadDoctorFK.patronymic}}</td>-->
+<!--            <td>{{card.subdivisionHeadDoctorIsChecked}}</td>-->
+<!--            &lt;!&ndash;<td>{{card.subdivisionHeadDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>&ndash;&gt;-->
+<!--            <td>{{card.subdivisionHeadDoctorComment}}</td>-->
+<!--          </tr>-->
           </tbody>
         </table>
       </div>

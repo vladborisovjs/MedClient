@@ -1,8 +1,10 @@
 <div class="flexible flex-column full-height">
-  <div class="flexible call-toolbar">
+  <div class="flexible call-toolbar default-bg">
     <div class="toolbar-left">
       <div class="btn-group">
-        <button class="btn btn-success" (click)="createCall()">
+        <button class="btn btn-success"
+                *ngIf="calls.mode === 'tcmk' ? access.checkAccessWrite({level: 'tcmkModule'}) : access.checkAccessWrite({level: 'callsModule'})"
+                (click)="createCall()" >
           <i class="fas fa-sm fa-plus"></i>
           Новый вызов (shift+N)
         </button>
@@ -13,7 +15,7 @@
     </div>
     <div class="toolbar-right">
       <button class="btn btn-primary" (click)="changeMode()">
-        {{mode === 'calls' ? 'Показать актуальные карты' : 'Показать актуальные вызовы'}} (shift+C)
+        {{mode === 'calls' ? 'Карты' : 'Вызовы'}} (shift+C)
       </button>
     </div>
   </div>
@@ -21,19 +23,58 @@
     <div class="card full-height calls-block" leftResizable>
       <div class="card-header toolbar">
         <div class="toolbar-left">
+          <div class="filter-statuses">
+            <i class="fas fa-exclamation-circle text-danger"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNDONE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-exclamation-circle text-warning"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNCONFIRM" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-clipboard-check text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.CONFIRM" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-cog text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.ACTIVE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-people-carry text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.EVACUATION_REQUIRED" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-ambulance text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.TRANSPORTING" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-check-circle text-success"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.DONE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+          </div>
         </div>
-        <h5>Актуальные вызовы <span class="badge badge-pill badge-info">
-          <!--{{this.firstLoaded ? listSourceCalls[0].size: ''}}-->
-          <i *ngIf="!this.firstLoaded" class="fas fa-spinner fa-pulse"></i>
-        </span></h5>
-        <div class="toolbar-right"></div>
+        <h5>
+          Актуальные вызовы
+          <span *ngIf="calls.mode === 'tcmk'">ЧС </span>
+          <span class="badge badge-pill badge-primary">
+            {{callCount !== undefined ? callCount : ''}}
+            <i *ngIf="callCount === undefined" class="fas fa-spin fa-spinner"></i>
+          </span>
+        </h5>
+        <div class="toolbar-right">
+          <form [formGroup]="form" novalidate autocomplete="off" class="sc-form form-group subdivision-select flexible  col-8">
+            <ng-select
+              [placeholder]="'Подразделение'"
+              [bindLabel]="'name'"
+              [bindValue]="'id'"
+              [items]="subdivisionList"
+              class="archive-select subdivision-select"
+              [formControlName]="'subdivision'">
+            </ng-select>
+          </form>
+        </div>
       </div>
       <div class="card-body full-height null-padding">
         <app-grid-table
           [dataSource]="dataSource"
           [columnDefs]="colDefs"
           [pagination]="true"
-          [filter]="filters"
+          [filter]="filter"
+          [gridOptions]="gridOptions"
           (onRowSelect)="selectCall($event)"
           (onGridReady)="fitCol($event)"
           (onFilterChanged)="filterSource($event)"
@@ -62,7 +103,7 @@
             </thead>
             <tbody>
             <tr *ngFor="let card of callsCards" [routerLink]="card.call+'/card/'+card.id">
-              <td>{{card.id}}</td>
+              <td>{{card.number}}</td>
               <!--<td><a>{{card.card_status_name}}</a></td>-->
               <td>{{card.brigadeFK.name}}</td>
             </tr>
@@ -90,7 +131,7 @@
         </div>
         <div class="card-body" *ngIf="selectedCall">
           <div>
-            <i class="fa fa-phone"></i> {{selectedCall.date | date: 'MM.dd - HH:mm'}} <br>
+            <i class="fa fa-phone"></i> {{selectedCall.date | date: 'dd.MM.yyyy HH:mm'}} <br>
             <i class="fas fa-hourglass-half fa-spin"></i> {{timeControlValue.minutes}} мин. {{timeControlValue.seconds}}
             сек.
           </div>

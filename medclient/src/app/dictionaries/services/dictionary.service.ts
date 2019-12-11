@@ -34,10 +34,10 @@ export class DictionaryService {
   }
 
   getDictionaryItem(dictName, itemId) {
-    let dict = getDictInfo(dictName);
-    console.log(dict.item.method);
+    const dict = getDictInfo(dictName);
     if (itemId > 0) {
-      let met: Observable<any> = this.api[dict.item.method](itemId);
+      console.log(dict.item);
+      const met: Observable<any> = this.api[dict.item.method](itemId);
       return met.pipe(map(
         res => {
           return { item: dict.item, content: res };
@@ -48,4 +48,7 @@ export class DictionaryService {
     }
 
   }
+  // getListClassification(nameDisease, codeDisease) {
+  //   return this.api.getFullListUsingGET(0, 100, false, nameDisease, codeDisease);
+  // }
 }

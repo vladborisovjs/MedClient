@@ -6,7 +6,7 @@ import Point from 'ol/geom/Point';
 import Map from 'ol/Map';
 import Overlay from 'ol/Overlay';
 import {PopupComponent} from '../components/popup/popup.component';
-import {CallLayer, PointerLayer, SubdivisonLayer} from '../models/map-features';
+import {CallLayer, PointerLayer, SubdivisonLayer, TransportLayer} from '../models/map-features';
 import {BehaviorSubject} from 'rxjs';
 
 
@@ -26,6 +26,7 @@ export class MedMapService {
 
   callsMedLayer: CallLayer; //Векторный слой для звонков
   subdivisionsMedLayer: SubdivisonLayer; //Векторный слой для больниц
+  transportMedLayer: TransportLayer; //Векторный слой для ранспорта
   pointMedLayer: PointerLayer; //Векторный слой для указателя
 
   constructor(private _resolver: ComponentFactoryResolver, @Inject(API_BASE_URL) private apiUrl?: string) {
@@ -45,6 +46,8 @@ export class MedMapService {
         this.popupComp.instance.subdivision = feature[0].get('subdivision');
       } else if (featureType === 'call'){
         this.popupComp.instance.call = feature[0].get('call');
+      } else if (featureType === 'transport'){
+        this.popupComp.instance.transport = feature[0].get('transport');
       }
     }
   }
@@ -63,12 +66,14 @@ export class MedMapService {
     this.map = this.mapManager.getMap();
 
     this.subdivisionsMedLayer = new SubdivisonLayer(this.mapParams.mapProjection);
+    this.transportMedLayer = new TransportLayer(this.mapParams.mapProjection);
     this.callsMedLayer = new CallLayer(this.mapParams.mapProjection);
     this.pointMedLayer = new PointerLayer();
 
     this.mapManager.addMapLayer(this.pointMedLayer.layer);
     this.mapManager.addMapLayer(this.callsMedLayer.layer);
     this.mapManager.addMapLayer(this.subdivisionsMedLayer.layer);
+    this.mapManager.addMapLayer(this.transportMedLayer.layer);
     this.setCursor();
     this.map.on('click',
       (evt) => {
@@ -106,7 +111,7 @@ export class MedMapService {
     this.mapManager.getMap().getView().setZoom(zoom);
   }
 
-  drawPoint(coordinate) { // удаление старойточки и добавление новой
+  drawPoint(coordinate) { // удаление старой точки и добавление новой
     this.pointMedLayer.setPointFeature(coordinate)
   }
 
@@ -116,5 +121,9 @@ export class MedMapService {
 
   drawSubdivisions(subdivisions) {
     this.subdivisionsMedLayer.resetFeatures(subdivisions);
+  }
+
+  drawTransport(transports){
+    this.transportMedLayer.resetFeatures(transports)
   }
 }

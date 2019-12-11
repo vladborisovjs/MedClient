@@ -1,3 +1,6 @@
+<div class="card-header">
+  <div class="card-title center-me">Бригады</div>
+</div>
 <div class="card-pack">
   <div class="card-wrapper" *ngFor="let bri of callContainer.brigadeList">
     <div class="card bri-item">
@@ -14,7 +17,7 @@
           <button class="btn btn-sm btn-outline-primary" (click)="openBri110(bri.brigade)">
             Формы Ф-110 <i class="fas fa-file"></i>
           </button>
-          <button class="btn btn-sm btn-outline-danger" (click)="removeBrigade(bri.brigade)">
+          <button class="btn btn-sm btn-outline-danger" *ngIf="isEdit" (click)="removeBrigade(bri.brigade)">
             Удалить <i class="fas fa-times"></i>
           </button>
         </div>
@@ -27,10 +30,13 @@
       <div class="card-header">
         <em>Новая бригада</em>
       </div>
-      <div class="card-body">
-        <button class="btn btn-outline-success" (click)="appointBrigade()">
+      <div class="card-body" *ngIf="isEdit">
+        <button class="btn btn-outline-success"  (click)="appointBrigade()">
           Назначить <i class="fas fa-plus-circle"></i>
         </button>
+      </div>
+      <div class="patch" *ngIf="!isEdit">
+        <h6>Перейдите режим редактирования для назначения бригады на вызов</h6>
       </div>
     </div>
   </div>

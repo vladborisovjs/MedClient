@@ -75,8 +75,9 @@ export class FullAddressComponent implements OnInit, OnDestroy {
     );
   }
 
-  onSelectStreet(e) {
-    if (e) {
+  onSelectStreet(e: StreetBean) {
+    console.log(e, this.valueStreet);
+    if (e.name) { // todo костыль чтобы не искало при новой улице
       this.loadingBuilding = true;
       this.searchService.searchBuilding(e.cityAddress, e.name).subscribe(
         b => {
@@ -85,6 +86,11 @@ export class FullAddressComponent implements OnInit, OnDestroy {
         }
       );
     }
+  }
+
+  addStreet(e){
+    console.log('added', {fullName: e});
+    return {fullName: e};
   }
 
   search() {
@@ -96,7 +102,14 @@ export class FullAddressComponent implements OnInit, OnDestroy {
   }
 
   onSelectBuilding(e) {
-    this.setPolygon.emit(e);
+    console.log('select:', typeof e, e);
+    console.log(this.valueBuilding);
+    if (e.geometry) this.setPolygon.emit(e);
+  }
+
+  addBuilding(e){
+    console.log('added', {houseNumber: e});
+    return {houseNumber: e};
   }
 
 

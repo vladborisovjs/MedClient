@@ -1,6 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {CallItemService} from '../../services/call-item.service';
 import {NotificationsService} from 'angular2-notifications';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -41,9 +39,13 @@ export class ModalCallBrigadeStatusesComponent implements OnInit {
     [1, 8],
     [2, 8],
     [3, 8],
-    [4, 6, 8],
+    [6, 8, 9],
     [5, 8],
     [6],
+    [],
+    [],
+    [],
+    [4]
   ]; // порядок отпраки сообщений индекс массива = код последнего сообзщения, а содержимое сообщения доступные для отправки
   messagesHistory = []; // история сообщений
   resTypes: any;
@@ -55,10 +57,8 @@ export class ModalCallBrigadeStatusesComponent implements OnInit {
   rejectCall = false; // true если отказ от вызова - активирует блок выбора причины
   rejectingStatuses: any[];
   rejectingStatusCode: string;
-  mode = 'send'; // send / history
 
   constructor(private cs: CallItemService,
-              private sds: SimpleDescriptionService,
               private ns: NotificationsService,
               private modalInstance: NgbActiveModal) {
   }

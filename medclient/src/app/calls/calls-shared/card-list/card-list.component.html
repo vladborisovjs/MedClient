@@ -3,13 +3,24 @@
     <div class="toolbar-left">
     </div>
     <h5>Актуальные карты</h5>
-    <div class="toolbar-right"></div>
+    <div class="toolbar-right">
+      <form [formGroup]="form" novalidate autocomplete="off" class="sc-form form-group subdivision-select flexible col-8">
+        <ng-select
+          [placeholder]="'Подразделение'"
+          [bindLabel]="'name'"
+          [bindValue]="'id'"
+          [items]="subdivisionList"
+          class="archive-select"
+          [formControlName]="'subdivision'">
+        </ng-select>
+      </form>
+    </div>
   </div>
   <div class="card-body full-height p-0">
     <app-grid-table [dataSource]="dataSource"
                     [columnDefs]="colDefs"
                     [pagination]="true"
-                    [filter]="filters"
+                    [filter]="filter"
                     (onRowSelect)="selectCard($event)"
                     (onGridReady)="fitCol($event)"
                     (onRowDblClick)="goToCard($event)">

@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {MedApi} from '../../../../swagger/med-api.service';
+import {
+  ArchiveCardContainer,
+  CallPriorityList,
+  CallStatusList,
+  MedApi,
+  PatientBean
+} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 
 
@@ -7,24 +13,16 @@ import {UserService} from '../../services/user.service';
   providedIn: 'root'
 })
 export class ArchiveService {
-
   constructor(private api: MedApi, private user: UserService) {
   }
 
-  searchCall(from, count, filter, dateFrom, dateTo) {
-    //console.log('filk', filters);
-
-    return this.api.getCallListUsingGET(
-      from, count, 'date', false,
-      undefined, undefined,
-      filter.number ? filter.number : undefined,
-      filter.declarantName ? filter.declarantName : undefined,
-      filter.reason ? filter.reason : undefined,
-      undefined, dateFrom, dateTo);
+  searchCall(bean, from, count) {
+    return this.api.getArchiveCallListUsingPOST(bean,
+      from, count, 'date', false);
   }
 
-  searchCard(from, count) {
-    return this.api.getCardListUsingGET(from, count, 'date', false);
+  searchCard(bean: ArchiveCardContainer, from, count) {
+    return this.api.getArchiveCardListUsingPOST(bean, from, count, 'date', false);
   }
 
   searchPatient(from, count, filter){
@@ -33,6 +31,29 @@ export class ArchiveService {
       count,
       false,
       filter.patientType ? filter.patientType : undefined,
-      filter.surname ? filter.surname : undefined );
+      filter.surname ? filter.surname : undefined,
+      filter.name ? filter.name : undefined,
+      filter.patronymic ? filter.patronymic : undefined,
+      filter.dateBirth ? filter.dateBirth : undefined);
+  }
+
+  getPatient(patId) {
+    return this.api.getPatientUsingGET(patId);
+  }
+
+  getPatientCards(from, count, filter) {
+    return this.api.getCardListUsingGET(
+      from, count, 'date', false,
+      undefined, undefined, filter.patientId ? filter.patientId : undefined, undefined
+    );
+  }
+
+  savePatient(patientBean) {
+    patientBean = PatientBean.fromJS(patientBean);
+    return this.api.updatePatientUsingPOST(patientBean);
+  }
+
+  sendEgisz(egisz) {
+    return this.api.egiszCasesUsingGET(egisz);
   }
 }

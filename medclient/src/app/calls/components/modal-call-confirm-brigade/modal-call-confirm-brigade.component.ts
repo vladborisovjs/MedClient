@@ -39,7 +39,7 @@ export class ModalCallConfirmBrigadeComponent implements OnInit, OnDestroy {
     },
     ];
   form: FormGroup;
-  receivingType: any = {receiving_type_id: 79874}; //значение по умолчанию по телефону
+  receivingType: any = {receiving_type_id: 79874}; // значение по умолчанию по телефону
   sbscs: Subscription[] = [];
   constructor(private modalInstance: NgbActiveModal,
               private sds: SimpleDescriptionService,
@@ -48,14 +48,14 @@ export class ModalCallConfirmBrigadeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log(this.brigades);
     this.form = this.sds.makeForm(this.desc);
   }
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
   }
-  confirm(){
+
+  confirm() {
     this.receivingType  = this.form.getRawValue();
     this.brigades.forEach(
       bri => {

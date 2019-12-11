@@ -21,6 +21,7 @@
 
   <button *ngIf="type === 'btn'"
           [class]="btnClass"
+          [disabled]="alwaysDisabled ? true : disabled"
           (click)="action()"
   >{{placeholder}}
   </button>
@@ -111,8 +112,11 @@
               [maxDate]="timeOnlyWithDate ? maxDate : null"
               [minDate]="timeOnlyWithDate ? minDate : null"
               hourFormat="24"
+              [yearNavigator]="yearNavigator"
+              [yearRange]="'1920:2099'"
               (onBlur)="onInputBlur($event)"
               [dateFormat]="dateFormat"></p-calendar>
+
 
   <ng-select *ngIf="type === 'select'" #ctrl
              class="archive-select"
@@ -124,6 +128,16 @@
              [bindLabel]="'name'"
              [bindValue]="bindValue? (bindValue ==='selfObject') ? null : bindValue : 'id'"
              [items]="selectList"></ng-select>
+
+  <p-inputMask *ngIf="type === 'mask'" #ctrl
+               [ngModelOptions]="{standalone: true}"
+               [styleClass]="'sc-control form-control'"
+               [readonly]="readonly"
+               (blur)="onInputBlur($event)"
+               [(ngModel)]="value"
+               [title]="value ? value : ''"
+               [disabled]="alwaysDisabled ? true : disabled"
+               [mask]="mask"></p-inputMask>
 
   <!--<div *ngIf="postLabel" class="sc-post-label">{{postLabel}}</div>-->
   <div *ngIf="postLabel" class="input-group-append">

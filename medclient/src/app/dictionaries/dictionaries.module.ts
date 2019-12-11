@@ -9,6 +9,9 @@ import {SimpleControlModule} from '../shared/simple-control/simple-control.modul
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TreeTableModule} from 'primeng/primeng';
 import {ModalModule} from '../shared/modal/modal.module';
+import {LogsModule} from '../shared/logs/logs.module';
+import {BestMapModule} from '../shared/best-map/best-map.module';
+import {MedPipesModule} from '../shared/med-pipes/med-pipes.module';
 
 @NgModule({
   declarations: [DictionariesComponent, DictionaryInfoComponent, DictionaryItemComponent],
@@ -20,7 +23,10 @@ import {ModalModule} from '../shared/modal/modal.module';
     FormsModule,
     ReactiveFormsModule,
     TreeTableModule,
-    ModalModule
+    ModalModule,
+    LogsModule,
+    BestMapModule,
+    MedPipesModule
   ]
 })
 export class DictionariesModule { }

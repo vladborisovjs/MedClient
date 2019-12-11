@@ -10,7 +10,7 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Диспетчеризация',
+      title: 'Управление вызовами',
     },
     children: [
       {

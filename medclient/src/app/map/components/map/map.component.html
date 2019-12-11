@@ -2,15 +2,46 @@
   <div class="card-header center-me">
     <h3>Карта</h3>
   </div>
-  <div class="flexible h-100 w-100" resizable="horizontal" (onResize)="resizeMap()">
+  <div class="flexible h-100 w-100" resizable="horizontal" (onResize)="resizeMap()" saveName="big-map">
     <div class="map-wrapper" leftResizable>
       <app-med-map (onMapReady)="initMapPoint()" (onClick)="mapClick($event)"></app-med-map>
     </div>
     <div class="vertical-resizer" resizer="2px"></div>
     <div class="toolbar-wrapper" rightResizable fixed="300px">
-      <div class="h-100 w-100 default-bg p-2">
-        <div><i class="fas fa-phone-alt" style="color: #841519;"></i> - Вызовы</div>
-        <div><i class="far fa-hospital" style="color: #125ec2;"></i> - Подразделения</div>
+      <div class="h-100 w-100 default-bg scrollable">
+        <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-1">
+          <ngb-panel title="Легенда">
+            <ng-template ngbPanelContent>
+              <div>
+                <img class="legend-icon" src="assets/icons/hospital.svg" alt="Подразделения"> - Подразделения
+              </div>
+              <div>
+                <img class="legend-icon" src="assets/icons/ambulance-top.png" alt="Транспорт"> - Транспорт
+              </div>
+              <div><img class="legend-icon" src="assets/icons/phone-on-circle.png" alt="Вызовы"> - Вызовы</div>
+            </ng-template>
+          </ngb-panel>
+          <ngb-panel>
+            <ng-template ngbPanelTitle>
+              <span>Бригады</span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <i *ngIf="!transportMonitoringList" class="fas fa-spin fa-spinner"></i>
+                <ng-container *ngIf="transportMonitoringList">
+                  <div *ngFor="let transport of transportMonitoringList" class="mb-3">
+                    <b>Бригада:</b> {{transport.brigadeContainer.brigade.name}} <br>
+                    <b>Статус:</b> {{transport.brigadeContainer.brigade.brigadeStatusFK.name}}<br>
+                    <b>Транспорт:</b> {{transport.brigadeContainer.transportBean.name}}<br>
+                    <button *ngIf="transport.transportMonitoringBean" class="btn btn-info" (click)="showOnMap(transport.transportMonitoringBean.location)">Показать на карте</button>
+                    <div *ngIf="!transport.transportMonitoringBean" class="alert alert-warning">
+                      Отсутствуют данные мониторинга
+                    </div>
+                  </div>
+                </ng-container>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+
       </div>
     </div>
   </div>

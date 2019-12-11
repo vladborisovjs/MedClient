@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <div class="card-title">
+      Список шаблонов укладок и наборов
+    </div>
+    <div class="toolbar-right">
+    </div>
+  </div>
+</div>
+<app-grid-table
+  (onRowSelect)="selectBagTemplateFromTable($event)"
+  [columnDefs]="colDef"
+  [dataSource]="ds.drugBagTemplatesDataSource"
+  [filter]="filters"></app-grid-table>
