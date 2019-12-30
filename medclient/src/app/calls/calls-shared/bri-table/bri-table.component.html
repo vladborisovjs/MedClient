@@ -1,0 +1,37 @@
+<div class="card">
+  <div class="card-header collapse-panel" (click)="changeCollapse()">
+    <em class="text-secondary">Бригады
+        <i *ngIf="!collapsed" class="fas fa-chevron-down"></i>
+        <i *ngIf="collapsed" class="fas fa-chevron-up"></i>
+    </em>
+  </div>
+</div>
+<div class="collapsible-info" [style.display]="collapsed ? 'none' : 'flex'">
+  <div class="bri-table-wrapper">
+    <div class="card-header p-0">
+      <ngb-tabset (tabChange)="changeMode($event.nextId)">
+        <ngb-tab [id]="'online'" title="Выведены в смену">
+        </ngb-tab>
+        <ngb-tab [id]="'offline'" title="Не выведены в смену">
+        </ngb-tab>
+        <ngb-tab [id]="'upcoming'" title="Заступают в течение суток">
+        </ngb-tab>
+      </ngb-tabset>
+    </div>
+    <div class="h-100">
+      <app-grid-table
+        [columnDefs]="colDefs"
+        [listSource]="brigadeList"
+        [gridOptions]="gridOptions"
+        [pagination]="false"
+        (onGridReady)="getGridApi($event)"
+        (onRowSelect)="selectBrigade($event)"
+      ></app-grid-table>
+    </div>
+  </div>
+  <app-bri-info
+    [brigade]="selectedBrigade"
+    [callList]="brigadeCallList"
+    [mode]="mode"
+    [brigadeContainer]="brigadeContainer"></app-bri-info>
+</div>

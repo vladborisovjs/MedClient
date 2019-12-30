@@ -28,6 +28,13 @@ import {AudioPlayerModule} from "../../shared/audio-player/audio-player.module";
 import {MedPipesModule} from "../../shared/med-pipes/med-pipes.module";
 import { ModalCallBrigadeRemoveComponent } from './modal-call-brigade-remove/modal-call-brigade-remove.component';
 import { ModalCallPatientArchiveComponent } from './modal-call-patient-archive/modal-call-patient-archive.component';
+import { CallsContainerComponent } from './calls-container/calls-container.component';
+import { CallsTableComponent } from './calls-table/calls-table.component';
+import { CardTableComponent } from './card-table/card-table.component';
+import { BriTableComponent } from './bri-table/bri-table.component';
+import { CallInfoComponent } from './call-info/call-info.component';
+import { BriInfoComponent } from './bri-info/bri-info.component';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
   declarations: [
@@ -44,7 +51,13 @@ import { ModalCallPatientArchiveComponent } from './modal-call-patient-archive/m
     ModalCallInquirerComponent,
     ModalAviaRequestInfoComponent,
     ModalCallBrigadeRemoveComponent,
-    ModalCallPatientArchiveComponent
+    ModalCallPatientArchiveComponent,
+    CallsContainerComponent,
+    CallsTableComponent,
+    CardTableComponent,
+    BriTableComponent,
+    CallInfoComponent,
+    BriInfoComponent
   ],
   imports: [
     CommonModule,
@@ -62,7 +75,9 @@ import { ModalCallPatientArchiveComponent } from './modal-call-patient-archive/m
     InfoPlateModule,
     LogsModule,
     AudioPlayerModule,
-    MedPipesModule
+    MedPipesModule,
+    LightResizerModule,
+    NgbModule,
   ],
   exports: [
     CallsListComponent,

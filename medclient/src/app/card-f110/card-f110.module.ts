@@ -28,6 +28,7 @@ import {LOCK_CONF, TeldaNgLocksService} from "telda-ng-locks";
 import {API_BASE_URL} from "../../../swagger/med-api.service";
 import {CardItemService} from "./services/card-item.service";
 import {MedPipesModule} from "../shared/med-pipes/med-pipes.module";
+import { ModalCardValidWarnComponent } from './components/modal-card-valid-warn/modal-card-valid-warn.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import {MedPipesModule} from "../shared/med-pipes/med-pipes.module";
     ModalCardResultTherapyComponent,
     ModalAddPatientToCardComponent,
     ModalCardResultTherapyWithBagComponent,
+    ModalCardValidWarnComponent,
   ],
   imports: [
     CommonModule,
@@ -79,7 +81,8 @@ import {MedPipesModule} from "../shared/med-pipes/med-pipes.module";
     ModalCardResultTherapyWithBagComponent,
     ModalAddDrugsComponent,
     ModalAddDrugsComponent,
-    ModalAddPatientToCardComponent
+    ModalAddPatientToCardComponent,
+    ModalCardValidWarnComponent
   ]
 })
 export class CardF110Module { }

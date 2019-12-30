@@ -1,4 +1,4 @@
-export const enum _Roles {
+export enum _Roles {
   ADMIN = 'ADMIN', // Администратор
   DISTRICT_ADMIN = 'DISTRICT_ADMIN', // Администратор района
   SCHEDULE_MASTER = 'SCHEDULE_MASTER', // "Старший врач смены
@@ -23,7 +23,7 @@ export const enum _Roles {
   // _Roles.SUBDIVISION_HEAD // Руководитель подразделения СМП
 
 
-export const enum _AccessLevels {
+export  enum _AccessLevels {
   shiftControl = 'shiftControl',
   callsModule = 'callsModule',
   reportModule = 'reportModule',

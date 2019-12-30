@@ -1,0 +1,29 @@
+@import "../../../../styles/variables";
+
+:host{
+  height: 100%;
+  display: flex;
+}
+.patch{
+  font-size: 5rem;
+  i{
+    font-size: 5rem;
+  }
+}
+.collapse-panel{
+  background-color: $card-cap-bg;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.25rem;
+}
+.collapse-panel:hover{
+  background-color: $gray-300;
+}
+
+.info-panel{
+  height: 100%;
+  width: 20rem;
+  flex-direction: column;
+
+}

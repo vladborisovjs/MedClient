@@ -30,13 +30,13 @@ export class PerformerShiftService {
         }
       }
     );
-    this.shiftTableSub.subscribe(
-      pt => console.log(pt)
-    );
+    // this.shiftTableSub.subscribe(
+    //   pt => console.log(pt)
+    // );
   }
 
   getShifts(dateFrom, dateTo, subId = undefined) {
-    this.api.getPerformerShiftTableUsingGET(false, false, dateFrom, dateTo, this.mode === 'aviation', subId).subscribe(
+    this.api.getPerformerShiftTableUsingGET(false, false, dateFrom, dateTo, this.mode === 'aviation', subId, false).subscribe(
       rawShiftTable => this.rawTableSub.next(
         {
           date: {
@@ -55,7 +55,7 @@ export class PerformerShiftService {
     return this.api.updatePerformerShiftUsingPOST(shift).pipe(
       tap( // обновляем таблицу смен без перезагрузки
         (res: PerformerShiftBean) => {
-          console.log('shift updated', res);
+          // console.log('shift updated', res);
           let updateRawTable = Object.assign({}, this.rawTable);
 
           if (shift.id) { //если смена отредактирована, то удаляем старую версию
@@ -91,7 +91,7 @@ export class PerformerShiftService {
     return this.api.scheduleProlongationUsingPOST(performerIds, dateFrom, dateTo).pipe(
       tap(
         res => {
-          console.log('prolongation success', res);
+          // console.log('prolongation success', res);
         }
       )
     );
@@ -101,7 +101,7 @@ export class PerformerShiftService {
     return this.api.scheduleClearUsingDELETE(performerIds, dateFrom, dateTo).pipe(
       tap(
         res => {
-          console.log('udolgation success', res);
+          // console.log('udolgation success', res);
         }
       )
     );
@@ -109,7 +109,7 @@ export class PerformerShiftService {
 
   processShifts(rawShiftTable: IShiftSubItem): IShiftSubItem {
     let dayMatrix: { performer: any, days: { shifts: PerformerShiftBean[], display?: any }[] }[] = [];
-    console.log(rawShiftTable);
+    // console.log(rawShiftTable);
     rawShiftTable.shifts.sort(
       (a, b) => {
         if (a.first.surname < b.first.surname) return  -1;
@@ -117,7 +117,7 @@ export class PerformerShiftService {
         return 0;
       }
     );
-    console.log(rawShiftTable);
+    // console.log(rawShiftTable);
     for (let row in rawShiftTable.shifts) { // идем по списку пар {сотрудник, смены[]}
       dayMatrix.push(
         {

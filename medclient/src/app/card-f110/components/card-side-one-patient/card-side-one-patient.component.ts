@@ -19,9 +19,9 @@ import {CustomModalService} from '../../../shared/modal/services/custom-modal.se
 import {debounceTime} from "rxjs/operators";
 
 export interface IDocForm {
-  form: FormGroup,
-  subscription: Subscription,
-  document: DocumentBean
+  form: FormGroup;
+  subscription: Subscription;
+  document: DocumentBean;
 }
 
 @Component({
@@ -231,7 +231,7 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       additional: {
         block: 'documents'
       }
-    }, //documents
+    }, // documents
     {
       label: 'Номер',
       key: 'num',
@@ -242,7 +242,7 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       additional: {
         block: 'documents'
       }
-    }, //documents
+    }, // documents
     {
       label: 'Дата выдачи',
       key: 'date',
@@ -251,7 +251,7 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       additional: {
         block: 'documents'
       }
-    }, //documents
+    }, // documents
     {
       label: 'Кем выдан',
       key: 'organization',
@@ -259,7 +259,7 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       additional: {
         block: 'documents'
       }
-    }, //documents
+    }, // documents
     {
       label: 'Примечания',
       key: 'description',
@@ -267,7 +267,7 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       additional: {
         block: 'documents'
       }
-    }, //documents
+    }, // documents
   ];
   docForms: IDocForm[] = [];
 
@@ -287,18 +287,17 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
 
     this.sbscs.push(
       this.cas.isEditingSub.subscribe(s => {
-        console.log(this.card);
         if (s === 'disable' || s === 'loading') {
           this.formPatientTemplate.disable({emitEvent: false});
           this.formCard.disable({emitEvent: false});
           this.formPatient.disable({emitEvent: false});
-          this.docForms.forEach( df=> df.form.disable({}))
+          this.docForms.forEach( df => df.form.disable({}));
         } else {
           this.formPatientTemplate.enable({emitEvent: false});
           if (this.card && this.card.patientFK) {
             this.formCard.enable({emitEvent: false});
             this.formPatient.enable({emitEvent: false});
-            this.docForms.forEach( df=> df.form.enable({}))
+            this.docForms.forEach( df => df.form.enable({}));
           }
         }
       }),
@@ -310,7 +309,8 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
                 if (!p.isDeleted) {
                   this.pList.push(
                     {
-                      name: (p.surname || p.name || p.patronymic) ? (p.surname || '') + ' ' + (p.name || '') + ' ' + (p.patronymic || '') : 'Не заполнено',
+                      name: (p.surname || p.name || p.patronymic) ? (p.surname || '') + ' ' +
+                        (p.name || '') + ' ' + (p.patronymic || '') : 'Не заполнено',
                       id: p.id
                     }
                   );
@@ -323,7 +323,10 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
       this.cas.cardItemSub.subscribe(card => {
           this.card = card;
           if (card.patientTemplateFK) { // Если выбран пациент карты отображаем соответсвуещее значение из pList
-            this.formPatientTemplate.controls['patientTemplateFK'].setValue(this.pList.find((v) => v.id === this.card.patientTemplateFK.id).id);
+            if (this.pList.find((v) => v.id === this.card.patientTemplateFK.id)){
+              this.formPatientTemplate.controls['patientTemplateFK']
+                .setValue(this.pList.find((v) => v.id === this.card.patientTemplateFK.id).id);
+            }
           }
           if (this.card.patientFK) {
             this.formPatient.reset(this.card.patientFK);
@@ -355,7 +358,7 @@ export class CardSideOnePatientComponent implements OnInit, OnDestroy {
     this.card.patientFK.documentList.forEach(
       doc => {
         if (!doc.isDeleted) {
-          let form = this.sds.makeForm(this.getBlockDescriptions('documents'));
+          const form = this.sds.makeForm(this.getBlockDescriptions('documents'));
           let subscription: Subscription;
           doc.date = new Date(doc.date);
           form.reset(doc);

@@ -25,37 +25,9 @@
         <div class="plate-list">
           <div class="gen-info-char">
             <div class="plate-title">Приоритет:</div>
-            <div class="plate-value">{{callContainer.call.priority? 'Неотложный' : 'Экстренный'}}</div>
+            <div class="plate-value">{{callContainer.call.priority ? 'Неотложный' : 'Экстренный'}}</div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="card" *ngIf="callContainer.call.patientList && callContainer.call.patientList[0]">
-      <div class="card-header">
-        <div class="toolbar justify-content-between">
-          <div class="card-subtitle">Пациент</div>
-          <div class="toolbar-right">
-          </div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="plate-list">
-          <div class="gen-info-char" >
-            <div class="plate-title">Имя:</div>
-            <div class="plate-value">{{callContainer.call.patientList[0].surname}}</div>
-            <div class="plate-value">{{callContainer.call.patientList[0].name}}</div>
-            <div class="plate-value">{{callContainer.call.patientList[0].patronymic}}</div>
-          </div>
-        </div>
-        <div class="plate-list">
-          <div class="gen-info-char">
-            <div class="plate-title">Пол:</div>
-            <div class="plate-value">{{callContainer.call.patientList[0].gender? 'Мужской' : 'Женский'}}</div>
-          </div>
-        </div>
-        <app-info-plate
-          [item]="callContainer.call.patientList[0]"
-          [properties]="getPlateDescriptions('patient')"></app-info-plate>
       </div>
     </div>
     <div class="card">
@@ -86,12 +58,12 @@
       </div>
       <div class="card-body">
         <app-info-plate
-          [item]="callContainer.brigadeList[0].brigade"
+          [item]="brigadeContainer?.brigade"
           [properties]="getPlateDescriptions('brigade')"></app-info-plate>
-        <div *ngFor="let per of callContainer.brigadeList[0].performerList">
+        <div *ngFor="let per of brigadeContainer?.performerList">
           <div class="plate-list">
-            <div class="gen-info-char" >
-              <div class="plate-title">Состав:</div>
+            <div class="gen-info-char">
+              <div class="plate-title">{{per.typeFK.name}}:</div>
               <div class="plate-value">{{per.surname}}</div>
               <div class="plate-value">{{per.name}}</div>
               <div class="plate-value">{{per.patronymic}}</div>
@@ -114,54 +86,37 @@
             {{s.messageTypeFK.name}} - {{s.receivingTypeFK.name}} - {{s.date | date: "dd.MM HH:mm:ss"}}
           </li>
         </ol>
-        <app-info-plate
-          [item]="card"
-          [properties]="getPlateDescriptions('time')"></app-info-plate>
+        <!--        <app-info-plate-->
+        <!--          [item]="card"-->
+        <!--          [properties]="getPlateDescriptions('time')"></app-info-plate>-->
+        <!--      </div>-->
       </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        Подписи
-      </div>
-      <div class="card-body null-padding">
-        <table class="table table-bordered table-sm table-striped null-margin">
-          <thead>
-          <tr>
-            <th scope="col">Должность</th>
-            <th scope="col">Фио</th>
-            <th scope="col">Подпись</th>
-            <th scope="col">Дата и время</th>
-            <th scope="col">Комментарий</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngIf="card.brigadeDoctorFK">
-            <td >Сотрудник бригады</td>
-            <td>{{card.brigadeDoctorFK.surname + ' ' + card.brigadeDoctorFK.name + ' ' + card.brigadeDoctorFK.patronymic}}</td>
-            <td>{{card.brigadeDoctorIsChecked}}</td>
-            <!--<td>{{card.brigadeDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
-            <td></td>
-            <td></td>
-          </tr>
-          <tr *ngIf="card.shiftSeniorDoctorFK">
-            <td >Старший фельдшер</td>
-            <td>{{card.shiftSeniorDoctorFK.surname + ' ' + card.shiftSeniorDoctorFK.name + ' ' + card.shiftSeniorDoctorFK.patronymic}}</td>
-            <td>{{card.shiftSeniorDoctorIsChecked}}</td>
-            <!--<td>{{card.shiftSeniorDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>-->
-            <td>{{card.shiftSeniorDoctorComment}}</td>
-          </tr>
-<!--          <tr *ngIf="card.subdivisionHeadDoctorFK">-->
-<!--            <td>Заведующий отделения</td>-->
-<!--            <td>{{card.subdivisionHeadDoctorFK.surname + ' ' + card.subdivisionHeadDoctorFK.name + ' ' + card.subdivisionHeadDoctorFK.patronymic}}</td>-->
-<!--            <td>{{card.subdivisionHeadDoctorIsChecked}}</td>-->
-<!--            &lt;!&ndash;<td>{{card.subdivisionHeadDoctorFK | date: 'dd.MM.yyyy HH:mm'}}</td>&ndash;&gt;-->
-<!--            <td>{{card.subdivisionHeadDoctorComment}}</td>-->
-<!--          </tr>-->
-          </tbody>
-        </table>
+      <div class="card">
+        <div class="card-header">
+          Подписи
+        </div>
+        <div class="card-body null-padding">
+          <table class="table table-bordered table-sm table-striped null-margin">
+            <thead>
+            <tr>
+              <th scope="col">Действие</th>
+              <th scope="col">ФИО сотрудника</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngIf="card.brigadeDoctorFK">
+              <td>Создание</td>
+              <td>{{card.brigadeDoctorFK.surname + ' ' + card.brigadeDoctorFK.name + ' ' + card.brigadeDoctorFK.patronymic}}</td>
+            </tr>
+            <tr *ngIf="card.shiftSeniorDoctorFK">
+              <td>Проверка</td>
+              <td>{{card.shiftSeniorDoctorFK.surname + ' ' + card.shiftSeniorDoctorFK.name + ' ' + card.shiftSeniorDoctorFK.patronymic}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 

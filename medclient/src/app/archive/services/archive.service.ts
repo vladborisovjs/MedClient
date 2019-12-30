@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
   ArchiveCardContainer,
-  CallPriorityList,
-  CallStatusList,
   MedApi,
   PatientBean
 } from '../../../../swagger/med-api.service';
@@ -17,11 +15,13 @@ export class ArchiveService {
   }
 
   searchCall(bean, from, count) {
+    bean.subdivisionId = bean.subdivisionId || this.user.mePerformer.performer.subdivisionFK.id; // ограничение по району
     return this.api.getArchiveCallListUsingPOST(bean,
       from, count, 'date', false);
   }
 
   searchCard(bean: ArchiveCardContainer, from, count) {
+    bean.subdivisionId = bean.subdivisionId || this.user.mePerformer.performer.subdivisionFK.id; // ограничение по району
     return this.api.getArchiveCardListUsingPOST(bean, from, count, 'date', false);
   }
 

@@ -15,6 +15,7 @@ import {LogService} from "../../../shared/logs/log.service";
 import {MedMapService} from "../../../shared/best-map/services/med-map.service";
 import {RoleAccessService} from "../../../services/role-access.service";
 import {take} from "rxjs/operators";
+import {_Roles} from "../../../models/user-roles";
 
 @Component({
   selector: 'app-dictionary-item',
@@ -30,6 +31,7 @@ export class DictionaryItemComponent implements OnInit {
   dictItem: IDictItem;
   reason: string;
   lockSettingPoint = true; // флаг - надо ли считывать клик с карты для сохранения координат
+  Roles = _Roles;
   constructor(private route: ActivatedRoute,
               private router: Router,
               private api: MedApi,

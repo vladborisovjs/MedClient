@@ -522,6 +522,20 @@ ngb-tabset.flex-ngb-tabs {
     background-color: darken(rgba($red, 0.5), 20%);
   }
 }
+.may-emergency-row {
+  &.ag-row-even {
+    background-color: lighten(rgba($orange, 0.5), 10%);
+  }
+  &.ag-row-odd {
+    background-color: rgba($orange, 0.5);
+  }
+  &.ag-row-hover {
+    background-color: darken(rgba($orange, 0.5), 10%);
+  }
+  &.ag-row-selected {
+    background-color: darken(rgba($orange, 0.5), 20%);
+  }
+}
 .priority-row {
   &.ag-row-even {
     background-color: lighten(rgba($yellow, 0.5), 10%);

@@ -12,7 +12,7 @@ export class ConfirmComponent implements OnInit {
   @Input() confirmText: string = 'Подтвердить';
   @Input() dismissText: string = 'Отмена';
 
-  constructor(private modalInstance: NgbActiveModal,) { }
+  constructor(private modalInstance: NgbActiveModal) { }
 
   ngOnInit() {
   }
@@ -21,7 +21,7 @@ export class ConfirmComponent implements OnInit {
     this.modalInstance.close(false);
   }
 
-  submit(){
+  submit() {
     this.modalInstance.close(true);
   }
 

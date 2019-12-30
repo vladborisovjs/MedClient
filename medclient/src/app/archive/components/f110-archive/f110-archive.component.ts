@@ -11,6 +11,10 @@ import {NotificationsService} from 'angular2-notifications';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ModalMkb10DiagnosisComponent} from '../../../shared/modal-mkb10-diagnosis/components/modal-mkb10-diagnosis.component';
 import {CardStatusPipe} from "../../../shared/med-pipes/pipes/card-status.pipe";
+import {FullnameShorterPipe} from "../../../shared/med-pipes/pipes/fullname-shorter.pipe";
+import {RoleAccessService} from "../../../services/role-access.service";
+import {_AccessLevels, _Roles} from "../../../models/user-roles";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-f110-archive',
@@ -23,18 +27,17 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
     {
       headerName: '№ карты',
       field: 'number',
-      sortable: true,
-      filter: true
+      sortable: false,
+      filter: false
     },
     {
       headerName: 'Статус',
       field: 'cardStatus',
       valueFormatter: params => {
-        console.log(params);
         return this.cardStatusPipe.transform(params.value);
       },
-      sortable: true,
-      filter: true
+      sortable: false,
+      filter: false
     },
     {
       headerName: 'Дата',
@@ -47,13 +50,8 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
     },
     {
       headerName: 'Пациент',
-      valueGetter: params => {
-        if (params.data.patientFK) {
-          return (params.data.patientFK.surname || '')  + ' ' +  (params.data.patientFK.name || '') + ' ' + (params.data.patientFK.patronymic || '');
-        } else {
-          return 'пациент не указан';
-        }
-      }
+      field: 'patientFK',
+      valueFormatter: params => this.nameShorterPipe.transform(params.value),
     },
     {
       headerName: 'Район',
@@ -63,15 +61,17 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
     },
     {
       headerName: 'Бригада',
-      sortable: true,
-      filter: true,
-      valueGetter: params => params.data.brigadeFK.name
+      field: 'brigadeFK.name',
+      sortable: false,
+      filter: false,
+      width: 100,
     },
     {
-      headerName: 'Повод',
-      valueGetter: params => params.data.callFK.reasonFK.reason,
-      sortable: true,
-      filter: true
+      headerName: 'Повод к вызову',
+      field: 'callFK.reasonFK.reason',
+      sortable: false,
+      filter: false,
+      width: 220,
     },
     // {
     //   headerName: 'Адрес происшествия',
@@ -95,14 +95,10 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
 
     {
       headerName: 'Результат',
-      valueGetter: params => {
-        if (!params.data.resultTypeFK) {
-          return '';
-        }
-        return params.data.resultTypeFK.name;
-      },
-      sortable: true,
-      filter: true
+      field: 'resultTypeFK.name',
+      sortable: false,
+      filter: false,
+      width: 200,
     },
   ];
   form: FormGroup;
@@ -144,6 +140,7 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
       key: 'dateFrom',
       label: 'Дата с',
       type: 'date',
+      showTime: false,
       styleClass: 'col-6',
       additional: {
         block: 'callInfo'
@@ -153,6 +150,7 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
       key: 'dateTo',
       label: 'по',
       type: 'date',
+      showTime: false,
       styleClass: 'col-6',
       additional: {
         block: 'callInfo'
@@ -173,6 +171,8 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
       key: 'brigadeId',
       type: 'dict',
       dict: 'getBrigadeListUsingGET',
+      dictFilters: {subdivisionId: this.user.mePerformer.performer.subdivisionFK.id},
+      dictFiltersOrder:['name', 'code', 'isAvia', 'subdivisionId'],
       bindValue: 'id',
       styleClass: 'col-6',
       additional: {
@@ -187,8 +187,9 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
       selectList: [
         {name: 'Не оформлена', id: 0},
         {name: 'На проверке', id: 1},
-        {name: 'В архиве', id: 2},
-        {name: 'Проверено', id: 3},
+        {name: 'Отправлена на доработку', id: 2},
+        {name: 'В архиве', id: 3},
+        {name: 'Отправлено в ЕГИСЗ', id: 4},
       ],
       additional: {
         block: 'callInfo'
@@ -198,9 +199,11 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
       key: 'subdivisionId',
       label: 'Район',
       type: 'dict',
-      dict: 'getSubdivisionListUsingGET',
-      dictFilters: {type: [448641]},
-      dictFiltersOrder: ['type'],
+      dict: 'getDistrictListUsingGET',
+      bindLabel: 'shortName',
+      shortDict: true,
+      dictFilters: {rootId: [this.user.mePerformer.performer.subdivisionFK.id]},
+      dictFiltersOrder: ['rootId'],
       bindValue: 'id',
       additional:{
         block: 'callInfo'
@@ -295,17 +298,17 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
     //     block: 'patient'
     //   }
     // },
-    {
-      key: 'districtId',
-      label: 'Район',
-      type: 'dict',
-      dict: 'readAllUsingGET_10',
-      bindValue: 'id',
-      styleClass: 'col-6',
-      additional: {
-        block: 'address'
-      }
-    },
+    // {
+    //   key: 'districtId',
+    //   label: 'Район',
+    //   type: 'dict',
+    //   dict: 'readAllUsingGET_10',
+    //   bindValue: 'id',
+    //   styleClass: 'col-6',
+    //   additional: {
+    //     block: 'address'
+    //   }
+    // },
     {
       key: 'aoName',
       label: 'Улица',
@@ -364,12 +367,17 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
   };
   filters: any = {};
   cardStatusPipe = new CardStatusPipe();
+  nameShorterPipe = new FullnameShorterPipe();
   grid: GridApi;
+  Roles = _Roles;
+  ALevels = _AccessLevels;
   constructor(
     private arch: ArchiveService,
+    public access: RoleAccessService,
     private sds: SimpleDescriptionService,
     private ns: NotificationsService,
     private modal: NgbModal,
+    private user: UserService,
     private router: Router) { }
 
   ngOnInit() {
@@ -393,7 +401,10 @@ export class F110ArchiveComponent implements OnInit, OnDestroy {
       this.filters.birthday.setHours(new Date().getTimezoneOffset() / (-60));
       this.filters.birthday = this.filters.dateBirth.toISOString().slice(0, 19);
     }
-    console.log(this.filters);
+    if (this.filters.dateTo){ // дато "по" делается включительной
+      this.filters.dateTo.setHours(this.filters.dateTo.getHours() + 24);
+      this.filters.dateTo.setSeconds(this.filters.dateTo.getSeconds() - 1);
+    }
   }
 
   fitCol(e) {

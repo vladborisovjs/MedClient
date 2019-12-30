@@ -2,8 +2,8 @@
   <div class="card-header toolbar">
     <div class="toolbar-left"></div>
     <div class="card-subtitle">
-      <span *ngIf="!callItem.call.isEmergency">Вызов</span>
-      <span *ngIf="callItem.call.isEmergency" class="text-danger">Вызов ЧС</span>
+      <span *ngIf="callItem.call.emergencySituation !== 2">Вызов</span>
+      <span *ngIf="callItem.call.emergencySituation === 2" class="text-danger">Вызов ЧС</span>
       №{{callItem.call.number}} - {{callItem.call.status | callStatus: 'text' }} </div>
     <div class="toolbar-right"></div>
   </div>

@@ -73,13 +73,11 @@ export class DictionaryComponent implements OnInit {
   }
 
   private setList() {
-    console.log(this.filters);
     if (!this.disabled && typeof this.api[`${this.dict}`] !== 'undefined') {
       let method = this.api[`${this.dict}`].bind(this.api);
       let orderedFilters = [];
       this.filtersOrder.forEach(el => {
         orderedFilters.push(this.filters[el]);
-        console.log(el, '-->', this.filters[el]);
       });
       this.loading = true;
       if (this.short) {
@@ -93,6 +91,7 @@ export class DictionaryComponent implements OnInit {
         method(this.from, this.count, false, ...orderedFilters).toPromise().then(el => {
           this.loading = false;
           this.list = el.list;
+          console.log('===+', this.list);
         });
       }
     }
@@ -204,11 +203,13 @@ export class DictionaryComponent implements OnInit {
     this.onTouched();
   }
 
-  onSearch(e: string) {
+  onSearch(e: {term: string, items: [any]}) {
     if (!this.short && this.searchField) {
       this.loading = true;
-      this.searchUpdated.next(e);
+      this.searchUpdated.next(e.term);
+      console.log(e);
     }
+    return true;
   }
 
   searching(text: string) {
@@ -217,6 +218,10 @@ export class DictionaryComponent implements OnInit {
     this.from = 0;
     this.count = 50;
     this.setList();
+  }
+
+  search() {
+    return true;
   }
 
 }

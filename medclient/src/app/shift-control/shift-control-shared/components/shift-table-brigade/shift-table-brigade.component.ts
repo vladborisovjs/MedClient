@@ -15,6 +15,7 @@ import {IReport, reportsList} from '../../../../reports/models/report-models';
 import {ModalReportOptionsComponent} from '../../../../reports/components/modal-report-options/modal-report-options.component';
 import {ReportService} from '../../../../reports/services/report.service';
 import {UserService} from "../../../../services/user.service";
+import {IPageInfo} from "ngx-virtual-scroller";
 
 @Component({
   selector: 'app-shift-table-brigade',
@@ -40,37 +41,37 @@ export class ShiftTableBrigadeComponent implements OnInit {
   ];
   filterDescriptions: ISimpleDescription[] = [
     {
-      label: '',
+      placeholder: 'Месяц',
       key: 'month',
       type: 'select',
       selectList: this.months,
       styleClass: 'line-form col-2'
     },
     {
-      label: '',
+      placeholder: 'Год',
       key: 'year',
       type: 'number',
       styleClass: 'line-form col-2'
     },
-    // {
-    //   label: '',
-    //   key: 'subdivisionId',
-    //   bindValue: 'id',
-    //   placeholder: 'Район',
-    //   dictFilters: {type: [448641]},
-    //   dictFiltersOrder: ['type'],
-    //   type: 'dict',
-    //   dict: 'getSubdivisionListUsingGET',
-    //   styleClass: 'line-form col-6'
-    // }
-
+    {
+      placeholder: 'Район',
+      key: 'subdivisionFK',
+      type: 'dict',
+      dict: 'getDistrictListUsingGET',
+      bindLabel: 'shortName',
+      shortDict: true,
+      dictFilters: {rootId: [this.user.mePerformer.performer.subdivisionFK.id]},
+      dictFiltersOrder: ['rootId'],
+      styleClass: 'line-form col-4'
+    }
   ];
-  currentPeriod: { month: number, year: number, subdivisionId: number }; // отображаемый месяц расписания
+  currentPeriod: { month: number, year: number, subdivisionFK: any }; // отображаемый месяц расписания
   form = new FormGroup({
     month: new FormControl(new Date().getMonth()),
     year: new FormControl(new Date().getFullYear()),
-    subdivisionId: new FormControl(),
+    subdivisionFK: new FormControl(this.user.mePerformer.performer.subdivisionFK),
   });
+  vScrollPageInfo: IPageInfo;
 
   constructor(public bss: BrigadeShiftService,
               private sanitizer: DomSanitizer,
@@ -88,7 +89,7 @@ export class ShiftTableBrigadeComponent implements OnInit {
     this.bss.shiftTableSub.subscribe(st => this.shiftTable = st);
   }
 
-  setPeriod(period: { month: number, year: number, subdivisionId: number }) {
+  setPeriod(period: { month: number, year: number, subdivisionFK: any }) {
     if (period.year && period.month !==null) {
       this.currentPeriod = period;
       let from = new Date(period.year, period.month, 1);
@@ -102,7 +103,10 @@ export class ShiftTableBrigadeComponent implements OnInit {
       to.setDate(to.getDate() + 1);
 
       this.shiftTable = null; // сброс расписания старого периода
-      this.bss.getShifts(from.toISOString().slice(0, -14), to.toISOString().slice(0, -14), this.user.mePerformer.performer.subdivisionFK.id);
+      this.bss.getShifts(
+        from.toISOString().slice(0, -14),
+        to.toISOString().slice(0, -14),
+        (period.subdivisionFK && period.subdivisionFK.id) || this.user.mePerformer.performer.subdivisionFK.id);
     }
   }
 

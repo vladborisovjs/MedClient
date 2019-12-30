@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -9,7 +8,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class CallsComponent implements OnInit {
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   ngOnInit() {
 

@@ -10,6 +10,7 @@ import {IGridTableDataSource} from "../../../shared/grid-table/components/grid-t
 import {SocketTopicsService} from "../../../shared/socket-topic/services/socket-topics.service";
 import {RoleAccessService} from "../../../services/role-access.service";
 import {CallStatusPipe} from "../../../shared/med-pipes/pipes/call-status.pipe";
+import {CallsService} from "../../services/calls.service";
 
 enum ACTIONS_RU { // todo:  перенести в пайп или хз
   'Cоздание',
@@ -121,22 +122,26 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
   gridOptions = {
     getRowClass: (params) => {
       if (new Date(params.data && params.data.second[0].dateTo) < new Date()){
-        return 'text-secondary';
+        return 'text-danger';
       }
     }
   };
   constructor(private http: HttpClient,
               private bs: BrigadeDutyService,
+              private cs: CallsService,
               private sTopics: SocketTopicsService,
               public access: RoleAccessService,
               private ns: NotificationsService) {
   }
 
   ngOnInit() {
+    this.cs.changeFiltering.subscribe(()=>{
+      this.updateBrigades();
+    });
     this.updateBrigades();
     this.sbscs.push(
       this.sTopics.brigadeStatusSub.subscribe(
-        (bstatus)=>{
+        (bstatus)=>{ // todo: не стоит запрашивать сразу весь список
           this.updateBrigades();
         }
       ),
@@ -149,7 +154,7 @@ export class BrigagesListComponent implements OnInit, OnDestroy {
 
   updateBrigades() {
     this.sbscs.push(
-      this.bs.getBrigadesOnDuty(this.mode).subscribe(bri => this.listSource = bri)
+      // this.bs.getBrigadesOnDuty(this.mode).subscribe(bri => this.listSource = bri)
     )
   }
 

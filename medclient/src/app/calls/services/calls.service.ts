@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {CallContainer, CallStatusList, MedApi} from '../../../../swagger/med-api.service';
 import {UserService} from '../../services/user.service';
 import {map} from "rxjs/operators";
@@ -7,15 +7,24 @@ import {map} from "rxjs/operators";
 @Injectable({providedIn: 'root'})
 export class CallsService {
   mode = 'original';
+  changeFiltering;
 
   constructor(protected api: MedApi, private user: UserService) {
+    this.changeFiltering = new EventEmitter();
   }
 
 
+  filterSubdivisionId: number; // для фильтрации бригад по району // todo: перенести сюда фильтрацию из calls-list
+
+
   getCallsList(from, count, filter) {
+    console.log(filter);
+    // this.filterSubdivisionId = filter.subdivisionFK.id;
+    this.changeFiltering.emit(true);
     return this.api.getCallListUsingGET(
       from, count,
-      filter['orderBy'] ? filter['orderBy'] : undefined, filter.isAsc,
+      filter['orderBy'] ? filter['orderBy'] : undefined,
+      filter.isAsc,
       filter.statuses,
       undefined,
       undefined,
@@ -26,26 +35,31 @@ export class CallsService {
       undefined,
       undefined,
       undefined,
-      filter.subdivisionId,
+      filter.subdivisionFK ? filter.subdivisionFK.id : undefined,
       true
     );
   }
 
-  getSubdivisions(subId) {
-    return this.api.getFullSubdivisionNodeUsingGET(subId, false);
-  }
-
-
-  getCall(callId) {
-    return this.api.getCallContainerUsingGET(callId);
-  }
+  // getSubdivisions(subId) {
+  //   return this.api.getFullSubdivisionNodeUsingGET(subId, false);
+  // }
+  //
+  //
+  // getCall(callId) {
+  //   return this.api.getCallContainerUsingGET(callId);
+  // }
 
   getActiveCardsList(from, count, filter) {
     return this.api.getCardListUsingGET(
-      from, count,
-      'date', false,
-      undefined, undefined, undefined,
-      filter.brigadeId, filter.subdivisionId
+      from,
+      count,
+      'date',
+      false,
+      undefined,
+      undefined,
+      undefined,
+      filter.brigadeId,
+      filter.subdivisionFK && filter.subdivisionFK.id
     );
   }
 
@@ -70,5 +84,9 @@ export class CallsService {
 
   getCallCardsList(callId) {
     return this.api.getCardListUsingGET(0, 100, undefined, undefined, undefined, callId);
+  }
+
+  countCalls(subId){
+    return this.api.getCallCountByStatusListUsingGET(subId, true);
   }
 }

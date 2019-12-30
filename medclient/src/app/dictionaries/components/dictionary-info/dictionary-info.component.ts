@@ -16,6 +16,7 @@ import {
 } from '../../../shared/simple-control/services/simple-description.service';
 import {RoleAccessService} from '../../../services/role-access.service';
 import {UserService} from '../../../services/user.service';
+import {_Roles} from '../../../models/user-roles';
 
 @Component({
   selector: 'app-dictionary-info',
@@ -27,12 +28,14 @@ export class DictionaryInfoComponent implements OnInit, OnDestroy {
   dict: IDictionaryInfo;
   tree: TreeNode[];
   filters: any[] = []; // фильтры
+  defaultFilters: any = {}; // subdivisionId и dict.params
   selectedItem: any;
   rootLevel: number = undefined; // по дефолту ставим андефайнед, нужен для параметров апишки
   showDeleted: boolean = false;
   form: FormGroup; // форма фильтров справочника
   sbscs: Subscription[] = [];
   loading: boolean; // для отображения загрузки
+  Roles = _Roles; // роли которые могут редактировать справочник своео подразделения
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -48,26 +51,20 @@ export class DictionaryInfoComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // this.searchForm = this.sds.makeForm(this.description);
     this.route.data.pipe(take(1)).subscribe(data => {
-        this.dict = data.dict || data.itemWithList; // todo: проверить резолвер в shift item
+        this.dict = data.dict;
+        this.defaultFilters = Object.assign({},
+          {subdivisionId: this.user.mePerformer.performer.subdivisionFK.id}, this.dict.params);
+        this.loading = true; // тру для начала загрузки и фолс в конце updateTree и findNode
+        this.filters = [this.showDeleted];
+        this.setFiltersByParamsOrder();
         if (this.dict.filters) {
           this.form = this.sds.makeForm(this.dict.filters);
           this.form.valueChanges.pipe(debounceTime(300)).subscribe(
             f => {
               this.loading = true; // тру для начала загрузки и фолс в конце updateTree и findNode
               this.filters = [this.showDeleted];
-              Object.assign(f, {subdivisionId: this.user.mePerformer.performer.subdivisionFK.id}, this.dict.params);
-              if (this.dict.paramsOrder) {
-                this.dict.paramsOrder.forEach(
-                  key => {
-                    if (f[key] !== null && f[key] !== '') {
-                      this.filters.push(f[key]);
-                    } else {
-                      this.filters.push(undefined);
-                    }
-                  }
-                );
-              }
-              this.filters = [...this.filters];
+              Object.assign(this.defaultFilters, f);
+              this.setFiltersByParamsOrder();
               if (this.dict.type === 'tree') {
                 this.updateTree();
               }
@@ -77,6 +74,21 @@ export class DictionaryInfoComponent implements OnInit, OnDestroy {
       }
     );
     this.updateDataSource();
+  }
+
+  setFiltersByParamsOrder() {
+    if (this.dict.paramsOrder) {
+      this.dict.paramsOrder.forEach(
+        key => {
+          if (this.defaultFilters[key] !== null && this.defaultFilters[key] !== '') {
+            this.filters.push(this.defaultFilters[key]);
+          } else {
+            this.filters.push(undefined);
+          }
+        }
+      );
+    }
+    this.filters = [...this.filters];
   }
 
   updateDataSource() {
@@ -139,8 +151,8 @@ export class DictionaryInfoComponent implements OnInit, OnDestroy {
     this.sbscs.push(
       this.api[this.dict.method](e.node.data.id, !this.showDeleted ? this.showDeleted : undefined).subscribe(
         nodes => {
-          for (let i = 0; i < nodes.children.length; i++) {
-            e.node.children.push(nodes.children[i]);
+          for (const child of nodes.children) {
+            e.node.children.push(child);
             this.tree = [...this.tree];
           }
         }
@@ -202,9 +214,8 @@ export class DictionaryInfoComponent implements OnInit, OnDestroy {
       nodes.splice(foundIndex, 1);
       return true;
     } else {
-      for (let i = 0; i < nodes.length; i++) {
-        const yes = this.findIndexTree(nodes[i].children, rowData);
-        if (yes) {
+      for (const node of nodes) {
+        if (this.findIndexTree(node.children, rowData)) {
           return true;
         }
       }

@@ -1,11 +1,9 @@
 <div class="card full-height">
   <div class="card-body full-height p-0">
     <div class="full-height flexible" resizable="horizontal" saveName="patients-info-archive">
-      <div class="card cards-list-block" fixed="450" leftResizable>
-        <div class="card-header toolbar">
-          <div class="toolbar-left"></div>
+      <div class="card cards-list-block" fixed="550" leftResizable>
+        <div class="card-header flexible justify-content-center">
           <h5>Список карт пациента</h5>
-          <div class="toolbar-right"></div>
         </div>
         <div class="card-body null-padding">
           <app-grid-table
@@ -20,20 +18,15 @@
       </div>
       <div class="vertical-resizer" resizer="2px"></div>
       <div class="card patient-info-block" rightResizable>
-        <div class="card-header toolbar justify-content-between">
-          <div class="toolbar-left"></div>
-          <h5 class="center-me">
-            {{patItem ? 'Пациент №'+ patItem.id : ''}}
+        <div class="card-header flexible justify-content-center">
+          <h5>
+            {{patItem ? 'Пациент №' + patItem.id : ''}}
           </h5>
-          <div class="toolbar-right">
-            <div class="btn-group">
-              <button class="btn btn-success btn-sm" (click)="savePatient()"><i class="fas fa-save"></i> Сохранить пациента </button>
-            </div>
-          </div>
         </div>
         <div class="card-body d-flex p-0 full-height scrollable default-bg">
-          <div class="col-6">
-            <div class="card card-message">
+          <!-- 1я колонка карточек-->
+          <div class="w-50 p-2">
+            <div class="card">
               <div class="card-header">
                 Общая информация
               </div>
@@ -47,14 +40,15 @@
               </div>
             </div>
           </div>
-          <div class="col-6">
-            <div class="card card-message">
+          <!-- 2я колонка карточек-->
+          <div class="w-50 p-2">
+            <div class="card">
               <div class="card-header">
                 Документы
               </div>
               <div class="card-body">
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item {{doc.document.isDeleted? 'bg-light' : ''}}"
+                  <li class="list-group-item pr-0 pl-0 {{doc.document.isDeleted? 'bg-light' : ''}}"
                       *ngFor="let doc of docForms; let i = index;">
                     <app-simple-view
                       [form]="doc.form"
@@ -64,12 +58,13 @@
                       [descriptions]="getBlockDescriptions('documents')"
                     ></app-simple-view>
                     <div class="toolbar-right">
-                      <button class="btn btn-danger" [disabled]="doc.document.isDeleted" (click)="deleteDocument(doc, i)">
+                      <button class="btn btn-danger" [disabled]="doc.document.isDeleted"
+                              (click)="deleteDocument(doc, i)">
                         Удалить
                       </button>
                     </div>
                   </li>
-                  <li class="list-group-item">
+                  <li class="list-group-item last-list-item">
                     <button class="btn btn-success" (click)="addDocument()">
                       Добавить документ
                     </button>
@@ -77,10 +72,15 @@
                 </ul>
               </div>
             </div>
-
           </div>
         </div>
-
+        <div class="card-footer">
+          <div class="btn-group w-100 p-1">
+            <button class="btn btn-success btn-sm" (click)="savePatient()"><i class="fas fa-save"></i> Сохранить
+              изменения
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

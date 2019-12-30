@@ -32,7 +32,7 @@ export class BrigadeShiftService {
       }
     );
     this.shiftTableSub.subscribe(
-      pt => console.log(pt)
+      // pt => console.log(pt)
     );
   }
 
@@ -97,7 +97,7 @@ export class BrigadeShiftService {
     return this.api.updateBrigadeScheduleUsingPOST(shift).pipe(
       tap(
         res => {
-          console.log('shift updated', res);
+          // console.log('shift updated', res);
           let updateRawTable = Object.assign({}, this.rawTable);
 
           if (shift.id) { //если смена отредактирована, то удаляем старую версию
@@ -136,7 +136,7 @@ export class BrigadeShiftService {
   }
 
   processShifts(rawShiftTable: IShiftSubItem): IShiftSubItem {
-    console.log(rawShiftTable);
+    // console.log(rawShiftTable);
     let dayMatrix: { brigade: any, days: { shifts: BrigadeScheduleBean[], display?: any }[] }[] = [];
 
     for (let row in rawShiftTable.shifts) { // идем по списку пар {сотрудник, смены[]}
@@ -216,7 +216,7 @@ export class BrigadeShiftService {
       );
 
     }
-    console.log(dayMatrix);
+    // console.log(dayMatrix);
     return {date: rawShiftTable.date, shifts: dayMatrix};
   }
 }

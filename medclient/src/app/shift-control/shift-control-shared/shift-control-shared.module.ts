@@ -18,6 +18,7 @@ import {DictionariesModule} from "../../dictionaries/dictionaries.module";
 import {DictionaryModule} from "../../shared/dictionary/dictionary.module";
 import {ModalReportOptionsComponent} from '../../reports/components/modal-report-options/modal-report-options.component';
 import {ReportsModule} from '../../reports/reports.module';
+import {VirtualScrollerModule} from "ngx-virtual-scroller";
 
 @NgModule({
   declarations:
@@ -42,7 +43,8 @@ import {ReportsModule} from '../../reports/reports.module';
     SimpleControlModule,
     DictionariesModule,
     DictionaryModule,
-    ReportsModule
+    ReportsModule,
+    VirtualScrollerModule
   ],
   entryComponents: [
     ModalPerformerShiftListComponent,

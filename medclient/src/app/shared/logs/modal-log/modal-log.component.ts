@@ -39,7 +39,7 @@ colDef: ColDef[] = [
   {
     headerName: 'Сотрудник',
     field: 'performerFK',
-    valueFormatter: params => params.value.name || '' + ' ' + params.value.surname || ''
+    valueFormatter: params => (params.value.name || '') + ' ' + (params.value.surname || '')
   }
 ];
   constructor() {

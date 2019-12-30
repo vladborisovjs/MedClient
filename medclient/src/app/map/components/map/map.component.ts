@@ -14,6 +14,7 @@ import {SocketTopicsService} from '../../../shared/socket-topic/services/socket-
 export class MapComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
   transportMonitoringList: TransportMonitoringData[] = [];
+  callsMonitoringList: any[] = [];
 
   constructor(private ms: MedMapService,
               private mapInfo: BigMapInfoService,
@@ -34,6 +35,7 @@ export class MapComponent implements OnInit, OnDestroy {
               calls => {
                 if (calls) {
                   this.ms.drawCalls(calls.list.filter(call => !!call.location));
+                  this.callsMonitoringList = calls.list.filter(call => !!call.location);
                 }
               }
             ),
@@ -46,11 +48,17 @@ export class MapComponent implements OnInit, OnDestroy {
             ),
             this.mapInfo.transportListSub.subscribe(
               trans => {
-                this.transportMonitoringList = trans;
                 if (trans) {
                   this.ms.drawTransport(trans.filter((t => !!t.transportMonitoringBean)));
+                  this.transportMonitoringList = trans.sort((a, b) => {
+                    if (a.brigadeContainer.brigade.id > b.brigadeContainer.brigade.id) {
+                      return 1;
+                    } else if (a.brigadeContainer.brigade.id < b.brigadeContainer.brigade.id) {
+                      return -1;
+                    }
+                    return 0;
+                  });
                 }
-
               }
             )
           );

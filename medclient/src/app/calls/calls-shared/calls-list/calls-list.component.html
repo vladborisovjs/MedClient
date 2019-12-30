@@ -6,7 +6,7 @@
                 *ngIf="calls.mode === 'tcmk' ? access.checkAccessWrite({level: 'tcmkModule'}) : access.checkAccessWrite({level: 'callsModule'})"
                 (click)="createCall()" >
           <i class="fas fa-sm fa-plus"></i>
-          Новый вызов (shift+N)
+          Новый вызов  (shift+N)
         </button>
         <button class="btn btn-primary" (click)="goToArchive()">
           Архив {{mode === 'calls' ? 'вызовов': 'карт'}} (shift+A)

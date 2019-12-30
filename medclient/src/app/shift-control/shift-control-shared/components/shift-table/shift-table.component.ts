@@ -16,6 +16,7 @@ import {ModalReportOptionsComponent} from '../../../../reports/components/modal-
 import {IReport, reportsList} from '../../../../reports/models/report-models';
 import {ReportService} from '../../../../reports/services/report.service';
 import {UserService} from "../../../../services/user.service";
+import {IPageInfo} from "ngx-virtual-scroller";
 
 
 @Component({
@@ -42,38 +43,39 @@ export class ShiftTableComponent implements OnInit {
   ];
   filterDescriptions: ISimpleDescription[] = [
     {
-      label: '',
+      placeholder: 'Месяц',
       key: 'month',
       type: 'select',
       selectList: this.months,
       styleClass: 'line-form col-2'
     },
     {
-      label: '',
+      placeholder: 'Год',
       key: 'year',
       type: 'number',
       styleClass: 'line-form col-2'
     },
-    // {
-    //   label: '',
-    //   key: 'subdivisionId',
-    //   bindValue: 'id',
-    //   placeholder: 'Район',
-    //   dictFilters: {type: [448641]},
-    //   dictFiltersOrder: ['type'],
-    //   type: 'dict',
-    //   dict: 'getSubdivisionListUsingGET',
-    //   styleClass: 'line-form col-6'
-    // }
+    {
+      placeholder: 'Район',
+      key: 'subdivisionFK',
+      type: 'dict',
+      dict: 'getDistrictListUsingGET',
+      bindLabel: 'shortName',
+      shortDict: true,
+      dictFilters: {rootId: [this.user.mePerformer.performer.subdivisionFK.id]},
+      dictFiltersOrder: ['rootId'],
+      styleClass: 'line-form col-4'
+    }
 
   ];
-  currentPeriod: { month: number, year: number, subdivisionId }; // отображаемый месяц расписания
+  currentPeriod: { month: number, year: number, subdivisionFK: any }; // отображаемый месяц расписания
   form = new FormGroup({
     month: new FormControl(new Date().getMonth()),
     year: new FormControl(new Date().getFullYear()),
-    subdivisionId: new FormControl(),
+    subdivisionFK: new FormControl(this.user.mePerformer.performer.subdivisionFK),
   });
 
+  vScrollPageInfo: IPageInfo;
   prolongationActive: boolean; // флаг: если есть выбранные сотрудники для пролонгации/удолгации
 
   constructor(public pss: PerformerShiftService,
@@ -86,12 +88,18 @@ export class ShiftTableComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.form.disable({emitEvent: false}); // блокируем форму пока не пришло расписание
     this.form.valueChanges.subscribe(ch => this.setPeriod(ch));
     this.setPeriod(this.form.getRawValue());
-    this.pss.shiftTableSub.subscribe(st => this.shiftTable = st);
+    this.pss.shiftTableSub.subscribe(st => {
+      this.shiftTable = st;
+      if (st){
+        this.form.enable({emitEvent:false}) // разблокируем форму когда пришло расписание
+      }
+    });
   }
 
-  setPeriod(period: { month: number, year: number, subdivisionId: number }) {
+  setPeriod(period: { month: number, year: number, subdivisionFK: any }) {
     if (period.year && period.month !==null) {
       this.shiftTable = null; // сброс расписания старого периода
       this.prolongationActive = false;
@@ -107,7 +115,13 @@ export class ShiftTableComponent implements OnInit {
       from.setHours(new Date().getTimezoneOffset() / (-60)); // todo: перенести танцы со временем в сервис
       to.setHours(new Date().getTimezoneOffset() / (-60)); // todo: перенести танцы со временем в сервис
 
-      this.pss.getShifts(from.toISOString().slice(0, -14), to.toISOString().slice(0, -14), this.user.mePerformer.performer.subdivisionFK.id);
+      this.form.disable({emitEvent: false}); // блокируем форму пока не пришло расписание
+
+      this.pss.getShifts(
+        from.toISOString().slice(0, -14),
+        to.toISOString().slice(0, -14),
+        (period.subdivisionFK && period.subdivisionFK.id) ||
+        (this.user.mePerformer.performer.subdivisionFK.id === 1 ? undefined : this.user.mePerformer.performer.subdivisionFK.id)); // undefined может послать только тцмк
     }
   }
 

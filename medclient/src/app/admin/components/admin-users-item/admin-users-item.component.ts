@@ -158,6 +158,8 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.form = this.sds.makeForm(this.getBlockDescriptions('general'));
+    this.loginForm = this.sds.makeForm(this.getBlockDescriptions('login'));
     this.users.initRoles();
     this.sbscs.push(
       this.users.userSub.subscribe(
@@ -179,8 +181,6 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
       ),
 
     );
-    this.form = this.sds.makeForm(this.getBlockDescriptions('general'));
-    this.loginForm = this.sds.makeForm(this.getBlockDescriptions('login'));
     this.sbscs.push(
       this.loginForm.valueChanges.subscribe(
         el => {
@@ -280,7 +280,6 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
     );
   }
 
-
   getBlockDescriptions(block: string): ISimpleDescription[] {
     return this.descriptions.filter(el => {
       if (el.additional) {
@@ -294,4 +293,15 @@ export class AdminUsersItemComponent implements OnInit, OnDestroy {
     this.logS.openLog(this.userItem.id, RecordType.PERFORMER);
   }
 
+  restoreUserItem() {
+    this.users.restoreUser(this.userItem.id).subscribe(
+      s => {
+        this.ns.success('Пользователь восстановлен');
+      },
+      error1 => {
+        console.log(error1);
+        this.ns.error('Ошибка сохранения');
+      }
+    );
+  }
 }

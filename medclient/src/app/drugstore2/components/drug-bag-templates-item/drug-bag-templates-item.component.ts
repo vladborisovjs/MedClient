@@ -1,8 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BagNewBean, BagTemplateBean, DrugBean} from '../../../../../swagger/med-api.service';
+import {BagNewBean} from '../../../../../swagger/med-api.service';
 import {Subscription} from 'rxjs';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
-import {FormGroup} from '@angular/forms';
 import {ColDef} from 'ag-grid-community';
 import {DrugstoreBagService} from '../../services/drugstore-bag.service';
 
@@ -14,18 +12,6 @@ import {DrugstoreBagService} from '../../services/drugstore-bag.service';
 export class DrugBagTemplatesItemComponent implements OnInit, OnDestroy {
   bagTmpItem: BagNewBean;
   sbscs: Subscription[] = [];
-  descriptions: ISimpleDescription[] = [
-    {
-      label: 'Наименование:',
-      key: 'name',
-      type: 'text',
-      styleClass: 'col-5',
-      additional: {
-        block: 'general'
-      }
-    },
-  ];
-  form: FormGroup;
   colDefDrugs: ColDef[] = [
     {
       headerName: 'Наименование',
@@ -78,24 +64,19 @@ export class DrugBagTemplatesItemComponent implements OnInit, OnDestroy {
       width: 250
     }
   ];
-  selectedDrug: DrugBean;
-  selectedItem: any;
   modes = {
     DRUGS : 'DRUGS',
     WARES : 'WARES',
     OTHER : 'OTHER'
   };
   mode = this.modes.DRUGS;
-  constructor(private ds: DrugstoreBagService,
-              private sds: SimpleDescriptionService) { }
+  constructor(private ds: DrugstoreBagService) { }
 
   ngOnInit() {
-    this.form = this.sds.makeForm(this.descriptions);
     this.sbscs.push(
       this.ds.bagTemplateSubject.subscribe(bag => {
         this.bagTmpItem = bag;
         console.log(bag);
-        this.form && this.form.reset(this.bagTmpItem ? this.bagTmpItem : {});
       }),
     );
   }
@@ -104,13 +85,8 @@ export class DrugBagTemplatesItemComponent implements OnInit, OnDestroy {
     this.sbscs.forEach(s => s.unsubscribe());
   }
 
-  selectDrugFromTable(e) {
-    this.selectedDrug = e.data;
-  }
-
   changeMode(mode) {
     console.log(mode);
-    this.selectedItem = null;
     this.mode = mode;
   }
 }

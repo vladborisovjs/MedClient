@@ -10,6 +10,8 @@ import {Subscription} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MedUtilitesService} from "../../../services/med-utilites.service";
+import {CardStatusPipe} from "../../../shared/med-pipes/pipes/card-status.pipe";
+import {FullnameShorterPipe} from "../../../shared/med-pipes/pipes/fullname-shorter.pipe";
 
 @Component({
   selector: 'app-card-list',
@@ -26,89 +28,70 @@ export class CardListComponent implements OnInit, OnDestroy {
     {
       headerName: '№',
       field: 'number',
-      sortable: true,
-      filter: true,
-      width: 80,
+      sortable: false,
+      filter: false,
+      width: 120,
     },
     {
       headerName: 'Бригада',
       field: 'brigadeFK.name',
-      sortable: true,
-      filter: true,
-      width: 200,
+      sortable: false,
+      filter: false,
+      width: 100,
     },
     {
       headerName: 'Повод к вызову',
       field: 'callFK.reasonFK.reason',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       width: 220,
     },
-    // {
-    //   headerName: 'Адрес',
-    //   field: 'address',
-    //   sortable: true,
-    //   filter: true,
-    //   width: 220,
-    // },
     {
       headerName: 'Пациент',
       field: 'patientFK',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       width: 120,
-      valueFormatter: (v) => {
-        return (v.value.surname ? v.value.surname : '') +
-          ' ' + (v.value.name ? v.value.name : '')  + ' ' + ( v.value.patronymic ? v.value.patronymic : '' ) + ' ';
-      }
+      valueFormatter: params => this.nameShorterPipe.transform(params.value),
     },
     {
       headerName: 'Заявитель',
       field: 'callFK.declarantName',
-      sortable: true,
-      filter: true,
+      sortable: false,
+      filter: false,
       width: 120,
     },
     {
       headerName: 'Исполнитель',
-      valueGetter: params => params.data.performerFK.surname +
-        ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
-      sortable: true,
-      filter: true,
+      field: 'performerFK',
+      sortable: false,
+      filter: false,
       width: 120,
+      valueFormatter: params => this.nameShorterPipe.transform(params.value),
     },
     {
-      headerName: 'Статус', // todo: pipe карточек
-      valueGetter: params => {
-        if (params.data.cardStatus === 1) {
-          return 'Проверена';
-        } else if ( params.data.cardStatus === 2) {
-          return 'Готова к отправке в ЕГИСЗ';
-        } else if (params.data.cardStatus === 4) {
-          return 'Отправлено в ЕГИСЗ';
-        } else if (params.data.cardStatus === 0) {
-          return 'Создана';
-        } else {
-          return 'Статус не установлен';
-        }
-      },
-      sortable: true,
-      filter: true,
-      width: 120,
+      headerName: 'Статус',
+      field: 'cardStatus',
+      valueFormatter: params => this.cardStatusPipe.transform(params.value),
+      sortable: false,
+      filter: false,
+      width: 100,
     },
     {
       headerName: 'Результат',
       field: 'resultTypeFK.name',
-      sortable: true,
-      filter: true,
-      width: 120,
+      sortable: false,
+      filter: false,
+      width: 200,
     },
 
   ];
   filter = {
-    subdivisionId: undefined
+    subdivisionId: this.user.mePerformer.performer.subdivisionFK.id,
   };
   datePipe = new DatePipe('ru');
+  cardStatusPipe = new CardStatusPipe();
+  nameShorterPipe = new FullnameShorterPipe();
   sbscs: Subscription[] = [];
   subdivisionList = [];
   form = new FormGroup({

@@ -6,7 +6,7 @@
         [descriptions]="descriptions"
       ></app-simple-view>
     <div class="toolbar-right">
-      <button *ngIf="access.checkAccessWrite({level: 'adminModule'})" class="btn btn-success" (click)="createUser()">Новый сотрудник</button>
+      <button *ngIf="access.checkAccessWrite({level: 'adminModule'})" class="btn btn-success" (click)="createUser()">Новый</button>
     </div>
   </div>
   <app-grid-table

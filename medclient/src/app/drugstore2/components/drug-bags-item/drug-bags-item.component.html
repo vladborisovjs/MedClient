@@ -30,7 +30,7 @@
       </div>
       <div class="toolbar-right">
         <div class="btn-group">
-          <button *ngIf="!bagNewItem.id" class="btn btn-success" (click)="saveBag()">
+          <button *ngIf="!bagNewItem.id" [disabled]="formBag.invalid" class="btn btn-success" (click)="saveBag()">
             <i class="fas fa-plus"></i> Создать
           </button>
         </div>

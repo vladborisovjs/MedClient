@@ -7,6 +7,7 @@
            class="archive-select"
            [(ngModel)]="_value"
            (search)="onSearch($event)"
+           [searchFn]="search"
            [loading]="loading"
            (clear)="onClear($event)"
            [ngClass]="{'hide-cross': !showCross}"
@@ -19,6 +20,6 @@
            notFoundText="Ничего не найдено"
            (change)="onSelectChange($event)">
   <ng-template ng-option-tmp let-item="item" let-index="index">
-    <span [title]="item[bindLabel]">{{item[bindLabel]}} <em>{{item[addLabel] ? ' ' + item[addLabel] : ''}}</em></span>
+    <span [title]="item[bindLabel]">{{item[bindLabel]}} {{item[addLabel] ? ' ' + item[addLabel] : ''}}</span>
   </ng-template>
 </ng-select>

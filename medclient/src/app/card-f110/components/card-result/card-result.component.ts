@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {CardItemService} from '../../services/card-item.service';
@@ -26,6 +29,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
       field: 'date',
       sortable: true,
       filter: true,
+      sort: 'desc',
       valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
       width: 200
     },
@@ -69,6 +73,8 @@ export class CardResultComponent implements OnInit, OnDestroy {
   mode: string = 'undef'; // режим отображения форм в зависимости от типа результата
   form: FormGroup;
   formType: FormGroup;
+  currentBlock: any[];
+
   descriptionsType: ISimpleDescription [] = [
     {
       label: 'Тип: ',
@@ -173,7 +179,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Основной',
-      key: 'mkbFK',
+      key: 'mainDiagnosisFK',
       type: 'dict',
       readonly: true,
       required: true,
@@ -238,7 +244,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'ЧСС',
-      type: 'text',
+      type: 'number',
       key: 'ekgChSS',
       styleClass: 'line-form col-6',
       postLabel: 'в мин.',
@@ -457,7 +463,7 @@ export class CardResultComponent implements OnInit, OnDestroy {
     },
     {
       label: 'ЧСС',
-      type: 'text',
+      type: 'number',
       key: 'ekgChSSAfter',
       styleClass: 'line-form col-12',
       postLabel: 'в мин',
@@ -485,8 +491,12 @@ export class CardResultComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'Помощь оказана в городе',
-      type: 'checkbox',
+      label: 'Место оказания помощи',
+      type: 'select',
+      selectList: [
+        {id: true, name: 'В городе'},
+        {id: false, name: 'В сельской местности'},
+      ],
       key: 'helpInCity',
       additional: {
         block: 'assistance_result'
@@ -548,8 +558,8 @@ export class CardResultComponent implements OnInit, OnDestroy {
     this.form = this.sds.makeForm(this.descriptions);
     this.formType = this.sds.makeForm(this.descriptionsType);
     this.sbscs.push(
-      this.cas.isEditingSub.subscribe(s =>{
-        if (s === 'disable' || s === 'loading'){
+      this.cas.isEditingSub.subscribe(s => {
+        if (s === 'disable' || s === 'loading') {
           this.form.disable({emitEvent: false});
           this.formType.disable({emitEvent: false});
         } else {
@@ -560,55 +570,59 @@ export class CardResultComponent implements OnInit, OnDestroy {
       this.cas.cardItemSub.subscribe(cardItem => {
         this.cardItem = cardItem;
         this.formType.reset(this.cardItem);
-        this.cardItem.resultTypeFK && this.setMode(this.cardItem.resultTypeFK.id);
+        if (this.cardItem.resultTypeFK) {
+          this.setMode(this.cardItem.resultTypeFK.id);
+        }
         this.resetTherapies();
       }),
       this.form.valueChanges.subscribe(
         result => {
           Object.assign(this.cardItem.cardResultBean, result);
-          this.blocks = { // todo: сделать функцию апдейта блоков, получать блоки из функции (в html тоже)
-            noBlocks: {
-              arrBlock: []
-            },
-            general: {
-              arrBlock: [
-                {label: 'Диагноз', block: 'diagnosis'},
-                {label: 'Активное посещение', block: 'activeVisitFK'},
-                {label: 'ЭКГ', block: 'ekg'}
-              ]
-            },
-            transport: {
-              arrBlock: [
-                {label: 'Диагноз', block: 'diagnosis'},
-                {label: 'ЭКГ', block: 'ekg'},
-                {label: 'Транспортировка', block: 'transporting'}
-              ]
-            },
-            transfer: {
-              arrBlock: [
-                {label: 'Диагноз', block: 'diagnosis'},
-                {label: 'Активное посещение', block: 'activeVisitFK'},
-                {label: 'ЭКГ', block: 'ekg'},
-                {label: 'Передача спецбригаде', block: 'transfer_patient'}
-              ]
-            },
-            deathTime: {
-              arrBlock: [
-                {label: 'смерть', block: 'deathTime'},
-                {label: 'Диагноз', block: 'diagnosis'},
-                {label: 'Транспортировка', block: 'transporting'}
-              ]
-            },
-            undef: {
-              arrBlock: []
-            }
-          };
+          // this.blocks = { // todo: сделать функцию апдейта блоков, получать блоки из функции (в html тоже)
+          //   noBlocks: {
+          //     arrBlock: []
+          //   },
+          //   general: {
+          //     arrBlock: [
+          //       {label: 'Диагноз', block: 'diagnosis'},
+          //       {label: 'Активное посещение', block: 'activeVisitFK'},
+          //       {label: 'ЭКГ', block: 'ekg'}
+          //     ]
+          //   },
+          //   transport: {
+          //     arrBlock: [
+          //       {label: 'Диагноз', block: 'diagnosis'},
+          //       {label: 'ЭКГ', block: 'ekg'},
+          //       {label: 'Транспортировка', block: 'transporting'}
+          //     ]
+          //   },
+          //   transfer: {
+          //     arrBlock: [
+          //       {label: 'Диагноз', block: 'diagnosis'},
+          //       {label: 'Активное посещение', block: 'activeVisitFK'},
+          //       {label: 'ЭКГ', block: 'ekg'},
+          //       {label: 'Передача спецбригаде', block: 'transfer_patient'}
+          //     ]
+          //   },
+          //   deathTime: {
+          //     arrBlock: [
+          //       {label: 'смерть', block: 'deathTime'},
+          //       {label: 'Диагноз', block: 'diagnosis'},
+          //       {label: 'Транспортировка', block: 'transporting'}
+          //     ]
+          //   },
+          //   undef: {
+          //     arrBlock: []
+          //   }
+          // };
         }
       ),
       this.formType.valueChanges.subscribe(
         ch => {
           Object.assign(this.cardItem, ch);
-          this.cardItem.resultTypeFK ? this.setMode(this.cardItem.resultTypeFK.id) : true;
+          if (this.cardItem.resultTypeFK) {
+            this.setMode(this.cardItem.resultTypeFK.id);
+          }
         }
       )
     );
@@ -628,37 +642,47 @@ export class CardResultComponent implements OnInit, OnDestroy {
     );
   }
 
+  getCurrentBlock(mode: string) {
+    this.currentBlock = this.blocks[mode].arrBlock;
+  }
 
   setMode(typeId) {
     console.log(typeId);
     switch (typeId) {
       case 0:
         this.mode = 'noBlocks';
+        this.getCurrentBlock(this.mode);
         break;
       case 445331:
       case 445326:
       case 445313:
+      case 337736: // оказана помощь,
       case 445314:
         this.mode = 'general';
+        this.getCurrentBlock(this.mode);
         break;
       case 445330:
       case 445308:
       case 445322:
       case 445318:
         this.mode = 'transport';
+        this.getCurrentBlock(this.mode);
         break;
       case 445310:
       case 445320:
         this.mode = 'transfer';
+        this.getCurrentBlock(this.mode);
         break;
       case 445319:
       case 457562:
       case 458619:
       case 457564:
         this.mode = 'deathTime';
+        this.getCurrentBlock(this.mode);
         break;
       default:
         this.mode = 'undef';
+        this.getCurrentBlock(this.mode);
     }
   }
 
@@ -685,7 +709,8 @@ export class CardResultComponent implements OnInit, OnDestroy {
         this.cardItem.cardResultBean.therapyList.push(_therapy);
         this.resetTherapies();
       },
-      error => {}
+      error => {
+      }
     );
   }
 
@@ -705,9 +730,10 @@ export class CardResultComponent implements OnInit, OnDestroy {
       res => {
         if (res) {
           console.log(res);
-          this.form.controls['mkbFK'].setValue(res);
+          this.form.controls['mainDiagnosisFK'].setValue(res);
         }
-      }, () => {}
+      }, () => {
+      }
     );
   }
 
@@ -719,7 +745,8 @@ export class CardResultComponent implements OnInit, OnDestroy {
           console.log(res);
           this.form.controls['concomitantDiagnosisFK'].setValue(res);
         }
-      }, () => {}
+      }, () => {
+      }
     );
   }
 }

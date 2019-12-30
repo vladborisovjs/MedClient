@@ -7,6 +7,9 @@ import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {RoleAccessService} from "../../../services/role-access.service";
 import {CardBean, Status} from "../../../../../swagger/med-api.service";
 import {NotificationsService} from "angular2-notifications";
+import {ModalCardValidWarnComponent} from "../modal-card-valid-warn/modal-card-valid-warn.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {_AccessLevels, _Roles} from "../../../models/user-roles";
 
 
 @Component({
@@ -35,6 +38,7 @@ export class F110Component implements OnInit, OnDestroy {
       return false;
     }),
     new Hotkey('alt+5', () => {
+      console.log(this.router.url);
       this.router.navigate(['result'], {relativeTo: this.route});
       return false;
     }),
@@ -46,6 +50,8 @@ export class F110Component implements OnInit, OnDestroy {
   isEditing: 'disable' | 'editing' | 'loading';
   cardStatuses = Status;
   cardItem: CardBean;
+  Roles = _Roles;
+  ALevels = _AccessLevels;
 
   constructor(
     private route: ActivatedRoute,
@@ -54,13 +60,14 @@ export class F110Component implements OnInit, OnDestroy {
     private cas: CardItemService,
     private hotkeysService: HotkeysService,
     public access: RoleAccessService,
+    private modal: NgbModal,
     private ns: NotificationsService,
   ) {
     this.hotkeys.forEach(key => this.hotkeysService.add(key));
   }
 
   ngOnInit() {
-    this.cas.isEditingSub.subscribe(s => this.isEditing = s); // todo: unsubscribe
+    this.cas.isEditingSub.subscribe(s => this.isEditing = s);
     this.cas.cardItemSub.subscribe(c => this.cardItem = c);
   }
 
@@ -82,15 +89,26 @@ export class F110Component implements OnInit, OnDestroy {
   }
 
   sendCardStatus(status: Status) {
-    this.cas.setCardStatus(status).subscribe(
-      res => {
-        this.ns.success('Статус карты обновлен');
-      },
-      error => {
-        console.log(error);
-        this.ns.error('Ошибка обновления статуса');
-      }
-    );
+    if (this.cas.validateCardInfo(status)){
+      this.cas.sendCardStatus(status);
+    } else {
+      const vc = this.modal.open(ModalCardValidWarnComponent);
+      vc.componentInstance.cardItem = this.cardItem;
+      vc.componentInstance.status = status;
+      vc.result.then(
+        (res) => {
+          if (res && res.type === 'submit') {
+            this.cas.sendCardStatus(status);
+          } else if (res && res.type === "navigate"){
+            console.log(this.router);
+            this.router.navigate([`${res.val}`], {relativeTo: this.route});
+          }
+        },
+        () => {
+        }
+      );
+    }
+
   }
 
 

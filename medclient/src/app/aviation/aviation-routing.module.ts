@@ -57,7 +57,7 @@ const routes: Routes = [
               title: '',
             },
             resolve: {
-              itemWithList: AviaBrigadeEditListResolverService
+              dict: AviaBrigadeEditListResolverService
             }
           },
           {

@@ -8,7 +8,7 @@
       </div>
       <div class="card-body scrollable">
         <pre lang="xml">
-          {{request}}
+          {{relatedLogFK.first}}
         </pre>
       </div>
     </div>
@@ -19,12 +19,10 @@
       <div class="card-header">
         <div class="card-subtitle">
           Ответ
-          <i class="fas fa-times-circle text-danger" *ngIf="!sending"></i>
-          <i class="fas fa-check-circle text-success" *ngIf="sending"></i>
         </div>
       </div>
       <div class="card-body">
-          {{response}}
+          {{relatedLogFK.first}}
       </div>
     </div>
   </div>

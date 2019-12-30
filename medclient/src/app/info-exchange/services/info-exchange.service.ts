@@ -13,7 +13,7 @@ export class InfoExchangeService {
   }
 
   getLog(logId) {
-    return this.api.getLogByIdUsingGET(logId);
+    return this.api.getBodyUsingGET(logId);
   }
 
 }

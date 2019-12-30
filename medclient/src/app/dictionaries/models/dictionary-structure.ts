@@ -16,6 +16,7 @@ export interface IDictItem {
   location?: boolean; // если у объекта устанавливается местоположение (активирует карту)
   bean?: any; // тип бина айтема, для приведения типа при сохранении
   recordType?: RecordType; // тип логов записи
+  editInSubdivision?: boolean; // Справочник можно редактировать админу района
 }
 
 export interface IHeadersTreeTable {
@@ -36,6 +37,8 @@ export interface IDictionaryInfo {
   paramsOrder?: string[]; // порядок параметров
   filters?: ISimpleDescription[]; // фильтры справочника
   rootLevel?: number; // поле значения корневого узла в tree dict
+  editInSubdivision?: boolean; // Справочник можно редактировать админу района
+  readOnly?: boolean; // только чтение true /чтение + редактирование  false
 }
 
 const dictionaries: IDictionaryInfo[] = [
@@ -638,11 +641,11 @@ const dictionaries: IDictionaryInfo[] = [
     method: 'getTransportListUsingGET',
     block: 'common',
     params: {isHelicopter: false},
-    paramsOrder: ['name', 'code', 'isHelicopter'],
+    paramsOrder: ['name', 'code', 'isHelicopter', 'subdivision'],
     colDef: [
       {
         headerName: 'Подразделение, которому принадлежит',
-        field: 'subdivision',
+        field: 'subdivisionFK.shortName', //
         width: 150
       },
       {
@@ -680,15 +683,35 @@ const dictionaries: IDictionaryInfo[] = [
         type: 'text',
         styleClass: 'col-2',
       },
+      {
+        label: 'Район',
+        key: 'subdivision',
+        type: 'dict',
+        dict: 'getDistrictListUsingGET',
+        bindLabel: 'shortName',
+        bindValue: 'id',
+        shortDict: true,
+        dictFilters: {rootId: [1]},
+        dictFiltersOrder: ['rootId'],
+        styleClass: 'col-4',
+        additional: {
+          block: 'general'
+        }
+      },
     ],
     item: {
       title: 'Автотранспорт',
       descriptions: [
         {
-          label: 'Подразделение:',
-          key: 'subdivision',
-          type: 'text',
-          styleClass: '',
+          label: 'Район:',
+          key: 'subdivisionFK',
+          type: 'dict',
+          dict: 'getSubdivisionListUsingGET',
+          bindLabel: 'shortName',
+          dictFilters: {type: [448641, 1202]},
+          dictFiltersOrder: ['type'],
+          required: true,
+          styleClass: 'col-12',
           additional: {
             block: 'common'
           }
@@ -703,10 +726,28 @@ const dictionaries: IDictionaryInfo[] = [
           }
         },
         {
-          label: 'Тип:',
+          label: 'Марка',
           key: 'name',
           type: 'text',
           styleClass: '',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'VIN',
+          key: 'vin',
+          type: 'text',
+          styleClass: 'col-6',
+          additional: {
+            block: 'common'
+          }
+        },
+        {
+          label: 'Год выпуска',
+          key: 'manufactureYear',
+          type: 'number',
+          styleClass: 'col-6',
           additional: {
             block: 'common'
           }
@@ -1987,6 +2028,7 @@ const dictionaries: IDictionaryInfo[] = [
     ],
     paramsOrder: ['name', 'code'],
     rootLevel: -1,
+    readOnly: true
   },
   {
     title: 'Бригады СМП',
@@ -2032,6 +2074,7 @@ const dictionaries: IDictionaryInfo[] = [
         styleClass: 'col-1',
       },
     ],
+    editInSubdivision: true,
     item: {
       title: 'Бригада СМП',
       descriptions: [
@@ -2039,6 +2082,7 @@ const dictionaries: IDictionaryInfo[] = [
           label: 'Наименование',
           key: 'name',
           type: 'text',
+          required: true,
           additional: {
             block: 'brigades'
           }
@@ -2047,6 +2091,7 @@ const dictionaries: IDictionaryInfo[] = [
           label: 'Код',
           key: 'code',
           type: 'text',
+          required: true,
           additional: {
             block: 'brigades'
           }
@@ -2055,6 +2100,7 @@ const dictionaries: IDictionaryInfo[] = [
           label: 'Тип',
           key: 'brigadeTypeFK',
           type: 'dict',
+          required: true,
           dict: 'readBrigadeTypeListUsingGET',
           additional: {
             block: 'brigades'
@@ -2101,7 +2147,8 @@ const dictionaries: IDictionaryInfo[] = [
       restoreMethod: 'restoreBrigadeUsingPOST',
       deleteMethod: 'deleteBrigadeUsingDELETE',
       bean: BrigadeBean,
-      recordType: RecordType.BRIGADE
+      recordType: RecordType.BRIGADE,
+      editInSubdivision: true,
     }
   },
   {
@@ -2169,7 +2216,7 @@ const dictionaries: IDictionaryInfo[] = [
           type: 'dict',
           dict: 'getSubdivisionListUsingGET',
           bindLabel: 'shortName',
-          dictFilters: {type: [448641, 1202]},
+          dictFilters: {type: [1202]},
           dictFiltersOrder: ['type'],
           required: true,
           styleClass: 'col-12',
@@ -3909,6 +3956,7 @@ const dictionaries: IDictionaryInfo[] = [
     method: 'getReferenceTypeListResultUsingGET',
     block: 'calls',
     paramsOrder: ['name', 'code'],
+
     colDef: [
       {
         headerName: 'Код',
@@ -4473,10 +4521,16 @@ const dictionaries: IDictionaryInfo[] = [
 
 ];
 
-
-export const getListOfDictionaries = (block: string) => {
+export const getListOfDictionaries = (block: string, filter: string) => {
   return dictionaries.filter(
-    d => d.block === block
+    el => {
+      if (filter && el.title) {
+        const upperLabel = el.title.toUpperCase(); // приводим к заглавным для поиска
+        return (el.block === block && upperLabel.includes(filter.toUpperCase()));
+      } else {
+        return el.block === block;
+      }
+    }
   );
 };
 

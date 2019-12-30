@@ -25,17 +25,14 @@
       <div class="card-body full-height p-0">
         <div class="drug-desc-table">
           <app-grid-table *ngIf="mode === 'OTHER'"
-                          (onRowSelect)="selectDrugFromTable($event)"
                           [columnDefs]="colDefOthers"
                           [listSource]="bagTmpItem.othersInBagBeanFK">
           </app-grid-table>
           <app-grid-table *ngIf="mode === 'WARES'"
-                          (onRowSelect)="selectDrugFromTable($event)"
                           [columnDefs]="colDefWares"
                           [listSource]="bagTmpItem.waresInBagBeanFK">
           </app-grid-table>
           <app-grid-table *ngIf="mode === 'DRUGS'"
-                          (onRowSelect)="selectDrugFromTable($event)"
                           [columnDefs]="colDefDrugs"
                           [listSource]="bagTmpItem.drugsInBagBeanFK">
           </app-grid-table>

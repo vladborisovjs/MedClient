@@ -32,7 +32,7 @@
           <button class="btn btn-secondary" (click)="back()">Назад</button>
         </div>
         <div class="toolbar-right">
-          <div class="btn-group" *ngIf="access.checkAccessWrite({level: 'dictModule'})">
+          <div class="btn-group" *ngIf="access.checkAccessWrite({level: 'dictModule'}) || (dictItem.editInSubdivision && access.checkAccessForRoles([Roles.DISTRICT_ADMIN]))">
             <button class="btn btn-primary" (click)="openLog()" *ngIf="dictItem.recordType">Журнал</button>
             <button class="btn btn-danger" (click)="delete()" *ngIf="item.id !== 0 && !item.isDeleted">Удалить</button>
             <button class="btn btn-success" (click)="save()"

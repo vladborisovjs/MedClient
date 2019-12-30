@@ -50,6 +50,7 @@ export class SocketTopicsService {
   aviationRequestSub: Subject<any> = new Subject();
   incomingUkioSub: Subject<any> = new Subject();
   updateUkioSub: Subject<any> = new Subject();
+  brigadeOverdueSub: Subject<any> = new Subject();
 
   socketTopics: ISocketTopic[] = [
     {
@@ -114,6 +115,12 @@ export class SocketTopicsService {
       destination: '/ukio/update/endpoint',
       messageAction: (message: IMessage) => {
         this.updateUkioSub.next(JSON.parse(message.body));
+      },
+    },
+    {
+      destination: '/brigade/overdue/endpoint/',
+      messageAction: (message: IMessage) => {
+        this.brigadeOverdueSub.next(JSON.parse(message.body));
       },
     },
   ];
@@ -192,7 +199,7 @@ export class SocketTopicsService {
       this.aviationRequestSub.pipe(filter(() => this.showSocketModals)).subscribe(
         ar => {
           if (this.access.checkAccessForRoles([_Roles.TCMK_DISPATCHER])) {
-            const inreq = this.modal.open(ModalIncomingAviationComponent);
+            const inreq = this.modal.open(ModalIncomingAviationComponent, {backdrop: "static"});
             inreq.result.then(
               res => {
                 if (res) {
@@ -209,7 +216,7 @@ export class SocketTopicsService {
           if (!this.user.mePerformer.callOperatorInfoBean) {
             console.log('net telephona');
           } else if (!ukio.transferCall) {
-            const ukioModal = this.modal.open(ModalUkioIncomingComponent);
+            const ukioModal = this.modal.open(ModalUkioIncomingComponent, {backdrop: "static"});
             ukioModal.componentInstance.ukioItem = ukio;
             ukioModal.result.then(
               res => {
@@ -220,6 +227,18 @@ export class SocketTopicsService {
               er => {
               }
             )
+          }
+        }
+      ),
+      this.brigadeOverdueSub.pipe(filter(() => this.showSocketModals)).subscribe(
+        (overdue: number[]) => {
+          console.log(overdue);
+          if (
+            this.access.checkAccessForRoles([_Roles.TCMK_DISPATCHER, _Roles.DISTRICT_ADMIN, _Roles.DIRECTION_DISPATCHER]) &&
+            overdue.some( s => s === this.user.mePerformer.performer.subdivisionFK.id) &&
+            this.user.mePerformer.performer.subdivisionFK.id !== 1
+          ){
+            this.ns.warn( '','У бригады закончилась смена! Уведите бригаду с линии!');
           }
         }
       )

@@ -9,14 +9,14 @@
   </div>
   <div class="p-2 header-wrapper">
     <div class="">
-      <app-simple-view
-        [descriptions]="description"
-        [form]="formDrugs"
-        [row]="true"
-      ></app-simple-view>
+      <!--<app-simple-view-->
+        <!--[descriptions]="description"-->
+        <!--[form]="formDrugs"-->
+        <!--[row]="true"-->
+      <!--&gt;</app-simple-view>-->
     </div>
     <div class="control-wrapper">
-      <button class="btn btn-sm btn-success mr-2" [disabled]="addCountItem <= 0" (click)="addItemFromTable()">
+      <button class="btn btn-sm btn-success mr-2" [disabled]="!addCountItem || addCountItem < 0 || !selectedItem" (click)="addItemFromTable()">
         Добавить
       </button>
       <input

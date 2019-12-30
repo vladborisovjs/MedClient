@@ -302,7 +302,11 @@ export class NewCallComponent implements OnInit, OnDestroy {
       }
     },
   ];
-  callItem: CallContainer =  CallContainer.fromJS({call: {id: 0, patientList: [], subdivisionFK: this.user.mePerformer.performer.subdivisionFK}});
+  callItem: CallContainer =  CallContainer.fromJS({call: {id: 0,
+      patientList: [],
+      subdivisionFK: this.user.mePerformer.performer.subdivisionFK,
+      emergencySituation: 0
+  }});
   patients: {item: PatientTemplateBean, form: FormGroup, subscription: Subscription}[] = [];
   sbscs: Subscription[] = [];
   filterRepeatedCalls = {

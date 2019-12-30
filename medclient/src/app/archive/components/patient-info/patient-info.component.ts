@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
+import {
+  ISimpleDescription,
+  SimpleDescriptionService
+} from '../../../shared/simple-control/services/simple-description.service';
 import {NotificationsService} from 'angular2-notifications';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormGroup} from '@angular/forms';
@@ -55,34 +58,33 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
         block: 'patient-info'
       }
     },
-
-    {
-      label: 'Лет',
-      key: 'ageYears',
-      type: 'number',
-      styleClass: 'col-4',
-      additional: {
-        block: 'patient-info'
-      }
-    },
-    {
-      label: 'Месяцев',
-      key: 'ageMonths',
-      type: 'number',
-      styleClass: 'col-4',
-      additional: {
-        block: 'patient-info'
-      }
-    },
-    {
-      label: 'Дней',
-      key: 'ageDays',
-      type: 'number',
-      styleClass: 'col-4',
-      additional: {
-        block: 'patient-info'
-      }
-    },
+    // {
+    //   label: 'Лет',
+    //   key: 'ageYears',
+    //   type: 'number',
+    //   styleClass: 'col-4',
+    //   additional: {
+    //     block: 'patient-info'
+    //   }
+    // },
+    // {
+    //   label: 'Месяцев',
+    //   key: 'ageMonths',
+    //   type: 'number',
+    //   styleClass: 'col-4',
+    //   additional: {
+    //     block: 'patient-info'
+    //   }
+    // },
+    // {
+    //   label: 'Дней',
+    //   key: 'ageDays',
+    //   type: 'number',
+    //   styleClass: 'col-4',
+    //   additional: {
+    //     block: 'patient-info'
+    //   }
+    // },
     {
       label: 'Пол',
       key: 'gender',
@@ -139,7 +141,7 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     //   }
     // },
     {
-      label: 'тип',
+      label: 'Тип',
       key: 'typeFK',
       type: 'dict',
       dict: 'getDocumentTypeListUsingGET',
@@ -154,7 +156,7 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
       type: 'number',
       pattern: '^[0-9]*',
       errorText: 'Поле не может быть отрицательным',
-      styleClass: 'col-6',
+      styleClass: 'col-5',
       additional: {
         block: 'documents'
       }
@@ -165,7 +167,7 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
       type: 'number',
       pattern: '^[0-9]*',
       errorText: 'Поле не может быть отрицательным',
-      styleClass: 'col-6',
+      styleClass: 'col-7',
       additional: {
         block: 'documents'
       }
@@ -221,7 +223,9 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     },
     {
       headerName: 'Исполнитель',
-      valueGetter: params => params.data.performerFK.surname + ' ' + params.data.performerFK.name + ' ' + params.data.performerFK.patronymic,
+      valueGetter: params => params.data.performerFK.surname + ' ' +
+        params.data.performerFK.name + ' ' +
+        params.data.performerFK.patronymic,
       sortable: true,
       filter: true,
       width: 120,
@@ -230,15 +234,15 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
       headerName: 'Статус',
       valueGetter: params => {
         if (params.data.cardStatus === 1) {
-          return 'Проверена'
-        } else if( params.data.cardStatus === 2) {
+          return 'Проверена';
+        } else if (params.data.cardStatus === 2) {
           return 'Готова к отправке в ЕГИСЗ';
         } else if (params.data.cardStatus === 4) {
-          return 'Отправлено в ЕГИСЗ'
+          return 'Отправлено в ЕГИСЗ';
         } else if (params.data.cardStatus === 0) {
-          return 'Создана'
+          return 'Создана';
         } else {
-          return 'Статус не установлен'
+          return 'Статус не установлен';
         }
       },
       sortable: true,
@@ -255,13 +259,15 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
 
   ];
   docForms: IDocForm[] = [];
-  filters = <any>{};
+  filters: any = {};
   dataSourceCards: IGridTableDataSource;
+
   constructor(private route: ActivatedRoute, private router: Router,
               private arch: ArchiveService,
               private ns: NotificationsService,
               private cmodal: CustomModalService,
-              private sds: SimpleDescriptionService) { }
+              private sds: SimpleDescriptionService) {
+  }
 
   ngOnInit() {
     this.formCard = this.sds.makeForm(this.getBlockDescriptions('patient-additional'));
@@ -277,10 +283,10 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
           console.log(data.patItem);
         }
       ),
-      );
-      this.formPatient.valueChanges.subscribe(ch => Object.assign(this.patItem, ch));
-      this.updateDataSource();
-      this.resetDocForms();
+    );
+    this.formPatient.valueChanges.subscribe(ch => Object.assign(this.patItem, ch));
+    this.updateDataSource();
+    this.resetDocForms();
   }
 
   updateDataSource() {
@@ -290,6 +296,7 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
       }
     };
   }
+
   getBlockDescriptions(block: string): ISimpleDescription[] {
     return this.descriptionPatient.filter(el => {
       if (el.additional) {
@@ -304,8 +311,8 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     this.docForms = [];
     this.patItem.documentList.forEach(
       doc => {
-        if (!doc.isDeleted){
-          let form = this.sds.makeForm(this.getBlockDescriptions('documents'));
+        if (!doc.isDeleted) {
+          const form = this.sds.makeForm(this.getBlockDescriptions('documents'));
           let subscription: Subscription;
           form.reset(doc);
           subscription = form.valueChanges.subscribe(ch => {
@@ -318,8 +325,8 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
   }
 
   addDocument() {
-    let doc = DocumentBean.fromJS({id: 0, isDeleted: false, patient: this.patItem.id});
-    let form = this.sds.makeForm(this.getBlockDescriptions('documents'));
+    const doc = DocumentBean.fromJS({id: 0, isDeleted: false, patient: this.patItem.id});
+    const form = this.sds.makeForm(this.getBlockDescriptions('documents'));
     let subscription: Subscription;
     form.reset(doc);
     subscription = form.valueChanges.subscribe(ch => {
@@ -333,10 +340,11 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
   deleteDocument(doc: IDocForm, i: number) {
     this.cmodal.confirm('Удаление пациента', 'Вы уверены, что хотите удалить пациента' + '?').then(
       res => {
-        doc.document.isDeleted = true;
-        this.resetDocForms();
-      },
-      () => {
+        if (res) {
+          doc.document.isDeleted = true;
+          this.resetDocForms();
+        }
+      }, () => {
       }
     );
   }
@@ -353,12 +361,12 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     console.log(this.patItem);
     this.arch.savePatient(this.patItem).subscribe(
       pat => {
-        this.ns.success('Успешно' , `Пациент № ${pat.id} сохранен`)
+        this.ns.success('Успешно', `Пациент № ${pat.id} сохранен`);
       },
       error1 => {
-        this.ns.error('Ошибка!', 'Пациент созранен')
+        this.ns.error('Ошибка!', 'Пациент созранен');
       }
-    )
+    );
   }
 
   goToCard(card) {
@@ -370,6 +378,6 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.sbscs.forEach( el => el.unsubscribe());
+    this.sbscs.forEach(el => el.unsubscribe());
   }
 }

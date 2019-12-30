@@ -72,7 +72,7 @@ export class CallItemBrigadesComponent implements OnInit, OnDestroy {
   }
 
   openBri110(brigade) {
-    const cardsList = this.modal.open(ModalCallF110Component);
+    const cardsList = this.modal.open(ModalCallF110Component, {size: 'lg'});
     cardsList.componentInstance.brigade = brigade;
     cardsList.componentInstance.callId = this.callContainer.call.id;
     cardsList.result.then(

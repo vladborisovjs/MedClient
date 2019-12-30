@@ -2,46 +2,118 @@
   <div class="card-header center-me">
     <h3>Карта</h3>
   </div>
-  <div class="flexible h-100 w-100" resizable="horizontal" (onResize)="resizeMap()" saveName="big-map">
+  <div class="flexible w-100 h-25" resizable="horizontal" (onResize)="resizeMap()" saveName="big-map">
     <div class="map-wrapper" leftResizable>
       <app-med-map (onMapReady)="initMapPoint()" (onClick)="mapClick($event)"></app-med-map>
     </div>
     <div class="vertical-resizer" resizer="2px"></div>
     <div class="toolbar-wrapper" rightResizable fixed="300px">
-      <div class="h-100 w-100 default-bg scrollable">
+      <div class="w-100 default-bg scrollable">
         <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-1">
           <ngb-panel title="Легенда">
             <ng-template ngbPanelContent>
               <div>
-                <img class="legend-icon" src="assets/icons/hospital.svg" alt="Подразделения"> - Подразделения
+                <img class="legend-icon p-1" src="assets/icons/hospital.svg" alt="Подразделения"> - Подразделения
               </div>
               <div>
-                <img class="legend-icon" src="assets/icons/ambulance-top.png" alt="Транспорт"> - Транспорт
+                <img class="legend-icon p-1" src="assets/icons/ambulance-top.png" alt="Транспорт"> - Транспорт
               </div>
-              <div><img class="legend-icon" src="assets/icons/phone-on-circle.png" alt="Вызовы"> - Вызовы</div>
+              <div><img class="legend-icon p-1" src="assets/icons/phone-on-circle.png" alt="Вызовы"> - Вызовы</div>
             </ng-template>
           </ngb-panel>
           <ngb-panel>
             <ng-template ngbPanelTitle>
-              <span>Бригады</span>
+              <span>Бригады </span>
+              <span *ngIf="transportMonitoringList && transportMonitoringList.length !== 0"
+                    class="badge badge-pill badge-primary">
+                {{transportMonitoringList.length ? transportMonitoringList.length : ''}}
+                <i *ngIf="!transportMonitoringList" class="fas fa-spin fa-spinner"></i>
+              </span>
             </ng-template>
             <ng-template ngbPanelContent>
               <i *ngIf="!transportMonitoringList" class="fas fa-spin fa-spinner"></i>
-                <ng-container *ngIf="transportMonitoringList">
-                  <div *ngFor="let transport of transportMonitoringList" class="mb-3">
-                    <b>Бригада:</b> {{transport.brigadeContainer.brigade.name}} <br>
-                    <b>Статус:</b> {{transport.brigadeContainer.brigade.brigadeStatusFK.name}}<br>
-                    <b>Транспорт:</b> {{transport.brigadeContainer.transportBean.name}}<br>
-                    <button *ngIf="transport.transportMonitoringBean" class="btn btn-info" (click)="showOnMap(transport.transportMonitoringBean.location)">Показать на карте</button>
-                    <div *ngIf="!transport.transportMonitoringBean" class="alert alert-warning">
-                      Отсутствуют данные мониторинга
+              <ng-container *ngIf="transportMonitoringList">
+                <div *ngFor="let transport of transportMonitoringList" class="mb-3">
+                  <div class="bri-item">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="flexible justify-content-between">
+                          <b class="mb-3">{{transport.brigadeContainer.brigade.name}}</b>
+                          <button ngbTooltip="Показать на карте" placement="left"
+                                  *ngIf="transport.transportMonitoringBean"
+                                  class="btn btn-outline-primary mb-1"
+                                  (click)="showOnMap(transport.transportMonitoringBean.location)">
+                            <i class="fas fa-lg fa-map-marked-alt"></i>
+                          </button>
+                          <i *ngIf="!transport.transportMonitoringBean"
+                             ngbTooltip="Отсутствуют данные мониторинга"
+                             class="fas fa-lg fa-warn fa-exclamation-triangle">
+                          </i>
+                        </div>
+                        <div class="lb pl-2">
+                          <p><span
+                            class="card-label">Тип: </span>{{transport.brigadeContainer.brigade.brigadeTypeFK.name}}</p>
+                          <p>
+                            <span
+                              class="card-label">Статус: </span>{{transport.brigadeContainer.brigade.brigadeStatusFK
+                            ? transport.brigadeContainer.brigade.brigadeStatusFK.name : '-'}}
+                          </p>
+                          <p><span
+                            class="card-label">Транспорт: </span>{{transport.brigadeContainer.transportBean.name}}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </ng-container>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!transportMonitoringList.length">
+                Данные отсутствуют
+              </ng-container>
+            </ng-template>
+          </ngb-panel>
+          <ngb-panel>
+            <ng-template ngbPanelTitle>
+              <span>Вызовы </span>
+              <span *ngIf="callsMonitoringList && callsMonitoringList.length !== 0"
+                    class="badge badge-pill badge-primary">{{callsMonitoringList.length ? callsMonitoringList.length : ''}}
+                <i *ngIf="!callsMonitoringList" class="fas fa-spin fa-spinner"></i>
+              </span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <i *ngIf="!callsMonitoringList" class="fas fa-spin fa-spinner"></i>
+              <ng-container *ngIf="callsMonitoringList.length">
+                <div *ngFor="let call of callsMonitoringList" class="mb-3">
+                  <div class="bri-item">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="flexible justify-content-between">
+                          <b class="">{{call.number}}</b>
+                          <button ngbTooltip="Показать на карте" placement="left"
+                                  *ngIf="call.location"
+                                  class="btn btn-outline-primary mb-1"
+                                  (click)="showOnMap(call.location)">
+                            <i class="fas fa-lg fa-map-marked-alt"></i>
+                          </button>
+                          <i *ngIf="!call.location"
+                             ngbTooltip="Отсутствуют данные мониторинга"
+                             class="fas fa-lg fa-warn fa-exclamation-triangle">
+                          </i>
+                        </div>
+                        <div class="lb pl-2">
+                          <p>{{call.reasonFK?.reason ? call.reasonFK?.reason : '-'}}</p>
+                          <p class="text-right"><em>{{call.date | date: "dd.MM.yyyy HH:mm"}}</em></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!callsMonitoringList.length">
+                Данные отсутствуют
+              </ng-container>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
-
       </div>
     </div>
   </div>

@@ -1,5 +1,17 @@
-<app-grid-table
-  [dataSource]="source"
-  [columnDefs]="colDef" >
+<div class="card h-100">
+  <div class="card-header">
+    <app-simple-view
+      [form]="form"
+      [descriptions]="description"
+      [item]="filter"
+      [row]="true"
+      [preprocessed]="true"
+    ></app-simple-view>
+  </div>
+  <app-grid-table
+    [dataSource]="source"
+    [filter]="filter"
+    [columnDefs]="colDef" >
+  </app-grid-table>
+</div>
 
-</app-grid-table>

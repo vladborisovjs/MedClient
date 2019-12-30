@@ -1,75 +1,106 @@
 <div class="card h-100">
-  <div class="card-header flexible justify-content-around">
-    <h3>Ведение НСИ</h3>
+  <div class="card-header row no-gutters">
+    <div class="flexible justify-content-start col-4">
+      <app-simple-view [form]="filtersForm"
+                       [descriptions]="description"
+                       styleClass="dict-filter-form"
+                       [preprocessed]="true">
+      </app-simple-view>
+      <div class="btn-group">
+        <button type="button" (click)="clearFilters()" class="btn btn-outline-warning btn-wide"
+                placement="left" ngbTooltip="Очистить фильтры"><i class="fa fa-eraser"></i>
+        </button>
+      </div>
+    </div>
+    <div class="col-4 flexible justify-content-center">
+      <h3>Ведение НСИ</h3>
+    </div>
+    <div class="col-4"></div>
   </div>
   <div class="card-body dict-list default-bg">
-    <div class="row d-flex">
-      <div class="card flex-fill align-self-start mr-2">
-        <div class="card-header">
-          <div class="card-title">Общие</div>
-        </div>
-        <div class="card-body dict-list-container">
-          <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of commonList | orderBy: 'title'">
-              <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
-            </li>
-          </ul>
+    <div class="row d-flex no-gutters"
+         *ngIf="commonList.length || brigadesList.length || callsList.length || drugStoreList2.length || objectivesList.length"
+    >
+      <div class="flex-fill align-self-start pr-2 col-4">
+        <div class="card" *ngIf="commonList.length">
+          <div class="card-header">
+            <div class="card-title">Общие</div>
+          </div>
+          <div class="card-body dict-list-container">
+            <ul class="nav flex-column full-height">
+              <li class="nav-item" *ngFor="let el of commonList | orderBy: 'title'">
+                <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="card flex-fill align-self-start mr-2">
-        <div class="card-header">
-          <div class="card-title">Бригады</div>
+      <div class="flex-fill align-self-start pr-2 col-4">
+        <div class="card" *ngIf="brigadesList.length">
+          <div class="card-header">
+            <div class="card-title">Бригады</div>
+          </div>
+          <div class="card-body dict-list-container">
+            <ul class="nav flex-column full-height">
+              <li class="nav-item" *ngFor="let el of brigadesList | orderBy: 'title'">
+                <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="card-body dict-list-container">
-          <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of brigadesList | orderBy: 'title'">
-              <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
-            </li>
-          </ul>
-        </div>
-        <div class="card-header">
-          <div class="card-title">Вызовы</div>
-        </div>
-        <div class="card-body dict-list-container">
-          <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of callsList | orderBy: 'title'">
-              <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
-            </li>
-          </ul>
+        <div class="card" *ngIf="callsList.length">
+          <div class="card-header">
+            <div class="card-title">Вызовы</div>
+          </div>
+          <div class="card-body dict-list-container">
+            <ul class="nav flex-column full-height">
+              <li class="nav-item" *ngFor="let el of callsList | orderBy: 'title'">
+                <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
+              </li>
+            </ul>
+          </div>
         </div>
         <!--<div class="card-header">-->
-          <!--<div class="card-title">Аптека</div>-->
+        <!--<div class="card-title">Аптека</div>-->
         <!--</div>-->
         <!--<div class="card-body dict-list-container">-->
-          <!--<ul class="nav flex-column full-height">-->
-            <!--<li class="nav-item" *ngFor="let el of drugStoreList">-->
-              <!--<a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>-->
-            <!--</li>-->
-          <!--</ul>-->
+        <!--<ul class="nav flex-column full-height">-->
+        <!--<li class="nav-item" *ngFor="let el of drugStoreList">-->
+        <!--<a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>-->
+        <!--</li>-->
+        <!--</ul>-->
         <!--</div>-->
-        <div class="card-header">
-          <div class="card-title">Аптека</div>
-        </div>
-        <div class="card-body dict-list-container">
-          <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of drugStoreList2 | orderBy: 'title'">
-              <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="card flex-fill">
-        <div class="card-header">
-          <div class="card-title">Объективные данные</div>
-        </div>
-        <div class="card-body dict-list-container">
-          <ul class="nav flex-column full-height">
-            <li class="nav-item" *ngFor="let el of objectivesList | orderBy: 'title'">
-              <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
-            </li>
-          </ul>
+        <div class="card" *ngIf="drugStoreList2.length">
+          <div class="card-header">
+            <div class="card-title">Аптека</div>
+          </div>
+          <div class="card-body dict-list-container">
+            <ul class="nav flex-column full-height">
+              <li class="nav-item" *ngFor="let el of drugStoreList2 | orderBy: 'title'">
+                <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+      <div class="flex-fill col-4">
+        <div class="card" *ngIf="objectivesList.length">
+          <div class="card-header">
+            <div class="card-title">Объективные данные</div>
+          </div>
+          <div class="card-body dict-list-container">
+            <ul class="nav flex-column full-height">
+              <li class="nav-item" *ngFor="let el of objectivesList | orderBy: 'title'">
+                <a class="nav-link" routerLinkActive="active" [routerLink]="el.name">{{el.title}}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center align-content-center w-100 h-100"
+         *ngIf="!(commonList.length || brigadesList.length || callsList.length || drugStoreList2.length || objectivesList.length)">
+      Нет записей для отображения
     </div>
   </div>
 </div>

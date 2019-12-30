@@ -1,14 +1,17 @@
 <div class="card full-height">
   <div class="card-header toolbar">
     <div class="toolbar-left filter-wrapper">
-      <button *ngIf="dict.type === 'list'" class="btn btn-primary" (click)="showDelete()">Показать {{showDeleted? 'активные':'удаленные'}}</button>
-      <button *ngIf="dict.type === 'tree'" class="btn btn-primary" (click)="showFullTree()">Показать {{showDeleted? 'активные':'все'}}</button>
+      <button *ngIf="dict.type === 'list'" class="btn btn-primary" (click)="showDelete()">
+        Показать {{showDeleted ? 'активные' : 'удаленные'}}</button>
+      <button *ngIf="dict.type === 'tree'" class="btn btn-primary" (click)="showFullTree()">
+        Показать {{showDeleted ? 'активные' : 'все'}}</button>
     </div>
     <div class="card-title">
       Справочник «{{dict.title}}»
     </div>
     <div class="toolbar-right">
-      <div class="btn-group filter-wrapper" *ngIf="access.checkAccessWrite({level: 'dictModule'})">
+      <div class="btn-group filter-wrapper"
+           *ngIf="access.checkAccessWrite({level: 'dictModule'}) || (dict.editInSubdivision && access.checkAccessForRoles([Roles.DISTRICT_ADMIN]))">
         <button class="btn btn-danger" *ngIf="selectedItem && !selectedItem.isDeleted" (click)="deleteItem()">
           <i class="fas fa-trash-alt"></i> Удалить
         </button>
@@ -23,9 +26,9 @@
   </div>
   <div class="card-header">
     <app-simple-view *ngIf="dict.filters"
-      [form]="form"
-      [row]="true"
-      [descriptions]="dict.filters"
+                     [form]="form"
+                     [row]="true"
+                     [descriptions]="dict.filters"
     ></app-simple-view>
   </div>
   <div class="card-body p-0 full-height">
@@ -49,37 +52,46 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-        <tr [ttSelectableRow]="rowNode" >
+        <tr [ttSelectableRow]="rowNode">
           <td>
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny" *ngIf="rowNode.node.children.length === 0 && rowNode.node.data.nodeCount !==0 && dict.name === 'mkb10'">
+            <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny"
+                    *ngIf="rowNode.node.children.length === 0 &&
+                    rowNode.node.data.nodeCount !==0 &&
+                    !rowNode.node.data.reason && dict.type === 'tree'">
               <i class="fas fa-chevron-right"></i>
             </button>
-            <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny" *ngIf="rowNode.node.children.length === 0 && !rowNode.node.data.reason && dict.name === 'inquirer'">
-              <i class="fas fa-chevron-right"></i>
-            </button>
+            <!--            <button (click)="goToNextLevel(rowNode)" class="btn btn-outline-dark btn-dark border-0 btn-tiny" *ngIf="rowNode.node.children.length === 0 && !rowNode.node.data.reason && dict.name === 'inquirer'">-->
+            <!--              <i class="fas fa-chevron-right"></i>-->
+            <!--            </button>-->
             <a *ngIf="rowData.name ? rowData.name : rowData.shortName" [routerLink]="rowData.id">
-              {{rowData.code ? '(' + rowData.code + ') - ' : ''}} {{rowData.shortName? rowData.shortName : rowData.name ? rowData.name : 'Нет имени'}}
+              {{rowData.code ? '(' + rowData.code + ') - ' : ''}} {{rowData.shortName ? rowData.shortName : rowData.name ? rowData.name : 'Нет имени'}}
             </a>
 
             <a *ngIf="rowData.query" [routerLink]="rowData.id">
               {{rowData.query + '? : ' + rowData.answer}}
             </a>
           </td>
-          <td *ngIf="dict.name === 'inquirer'">
+          <!-- колонка для отображения причины-->
+          <td *ngIf="dict.type === 'tree'">
             <span *ngIf="rowNode.node.children.length === 0"><b>{{rowData.reason}}</b></span>
           </td>
+          <!-- колонка редактирования дерева -->
           <td>
             <div class="btn-group to-right-side">
-              <button *ngIf="!rowData.isDeleted && rowNode.node.children.length !== 0 && dict.name === 'inquirer'" class="btn btn-tiny btn-outline-success border-0"
+              <button *ngIf="!rowData.isDeleted && rowNode.node.children.length !== 0 && dict.type === 'tree' && !dict.readOnly"
+                      class="btn btn-tiny btn-outline-success border-0"
                       (click)="createItem(rowData.id)">
                 <i class="fas fa-plus"></i>
               </button>
-              <button *ngIf="!rowData.isDeleted && rowData.subdivisionTypeCode !=='POINT' && dict.name === 'subdivisions'" class="btn btn-tiny btn-outline-success border-0"
-                      (click)="createItem(rowData.id)">
+              <button
+                *ngIf="!rowData.isDeleted && rowData.subdivisionTypeCode !=='POINT' && dict.name === 'subdivisions'"
+                class="btn btn-tiny btn-outline-success border-0"
+                (click)="createItem(rowData.id)">
                 <i class="fas fa-plus"></i>
               </button>
-              <button *ngIf="!rowData.isDeleted && dict.name !== 'mkb10'" class="btn btn-tiny btn-outline-danger border-0"
+              <button *ngIf="!rowData.isDeleted && !dict.readOnly"
+                      class="btn btn-tiny btn-outline-danger border-0"
                       (click)="deleteItemTree(rowData)">
                 <i class="fas fa-minus"></i>
               </button>
@@ -92,10 +104,10 @@
         </tr>
       </ng-template>
     </p-treeTable>
-    <div *ngIf="dict.type === 'tree' && loading" class="patch" >
+    <div *ngIf="dict.type === 'tree' && loading" class="patch">
       <h2>Загрузка... <i class="fa fa-cog fa-spin" spin="true"></i></h2>
     </div>
-    <div *ngIf="tree && !tree[0]?.children?.length && !loading" class="patch" >
+    <div *ngIf="tree && !tree[0]?.children?.length && !loading" class="patch">
       <h2>Ничего не найдено</h2>
     </div>
   </div>

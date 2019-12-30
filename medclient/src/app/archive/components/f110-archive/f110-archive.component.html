@@ -5,13 +5,15 @@
       Поиск карты по форме 110/у
     </h5>
     <div class="toolbar-right">
-      <button class="btn btn-primary mr-1" [disabled]="!egisz.length" (click)="sendEGISZ()">ЕГИСЗ
+      <button class="btn btn-primary mr-1"
+              *ngIf="access.checkAccessForRoles([Roles.SUBDIVISION_HEAD, Roles.ADMIN, Roles.TCMK_HEAD, Roles.DISTRICT_ADMIN])"
+              [disabled]="!egisz.length" (click)="sendEGISZ()">ЕГИСЗ
         <i class="fas fa-arrow-up" *ngIf="!sending"></i>
         <i class="fas fa-cog fa-spin" *ngIf="sending"></i>
       </button>
     </div>
   </div>
-    <div class="flexible full-height" resizable="horizontal" saveName="cards-archive">
+  <div class="flexible full-height" resizable="horizontal" saveName="cards-archive">
     <div class="card filter-cards-block" leftResizable fixed="400">
       <div class="scrollable full-height">
         <div class="card">
@@ -30,48 +32,50 @@
             </app-simple-view>
           </div>
         </div>
-          <div class="card-header">
-            <div class="card-subtitle">
-              Пациент
-            </div>
+        <div class="card-header">
+          <div class="card-subtitle">
+            Пациент
           </div>
-          <div class="card-body p-1">
-            <app-simple-view
-              [descriptions]="getBlockDescriptions('patient')"
-              [preprocessed]="true"
-              [form]="form"
-              [row]="true"
-              [item]="filters">
-            </app-simple-view>
-          </div>
-          <!--<div class="card-header">-->
-            <!--<div class="card-subtitle">-->
-              <!--Адрес вызова-->
-            <!--</div>-->
-          <!--</div>-->
-          <!--<div class="card-body p-1">-->
-            <!--<app-simple-view-->
-              <!--[descriptions]="getBlockDescriptions('address')"-->
-              <!--[preprocessed]="true"-->
-              <!--[form]="form"-->
-              <!--[row]="true"-->
-              <!--[item]="filters">-->
-            <!--</app-simple-view>-->
-          <!--</div>-->
-          <!--<div class="card-header">-->
-            <!--<div class="card-subtitle">-->
-              <!--Заявитель-->
-            <!--</div>-->
-          <!--</div>-->
-          <!--<div class="card-body p-1">-->
-            <!--<app-simple-view-->
-              <!--[descriptions]="getBlockDescriptions('declarant')"-->
-              <!--[preprocessed]="true"-->
-              <!--[form]="form"-->
-              <!--[row]="true"-->
-              <!--[item]="filters">-->
-            <!--</app-simple-view>-->
-          <!--</div>-->
+        </div>
+        <div class="card-body p-1">
+          <app-simple-view
+            [descriptions]="getBlockDescriptions('patient')"
+            [preprocessed]="true"
+            [form]="form"
+            [row]="true"
+            [item]="filters">
+          </app-simple-view>
+        </div>
+        <!--<div class="card-header">-->
+        <!--<div class="card-subtitle">-->
+        <!--Адрес вызова-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="card-body p-1">-->
+        <!--<app-simple-view-->
+        <!--[descriptions]="getBlockDescriptions('address')"-->
+        <!--[preprocessed]="true"-->
+        <!--[form]="form"-->
+        <!--[row]="true"-->
+        <!--[item]="filters">-->
+        <!--</app-simple-view>-->
+        <!--</div>-->
+        <!--<div class="card-header">-->
+        <!--<div class="card-subtitle">-->
+        <!--Заявитель-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="card-body p-1">-->
+        <!--<app-simple-view-->
+        <!--[descriptions]="getBlockDescriptions('declarant')"-->
+        <!--[preprocessed]="true"-->
+        <!--[form]="form"-->
+        <!--[row]="true"-->
+        <!--[item]="filters">-->
+        <!--</app-simple-view>-->
+        <!--</div>-->
+      </div>
+      <div class="card-footer">
         <div class="btn-group w-100 p-1">
           <button class="btn btn-success" [disabled]="loading || form.invalid" (click)="searchCards()">
             <i class="fas fa-search" *ngIf="!loading"></i>

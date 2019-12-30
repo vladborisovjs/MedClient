@@ -37,11 +37,11 @@ export class AviaRequetsComponent implements OnInit {
     {
       headerName: 'Тип',
       field: 'isInterHospital',
-      cellRenderer: (data) => {
+      valueFormatter: (data) => {
         if (data.value){
-          return '<i class="fas fa-hospital"></i><i class="fas fa-long-arrow-alt-right"></i><i class="fas fa-hospital"></i>';
+          return 'Мед. эвакуация';
         } else {
-          return '<i class="fas fa-map-marker-alt"></i><i class="fas fa-long-arrow-alt-right"></i><i class="fas fa-hospital"></i>';
+          return 'Транспортировка';
         }
       }
     },

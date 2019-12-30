@@ -1,15 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ColDef, GridApi} from 'ag-grid-community';
+import {ColDef} from 'ag-grid-community';
 import {IGridTableDataSource} from '../../../shared/grid-table/components/grid-table/grid-table.component';
 import {AdminUsersService} from '../services/admin-users.service';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import {PerformerBean} from '../../../../../swagger/med-api.service';
 import {UserService} from '../../../services/user.service';
 import {RoleAccessService} from "../../../services/role-access.service";
-import {MedUtilitesService} from "../../../services/med-utilites.service";
 
 @Component({
   selector: 'app-admin-users-list',
@@ -82,18 +81,24 @@ export class AdminUsersListComponent implements OnInit, OnDestroy {
   descriptions: ISimpleDescription[] = [
     {
       key: 'surname',
-      label: 'Фамилия',
+      placeholder: 'Фамилия',
       type: 'text',
-      styleClass: 'col-3'
+      styleClass: 'col-2'
     },
     {
       key: 'name',
-      label: 'Имя',
+      placeholder: 'Имя',
       type: 'text',
-      styleClass: 'col-3'
+      styleClass: 'col-2'
     },
     {
-      label: 'Район:',
+      key: 'login',
+      placeholder: 'Логин',
+      type: 'text',
+      styleClass: 'col-2'
+    },
+    {
+      placeholder: 'Район',
       key: 'subdivisionFK',
       type: 'dict',
       dict: 'getDistrictListUsingGET',
@@ -101,11 +106,18 @@ export class AdminUsersListComponent implements OnInit, OnDestroy {
       shortDict: true,
       dictFilters: {rootId: [this.user.mePerformer.performer.subdivisionFK.id]},
       dictFiltersOrder: ['rootId'],
-      styleClass: 'col-6',
+      styleClass: 'col-4',
       additional: {
         block: 'general'
       }
     },
+    {
+      key: 'deleted',
+      label: 'Удаленные',
+      type: 'checkbox',
+      styleClass: 'col-2'
+    },
+
   ];
   form: FormGroup;
   sbscs: Subscription[] = [];
@@ -113,22 +125,13 @@ export class AdminUsersListComponent implements OnInit, OnDestroy {
   constructor(private users: AdminUsersService,
               private user: UserService,
               public access: RoleAccessService,
-              private sds: SimpleDescriptionService,
-              private utility: MedUtilitesService) {
+              private sds: SimpleDescriptionService,) {
 
   }
 
   ngOnInit() {
     this.form = this.sds.makeForm(this.descriptions);
     this.sbscs.push(
-      // this.utility.getSubdivisionFilters().subscribe(
-      //   list => {
-      //     this.subdivisionList.push(...list);
-      //     this.descriptions[2] = Object.assign({}, this.descriptions[2]);
-      //     this.descriptions = [...this.descriptions]
-      //   }
-      // ),
-
       this.form.valueChanges.pipe(debounceTime(300)).subscribe(
       f => {
         this.filters = f

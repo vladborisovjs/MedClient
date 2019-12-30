@@ -49,7 +49,7 @@ const routes: Routes = [
               title: '',
             },
             resolve: {
-              itemWithList: BrigadeEditListResolverService
+              dict: BrigadeEditListResolverService
             }
           },
           {

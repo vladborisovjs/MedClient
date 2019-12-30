@@ -30,43 +30,46 @@
       <div class="day-cell" *ngFor="let d of headerDays">{{d}}</div>
     </div>
   </div>
-  <div class="schedule-row" *ngFor="let row of shiftTable.shifts">
-    <div class="performer-cell {{row.selected? 'selected-performer' : 'not-selected-performer'}}" (click)="addForLong(row)">
-      <div>{{row.performer.surname}} {{row.performer.name}}</div>
-      <div>
-        <i *ngIf="row.performer.typeFK.groupCode === 0" class="fas fa-briefcase-medical"></i>
-        <i *ngIf="row.performer.typeFK.groupCode === 1" class="fas fa-car"></i>
-        <i *ngIf="row.performer.typeFK.groupCode === 2" class="fas fa-phone-alt"></i>
-      </div>
-    </div>
-    <div class="day-row">
-      <div
-        *ngFor="let day of row.days; let i = index;"
-        class="cell-wrapper"
-        (click)="openShiftList(day, row.performer, i)">
-        <ng-template #popHoverTitle>{{row.performer.name}} {{row.performer.surname}} - {{row.performer.typeFK.name}}
-        </ng-template>
-        <ng-template #popHoverContent>
-          <p *ngFor="let shift of day.shifts">
-            <b>C:</b> {{shift.dateFrom | date: 'dd.MM HH:mm'}}
-            <b>до:</b> {{shift.dateTo | date: 'dd.MM HH:mm'}}
-            <b>({{shift.scheduleTypeFK && shift.scheduleTypeFK.name ?  shift.scheduleTypeFK.name  : 'б/г' }})</b>
-          </p>
-        </ng-template>
-        <div *ngIf="day"
-             class="day-cell filled-cell"
-             [ngbPopover]="popHoverContent"
-             [popoverTitle]="popHoverTitle"
-             triggers="mouseenter:mouseleave"
-             placement="bottom">
-          <div *ngFor="let dis of day.display" class="shift" [style]="makeShiftStyle(dis)"></div>
-        </div>
-        <div *ngIf="!day" class="empty-cell center-me">
-          <b>{{i + 1}}</b>
+  <virtual-scroller #scroll [items]="shiftTable.shifts" (vsChange)="vScrollPageInfo = $event">
+    <div class="schedule-row" *ngFor="let row of scroll.viewPortItems; let i = index;">
+      <div class="performer-cell {{row.selected? 'selected-performer' : 'not-selected-performer'}}" (click)="addForLong(row)">
+        <div>{{i+vScrollPageInfo.startIndex+1}}. {{row.performer.surname}} {{row.performer.name}}</div>
+        <div>
+          <i *ngIf="row.performer.typeFK.groupCode === 0" class="fas fa-briefcase-medical"></i>
+          <i *ngIf="row.performer.typeFK.groupCode === 1" class="fas fa-car"></i>
+          <i *ngIf="row.performer.typeFK.groupCode === 2" class="fas fa-phone-alt"></i>
         </div>
       </div>
+      <div class="day-row">
+        <div
+          *ngFor="let day of row.days; let i = index;"
+          class="cell-wrapper"
+          (click)="openShiftList(day, row.performer, i)">
+          <ng-template #popHoverTitle>{{row.performer.name}} {{row.performer.surname}} - {{row.performer.typeFK.name}}
+          </ng-template>
+          <ng-template #popHoverContent>
+            <p *ngFor="let shift of day.shifts">
+              <b>C:</b> {{shift.dateFrom | date: 'dd.MM HH:mm'}}
+              <b>до:</b> {{shift.dateTo | date: 'dd.MM HH:mm'}}
+              <b>({{shift.scheduleTypeFK && shift.scheduleTypeFK.name ?  shift.scheduleTypeFK.name  : 'б/г' }})</b>
+            </p>
+          </ng-template>
+          <div *ngIf="day"
+               class="day-cell filled-cell"
+               [ngbPopover]="popHoverContent"
+               [popoverTitle]="popHoverTitle"
+               triggers="mouseenter:mouseleave"
+               placement="bottom">
+            <div *ngFor="let dis of day.display" class="shift" [style]="makeShiftStyle(dis)"></div>
+          </div>
+          <div *ngIf="!day" class="empty-cell center-me">
+            <b>{{i + 1}}</b>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </virtual-scroller>
+
 </div>
 
 <div *ngIf="!shiftTable" class="patch">

@@ -9,6 +9,7 @@ import {BrigadeBean} from '../../../../../swagger/med-api.service';
 import {Subscription} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {RoleAccessService} from "../../../services/role-access.service";
+import {FullnameShorterPipe} from "../../../shared/med-pipes/pipes/fullname-shorter.pipe";
 
 @Component({
   selector: 'app-modal-call-f110',
@@ -22,27 +23,53 @@ export class ModalCallF110Component implements OnInit, OnDestroy {
     {
       headerName: '№',
       field: 'number',
-      sortable: true,
-      filter: true,
-      width: 80
-    },
-    {
-      headerName: 'Бригада',
-      field: 'brigadeFK.name',
-      sortable: true,
-      filter: true
+      width: 180,
+      sortable: false,
+      filter: false,
     },
     {
       headerName: 'Дата',
       field: 'date',
       valueFormatter: (p) => this.datePipe.transform(p.value, 'dd.MM.yyyy HH:mm'),
-      sortable: true,
-      filter: true
-    }
+      sortable: false,
+      filter: false,
+      width: 150,
+    },
+    {
+      headerName: 'Сотрудник',
+      field: 'performerFK',
+      sortable: false,
+      filter: false,
+      width: 160,
+      valueFormatter: p => this.nameShorterPipe.transform(p.value)
+    },
+    {
+      headerName: 'Бригада',
+      field: 'brigadeFK.name',
+      sortable: false,
+      filter: false,
+      width: 200,
+    },
+    {
+      headerName: 'Пациент',
+      field: 'patientFK',
+      valueFormatter: p => this.nameShorterPipe.transform(p.value),
+      width: 160,
+    },
+    {
+      headerName: 'Результат',
+      field: 'resultTypeFK.name',
+      sortable: false,
+      filter: false,
+      width: 300,
+    },
+
   ];
   listSource = [];
   sbscs: Subscription[] = [];
   datePipe = new DatePipe('ru');
+  nameShorterPipe = new FullnameShorterPipe();
+
   constructor(private router: Router,
               private route: ActivatedRoute,
               private ns: NotificationsService,

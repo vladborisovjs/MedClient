@@ -1,56 +1,61 @@
 import {Inject, Injectable} from '@angular/core';
-import {
-  API_BASE_URL,
-  CardBean,
-  CardResultBean,
-  MedApi,
-  Status
-} from '../../../../swagger/med-api.service';
+import {API_BASE_URL, CardBean, CardResultBean, MedApi, Status} from '../../../../swagger/med-api.service';
 import {BehaviorSubject} from 'rxjs';
 import {UserService} from '../../services/user.service';
 import {map, take, tap} from 'rxjs/operators';
 import {NotificationsService} from 'angular2-notifications';
 import {CallItemService} from '../../calls/services/call-item.service';
 import {TeldaNgLocksService} from "telda-ng-locks";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CustomModalService} from "../../shared/modal/services/custom-modal.service";
+import {ModalCardValidWarnComponent} from "../components/modal-card-valid-warn/modal-card-valid-warn.component";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Injectable()
 export class CardItemService {
-  isEditingSub: BehaviorSubject<'disable'|'editing'|'loading'>;
-  isEditing: 'disable'|'editing'|'loading';
+  isEditingSub: BehaviorSubject<'disable' | 'editing' | 'loading'>;
+  isEditing: 'disable' | 'editing' | 'loading';
   cardItemSub: BehaviorSubject<CardBean>;
   cardItem: CardBean;
+
   constructor(private api: MedApi, private user: UserService,
               private ns: NotificationsService,
               private cis: CallItemService,
+              private cmodal: CustomModalService,
               private locksService: TeldaNgLocksService,
+              private route: ActivatedRoute,
+              private router: Router,
               @Inject(API_BASE_URL) private apiUrl?: string) {
-    this.isEditingSub = new BehaviorSubject<'disable'|'editing'|'loading'>('disable');
+    this.isEditingSub = new BehaviorSubject<'disable' | 'editing' | 'loading'>('disable');
     this.isEditingSub.subscribe(value => this.isEditing = value);
     this.cardItemSub = new BehaviorSubject<CardBean>(null);
     this.cardItemSub.subscribe(card => this.cardItem = card);
     console.log('constr', this.cardItem);
   }
 
-  unlockCard(){
+  unlockCard() {
     if (this.isEditing === 'editing') return;
     this.isEditingSub.next('loading');
     this.locksService.startLock(this.cardItem.id).pipe(take(1)).subscribe(
       value => {
-        if (value.result.success){
+        if (value.result.success) {
           this.isEditingSub.next('editing');
         } else {
           this.isEditingSub.next('disable');
           this.ns.warn(null, `Карта редактируется пользователем ${value.result.locker}`);
         }
+      },
+      error => {
+        this.isEditingSub.next('disable');
       }
     );
   }
 
-  lockCard(){
+  lockCard() {
     if (this.isEditing === 'disable') return;
     this.isEditingSub.next('loading');
     this.locksService.unlock().pipe(take(1)).subscribe(
-      value =>  this.isEditingSub.next('disable')
+      value => this.isEditingSub.next('disable')
     );
 
   }
@@ -101,8 +106,8 @@ export class CardItemService {
             drug => {
               selectList.push({
                 id: drug.first, name: drug.first.name + ' - '
-                + drug.second + ' '
-                + (drug.first.measurementFK ? drug.first.measurementFK.name : 'ед')
+                  + drug.second + ' '
+                  + (drug.first.measurementFK ? drug.first.measurementFK.name : 'ед')
               });
             }
           );
@@ -159,14 +164,36 @@ export class CardItemService {
     );
   }
 
-  setCardStatus(status: Status){
-    return this.api.updateCardStatusUsingPOST(this.cardItem.id, status).pipe(tap(
+
+  validateCardInfo(status: Status) {
+    if (status === Status.VERIFYING || status === Status.ARCHIVED){
+      return(
+        this.cardItem &&
+        this.cardItem.patientFK &&
+        this.cardItem.patientFK.patientTypeFK &&
+        this.cardItem.patientFK.name && this.cardItem.patientFK.surname &&
+        this.cardItem.resultTypeFK &&
+        this.cardItem.cardResultBean.mainDiagnosisFK &&
+        this.cardItem.cardResultBean.complicationHelpFK
+      );
+    } else {
+      return true;
+    }
+
+  }
+
+  sendCardStatus(status: Status) {
+    this.api.updateCardStatusUsingPOST(this.cardItem.id, status).subscribe(
       status => {
         this.cardItem.cardStatus = status;
-        console.log('status', status);
         this.cardItemSub.next(this.cardItem);
+        this.ns.success('Статус карты обновлен');
+      },
+      error => {
+        console.log(error);
+        this.ns.error('Ошибка обновления статуса');
       }
-    ));
+    );
   }
 
 }

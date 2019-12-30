@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DrugstoreBagService} from '../../services/drugstore-bag.service';
-import {BagNewBean, DrugNewBean} from '../../../../../swagger/med-api.service';
+import {BagNewBean} from '../../../../../swagger/med-api.service';
 import {Subscription} from 'rxjs';
 import {ISimpleDescription, SimpleDescriptionService} from '../../../shared/simple-control/services/simple-description.service';
 import {FormGroup} from '@angular/forms';
@@ -21,20 +21,24 @@ export class DrugBagsItemComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
   descriptionBag: ISimpleDescription[] = [
     {
-      label: 'Наименование:',
+      label: 'Наименование*',
       key: 'name',
       type: 'text',
       styleClass: 'col-6',
+      required: true,
+      errorText: "Обязательное",
       additional: {
         block: 'general'
       }
     },
     {
-      label: 'Бригада',
+      label: 'Бригада*',
       key: 'brigadeBeanFK',
       type: 'dict',
       dict: 'getBrigadeListUsingGET',
       styleClass: 'col-6',
+      required: true,
+      errorText: "Обязательное",
       additional: {
         block: 'general'
       }
@@ -99,9 +103,9 @@ export class DrugBagsItemComponent implements OnInit, OnDestroy {
   ];
   selectedItem: any;
   modes = {
-    'DRUGS' : 'DRUGS',
-    'WARES' : 'WARES',
-    'OTHER' : 'OTHER'
+    DRUGS : 'DRUGS',
+    WARES : 'WARES',
+    OTHER : 'OTHER'
   };
   mode = this.modes.DRUGS;
   constructor(private ds: DrugstoreBagService,

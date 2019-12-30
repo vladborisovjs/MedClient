@@ -68,6 +68,7 @@ export class ModalAddDrugToBagComponent implements OnInit {
       width: 1000
     },
   ];
+  selectedItem: any;
   dataDrugs: IGridTableDataSource = {
     get: (filter, offset, count) => {
       return this.ds.getAllDrugs(offset, count);
@@ -107,6 +108,7 @@ export class ModalAddDrugToBagComponent implements OnInit {
 
   selectItemFromTable(e) {
     console.log(e.data);
+    this.selectedItem = e.data;
     this.addCountItem = this.addCountItem ? this.addCountItem : 1;
     if (this.mode === 'drugs') {
       this.writeOff.drugFK = e.data;

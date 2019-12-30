@@ -17,7 +17,7 @@ import {
   ISimpleDescription,
   SimpleDescriptionService
 } from '../../../shared/simple-control/services/simple-description.service';
-import {FormGroup, Validators} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {MedMapService} from '../../../shared/best-map/services/med-map.service';
 import {ModalAviationRequestComponent} from '../modal-aviation-request/modal-aviation-request.component';
 import {ModalAviaRequestInfoComponent} from '../modal-avia-request-info/modal-avia-request-info.component';
@@ -119,7 +119,6 @@ export class CallItemComponent implements OnInit, OnDestroy {
       key: 'emergencySituation',
       type: 'select',
       required: true,
-      errorText: 'Обязательное',
       selectList: [
         {name:'Нет угрозы ЧС', id:0},
         {name:'Угроза ЧС', id:1},
@@ -369,23 +368,6 @@ export class CallItemComponent implements OnInit, OnDestroy {
       )
     );
     this.form = this.sds.makeForm(this.description);
-    this.form.controls['typeFK'].valueChanges.subscribe( // Для отказа вызова
-      el => {
-        if (el.code === 'REJECT_CALL') {
-          this.form.controls['reasonComment'].setValidators(Validators.required);
-          if (!this.callItem.call.reasonComment) {
-            this.form.controls['reasonComment'].reset(this.callItem.call.reasonComment);
-            this.form.controls['reasonComment'].markAsTouched();
-            this.ns.warn('Укажите причину отказа');
-          }
-        }
-        else {
-          this.form.controls['reasonComment'].setValidators(null);
-          this.form.controls['reasonComment'].reset(this.callItem.call.reasonComment);
-          this.form.controls['reasonComment'].markAsTouched();
-        }
-      }
-    );
     console.log('-<', this.callItem.call);
     this.form.reset(this.callItem.call);
     this.form.disable();
@@ -511,9 +493,16 @@ export class CallItemComponent implements OnInit, OnDestroy {
 
   unlockForm() {
     this.tryToUnlock = true;
+    let disconnection = true;
+    setTimeout(()=> {
+      if (disconnection){
+        this.tryToUnlock = false;
+      }
+    }, 10000);
     this.locksService.startLock(this.callItem.call.id).pipe(take(1)).subscribe(
       value => {
         this.tryToUnlock = false;
+        disconnection = false;
         if (value.result.success) {
           this.form.enable();
           this.patients.forEach(
@@ -524,6 +513,10 @@ export class CallItemComponent implements OnInit, OnDestroy {
           this.ns.warn(null, `Вызов редактируется пользователем ${value.result.locker}`)
         }
 
+      },
+      error => {
+        this.tryToUnlock = false;
+        this.ns.error(null, `Ошибка сети`)
       }
     );
   }

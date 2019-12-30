@@ -1,0 +1,59 @@
+@import "../../../../styles/variables";
+
+:host{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-statuses{
+  display: flex;
+  margin-left: 0.5rem;
+  i{
+    vertical-align: middle;
+    margin-left: 0.7rem;
+    margin-right: 0.25rem;
+  }
+}
+
+.status-counter{
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  border: $card-border-width solid $card-border-color;
+  border-radius: 2px;
+  height: 1.7rem;
+  display: flex;
+  align-items: baseline;
+  background-color: $yellow-sand;
+  margin-right: 0.4rem;
+  i{
+    margin: 0.2rem;
+  }
+  .counter{
+    margin-right:0.2rem;
+    font-weight: 600;
+  }
+}
+
+.drop-filters-desc{
+  display: flex;
+  flex-direction: column;
+  width: 16rem;
+  padding: 0.5rem;
+  i{
+    width: 1.2rem;
+  }
+}
+//.tables-wrapper{
+//  display: flex;
+//  height: 100%;
+//  flex-direction: column;
+//}
+
+//.call-table-wrapper{
+//  //flex-grow: 1;
+//}
+//
+//.bri-table-wrapper{
+//  //flex-grow: 1;
+//}

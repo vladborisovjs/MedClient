@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {CallContainer, CardBean} from '../../../../../swagger/med-api.service';
+import {BrigadeBean, BrigadeContainer, CallContainer, CardBean} from '../../../../../swagger/med-api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IPlateInfo} from '../../../shared/info-plate/components/info-plate/info-plate.component';
 import {
@@ -113,7 +113,7 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
 
   ];
   messagesHistory = [];
-  role: string;
+  brigadeContainer: BrigadeContainer;
 
   constructor(
     private cas: CardItemService,
@@ -125,17 +125,15 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.role = this.router.url.includes('armBrigade') ? 'armBrigade' : undefined; // todo:разобраться зачем это, есле не нужно то вырезать
     this.sbscs.push(
       this.cs.callItemSub.subscribe(call => this.callContainer = call),
       this.cas.cardItemSub.subscribe(card => {
           this.card = card;
-          this.cs.getBrigadesMessages(this.card.brigadeFK.id, this.callContainer.call.id).pipe(take(1)).subscribe( // todo: мб перенсти в резолвер
-            h => {
-              this.messagesHistory = h;
-              console.log(this.messagesHistory);
-            }
-          );
+          if (card){
+            this.cs.getBrigadesMessages(this.card.brigadeFK.id, this.callContainer.call.id).pipe(take(1)).subscribe( // todo: мб перенсти в резолвер
+              h => this.messagesHistory = h);
+            this.findBrigadesPerformer();
+          }
 
         }
       ),
@@ -144,6 +142,12 @@ export class CardSideOneComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.sbscs.forEach(el => el.unsubscribe());
+  }
+
+  findBrigadesPerformer(){ // из callcontainer достаем бригаду  карты
+    if (this.callContainer){
+      this.brigadeContainer = this.callContainer.brigadeList.find(b => b.brigade.id === this.card.brigadeFK.id);
+    }
   }
 
   getPlateDescriptions(block: string): IPlateInfo[] {

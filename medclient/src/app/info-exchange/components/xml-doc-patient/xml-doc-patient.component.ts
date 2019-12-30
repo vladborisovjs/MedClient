@@ -10,18 +10,14 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class XmlDocPatientComponent implements OnInit, OnDestroy {
   sbscs: Subscription[] = [];
-  request: string;
-  response: string;
-  sending: boolean;
+  relatedLogFK: any;
   constructor(private ie: InfoExchangeService, private route: ActivatedRoute, private router: Router,) { }
 
   ngOnInit() {
     this.sbscs.push(
       this.route.data.subscribe(
-        data => { // почему бы не получать из резолвера 1 объект relatedLogFK и работать с его ключами, весто 3 разных объектов?
-              this.request = data.docItem.relatedLogFK.request;
-              this.response = data.docItem.relatedLogFK.response;
-              this.sending = data.docItem.relatedLogFK.successfulSending;
+        data => {
+          this.relatedLogFK = data.docItem;
           console.log(data);
         }
       ),

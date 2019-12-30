@@ -1,11 +1,9 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ColDef} from 'ag-grid-community';
-import {CallBean, CallContainer} from '../../../../../swagger/med-api.service';
+import {CallContainer} from '../../../../../swagger/med-api.service';
 import {CallItemService} from '../../services/call-item.service';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {ISimpleDescription} from '../../../shared/simple-control/services/simple-description.service';
-import {ModalCallConfirmBrigadeComponent} from '../../components/modal-call-confirm-brigade/modal-call-confirm-brigade.component';
 import {Subscription} from 'rxjs';
 import {tap} from 'rxjs/operators';
 

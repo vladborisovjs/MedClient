@@ -89,11 +89,11 @@ export class CallsListComponent implements OnInit, OnDestroy {
       sortable: false,
       filter: false,
       width: 220,
-      cellRenderer: params => {
-        if (!params.data.reasonFK || !params.data.reasonFK.reason || !params.data.reasonFK.primaryInquirerFK.answer) {
+      valueFormatter: params => {
+        if (!params.value || !params.value.reason || !params.value.primaryInquirerFK.answer) {
           return 'не указан';
         } else {
-          return params.data.reasonFK.primaryInquirerFK.answer + ': ' + params.data.reasonFK.reason;
+          return params.value.primaryInquirerFK.answer + ': ' + params.value.reason;
         }
       }
     },
@@ -110,36 +110,20 @@ export class CallsListComponent implements OnInit, OnDestroy {
       sortable: false,
       filter: false,
       width: 250,
-      valueGetter: params => {
-        if (params.data.patientList && params.data.patientList.length) {
-          let pat = '';
-          if (!params.data.patientList[0].call) {
-            return ' ';
-          }
-          pat = this.nameShorterPipe.transform(params.data.patientList);
-          return pat;
-        } else {
-          return ' ';
-        }
-
-      },
+      valueFormatter: params => this.nameShorterPipe.transform(params.value),
     },
     {
       headerName: 'Бригады',
-      field: 'brigades',
+      field: 'assignedBrigadeList',
       sortable: false,
       filter: false,
       width: 180,
-      valueGetter: params => {
-        if (!params.data.assignedBrigadeList || !params.data.assignedBrigadeList[0].call) {
-          return ' ';
+      valueFormatter: params => {
+        if (!params.value || !params.value[0] || !params.value[0].id) {
+          return '';
         }
         let bris = '';
-        params.data.assignedBrigadeList.forEach(
-          b => {
-            bris = bris + b.brigadeFK.name + ', ';
-          }
-        );
+        params.value.forEach(b => bris = bris + b.brigadeFK.name + ', ');
         bris = bris.slice(0, -2);
         return bris;
       },
@@ -162,7 +146,7 @@ export class CallsListComponent implements OnInit, OnDestroy {
 
   gridOptions = {
     getRowClass: (params) => {
-      if (params.data && params.data.isEmergency === true) {
+      if (params.data && params.data.emergencySituation === 2) {
         return 'emergency-row';
       } else if (params.data && params.data.priority === 1) {
         return 'priority-row';
@@ -286,7 +270,7 @@ export class CallsListComponent implements OnInit, OnDestroy {
 
   updateFilter() {
     if (this.calls.mode === 'original') {
-      this.filter.subdivisionId = this.filter.subdivisionId || this.user.mePerformer.performer.subdivisionFK.id; // todo: Костыль на ограничение видимости
+      this.filter.subdivisionId = this.filter.subdivisionId || this.user.mePerformer.performer.subdivisionFK.id; // Костыль на ограничение видимости
     } else {
       this.filter.subdivisionId = this.filter.subdivisionId || undefined;
     }
@@ -334,7 +318,6 @@ export class CallsListComponent implements OnInit, OnDestroy {
   fitCol(e) {
     this.callsGridApi = e.api;
     this.callsGridApi.sizeColumnsToFit();
-    console.log(this.callsGridApi);
   }
 
   ngOnDestroy() {

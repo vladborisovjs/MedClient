@@ -1,0 +1,60 @@
+<div class="collapse-panel text-secondary" (click)="changeCollapse()">
+    <i *ngIf="!collapsed" class="fas fa-chevron-right"></i>
+    <i *ngIf="collapsed" class="fas fa-chevron-left"></i>
+</div>
+<div class="info-panel" [style.display]="collapsed? 'none': 'flex'">
+  <div class="card h-50">
+    <div class="card-header toolbar">
+      <div class="toolbar-left"></div>
+      <div class="card-title">Карты вызова</div>
+      <div class="toolbar-right"></div>
+    </div>
+    <div class="card-body p-0 full-height scrollable">
+      <table *ngIf="!loading && cardlist?.length > 0"
+             class="table table-sm  m-0 table-hover">
+        <thead>
+        <tr>
+          <th scope="col">№</th>
+          <!--        <th scope="col">Статус</th>-->
+          <th scope="col">Бригада</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let card of cardlist" [routerLink]="card.call+'/card/'+card.id">
+          <td>{{card.number}}</td>
+          <!--        <td>{{card.cardStatus}}</td>-->
+          <td>{{card.brigadeFK.name}}</td>
+        </tr>
+        </tbody>
+      </table>
+      <div *ngIf="!loading && cardlist?.length === 0" class="patch">
+        <h2>У вызова нет карт</h2>
+      </div>
+      <div *ngIf="loading" class="patch">
+        <h2>Загрузка...</h2>
+      </div>
+      <div *ngIf="!loading && !cardlist" class="patch">
+        <i class="fas fa-file-medical-alt"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card h-50">
+    <div class="card-header toolbar">
+      <div class="toolbar-left"></div>
+      <div class="card-title">Контроль времени</div>
+      <div class="toolbar-right"></div>
+    </div>
+    <div *ngIf="!call" class="patch">
+      <i class="fas fa-hourglass-half"></i>
+    </div>
+    <div class="card-body" *ngIf="call">
+      <div>
+        <i class="fa fa-phone"></i> {{call.date | date: 'dd.MM.yyyy HH:mm'}} <br>
+        <i class="fas fa-hourglass-half fa-spin"></i> {{timeControlValue.minutes}} мин. {{timeControlValue.seconds}}
+        сек.
+      </div>
+
+    </div>
+  </div>
+</div>
+

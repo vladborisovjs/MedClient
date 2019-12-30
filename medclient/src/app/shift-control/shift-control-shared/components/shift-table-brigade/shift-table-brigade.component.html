@@ -24,35 +24,37 @@
       <div class="day-cell" *ngFor="let d of headerDays">{{d}}</div>
     </div>
   </div>
-  <div class="schedule-row" *ngFor="let row of shiftTable.shifts">
-    <div class="brigade-cell">
-      <div>{{row.brigade.name}}</div>
-    </div>
-    <div class="day-row">
-      <div *ngFor="let day of row.days; let i = index;" class="cell-wrapper"
-           (click)="openShiftList(day, row.brigade, i)">
-        <ng-template #popHoverTitle>{{row.brigade.name}} - {{row.brigade.brigadeTypeFK.name}}
-        </ng-template>
-        <ng-template #popHoverContent>
-          <p *ngFor="let shift of day.shifts">
-            <b>C:</b> {{shift.dateFrom | date: 'dd.MM HH:mm'}}
-            <b>до:</b> {{shift.dateTo | date: 'dd.MM HH:mm'}}
-          </p>
-        </ng-template>
-        <div *ngIf="day"
-             class="day-cell filled-cell"
-             [ngbPopover]="popHoverContent"
-             [popoverTitle]="popHoverTitle"
-             triggers="mouseenter:mouseleave"
-             placement="bottom">
-          <div *ngFor="let dis of day.display" class="shift" [style]="makeShiftStyle(dis)"></div>
-        </div>
-        <div *ngIf="!day" class="empty-cell center-me">
-          <b>{{i + 1}}</b>
+  <virtual-scroller #scroll [items]="shiftTable.shifts" (vsChange)="vScrollPageInfo = $event">
+    <div class="schedule-row" *ngFor="let row of scroll.viewPortItems; let i = index;">
+      <div class="brigade-cell">
+        <div>{{i+vScrollPageInfo.startIndex+1}}. {{row.brigade.name}}</div>
+      </div>
+      <div class="day-row">
+        <div *ngFor="let day of row.days; let i = index;" class="cell-wrapper"
+             (click)="openShiftList(day, row.brigade, i)">
+          <ng-template #popHoverTitle>{{row.brigade.name}} - {{row.brigade.brigadeTypeFK.name}}
+          </ng-template>
+          <ng-template #popHoverContent>
+            <p *ngFor="let shift of day.shifts">
+              <b>C:</b> {{shift.dateFrom | date: 'dd.MM HH:mm'}}
+              <b>до:</b> {{shift.dateTo | date: 'dd.MM HH:mm'}}
+            </p>
+          </ng-template>
+          <div *ngIf="day"
+               class="day-cell filled-cell"
+               [ngbPopover]="popHoverContent"
+               [popoverTitle]="popHoverTitle"
+               triggers="mouseenter:mouseleave"
+               placement="bottom">
+            <div *ngFor="let dis of day.display" class="shift" [style]="makeShiftStyle(dis)"></div>
+          </div>
+          <div *ngIf="!day" class="empty-cell center-me">
+            <b>{{i + 1}}</b>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </virtual-scroller>
 </div>
 
 <div *ngIf="!shiftTable" class="patch">

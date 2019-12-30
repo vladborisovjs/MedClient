@@ -13,6 +13,7 @@ export class LogService {
   }
 
   getLogSource(id: number, type: RecordType): IGridTableDataSource{
+    // todo: обратный порядок
     return  {
       get: (filter, offset, count) => {
         return this.api.getLogListByRecordUsingGET(offset, count, id, type)

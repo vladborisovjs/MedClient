@@ -1,9 +1,9 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {CallsComponent} from './components/calls/calls.component';
 import {CallItemComponent} from './calls-shared/call-item/call-item.component';
 import {CallItemResolverService} from './services/resolvers/call-item-resolver.service';
 import {NewCallComponent} from './calls-shared/new-call/new-call.component';
+import {CallsContainerComponent} from "./calls-shared/calls-container/calls-container.component";
 
 
 const routes: Routes = [
@@ -15,7 +15,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: CallsComponent,
+        component: CallsContainerComponent,
         data: {
           title: null,
         },

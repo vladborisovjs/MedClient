@@ -223,4 +223,16 @@ export class UkioMessagesComponent implements OnInit, OnDestroy {
   openCall() {
     this.router.navigate([`/calls/${this.callId}`], {relativeTo: this.route});
   }
+
+  getStatusCard(status: number) {
+    switch (status) {
+      case 2: return 'Карта принята';
+      case 3: return 'Вызов принят';
+      case 4: return 'Бригада выехала';
+      case 5: return 'Бригада прибыла на место';
+      case 6: return 'Вызов завершен';
+      case 7: return 'Отказ от вызова';
+    }
+    return '';
+  }
 }
