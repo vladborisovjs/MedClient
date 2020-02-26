@@ -1,0 +1,151 @@
+<div class="card full-height w-100 flex-default">
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <div class="card-subtitle">
+      <span *ngIf="callItem.call.emergencySituation !== 2">Вызов</span>
+      <span *ngIf="callItem.call.emergencySituation === 2" class="text-danger">Вызов ЧС</span>
+      №{{callItem.call.number}} - {{callItem.call.status | callStatus: 'text' }} </div>
+    <div class="toolbar-right"></div>
+  </div>
+  <div class="flexible w-100 h-25 flex-default" resizable="horizontal" (onResize)="resize($event)" saveName="call-item">
+    <div class="general-block" leftResizable>
+      <div class="card full-height">
+        <div class="card-header toolbar justify-content-between">
+          <div class="mr-auto">
+            <div class="btn-group" *ngIf="access.checkAccessWrite({level: 'tcmkModule'}) || access.checkAccessWrite({level: 'callsModule'})">
+              <button *ngIf="!isEdit" [disabled]="tryToUnlock" class="btn btn-primary btn-sm" (click)="unlockForm()">
+                Редактировать <i *ngIf="!tryToUnlock" class="fa fa-pen"></i><i *ngIf="tryToUnlock" class="fas fa-spin fa-spinner"></i>
+              </button>
+              <button *ngIf="isEdit" type="button" class="btn btn-success btn-sm"
+                      (click)="save()">
+                Сохранить <i class="fas fa-save"></i>
+              </button>
+
+              <button *ngIf="isEdit" class="btn btn-warning btn-sm" (click)="revertForm()">
+                Отменить изменения <i class="fas fa-undo"></i>
+              </button>
+            </div>
+          </div>
+          <div class="">
+            <button class="btn btn-primary btn-sm" *ngIf="callItem.call.ukioCardBean" (click)="openUkio()">УКИО</button>
+            <button class="btn btn-primary btn-sm ml-2" (click)="openPlayer()">Аудиозапись</button>
+            <button class="btn btn-primary btn-sm ml-2" *ngIf="!callItem.call.aviaRequest" (click)="aviationRequest()">Заявка на авиацию</button>
+            <span class="request-info ml-2" *ngIf="callItem.call.aviaRequest">
+              <button *ngIf="callItem.call.aviaRequest.isAccept" class="btn btn-sm btn-success" (click)="openAviaRequest()">Заявка одобрена</button>
+              <button *ngIf="callItem.call.aviaRequest.isAccept === false" class="btn btn-sm btn-danger" (click)="openAviaRequest()" >Заявка отклонена</button>
+              <button *ngIf="callItem.call.aviaRequest.isAccept === null" class="btn btn-sm btn-outline-primary" (click)="openAviaRequest()">Заявка обрабатывается</button>
+            </span>
+            <button class="btn btn-primary btn-sm ml-2" (click)="showLog()">Журнал</button>
+          </div>
+        </div>
+        <div class="p-2 scrollable default-bg">
+
+          <div class="card">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="card-title">Адрес вызова</div>
+                <app-full-address-fias
+                  [form]="form"
+                  [valueBuilding]="callItem.call.houseNum"
+                  [valueStreet]="callItem.call.address"
+                  (setPolygon)="setAddressPoint($event)"
+                ></app-full-address-fias>
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('address')"
+                  [item]="callItem.call"
+                  [preprocessed]="true"
+                  [row]="true"
+                  [form]="form"></app-simple-view>
+              </li>
+              <li class="list-group-item">
+                <div class="card-title">Заявитель</div>
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('declarant')"
+                  [item]="callItem.call"
+                  [preprocessed]="true"
+                  [row]="true"
+                  [form]="form"
+                ></app-simple-view>
+              </li>
+              <li class="list-group-item">
+                <div class="card-title">Данные о вызове</div>
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('general')"
+                  [item]="callItem.call"
+                  [preprocessed]="true"
+                  [row]="true"
+                  [form]="form"
+                ></app-simple-view>
+              </li>
+              <li class="list-group-item">
+                <div class="card-title">
+                  Пациенты
+                  <button class="btn btn-primary ml-2" [disabled]="!isEdit" (click)="openPatientArchive()">
+                    Архив
+                  </button>
+                </div>
+                <div *ngFor="let pat of patients; index as i;">
+                  <div *ngIf="!pat.item.isDeleted">
+                    <app-simple-view
+                      [descriptions]="getBlockDescriptions('patient')"
+                      [item]="pat.item"
+                      [preprocessed]="true"
+                      [row]="true"
+                      [form]="pat.form">
+                    </app-simple-view>
+                    <div class="toolbar">
+                      <div class="toolbar-right" *ngIf="isEdit">
+                        <button class="btn btn-danger" (click)="deletePatient(pat)">Удалить</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="toolbar-left">
+                  <button class="btn btn-primary" *ngIf="isEdit" (click)="addPatient()">Добавить пациента</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="brigades-map-block" rightResizable fixed="500" resizable="vertical" (onResize)="resize($event)"
+         saveName="brigades-map">
+      <div class="card brigades-block" upResizable>
+
+        <app-call-item-brigades *ngIf="cs.mode === 'original'"></app-call-item-brigades>
+        <app-call-item-arm-brigade *ngIf="cs.mode === 'ARM_BRIGADE'"></app-call-item-arm-brigade>
+      </div>
+      <div class="horizontal-resizer" resizer="2px"></div>
+      <div class="card map-block" fixed="400px" bottomResizable>
+        <div class="card-header toolbar">
+          <div class="toolbar-right">
+
+          </div>
+          <div class="card-title">
+            Местоположение вызова
+          </div>
+          <div class="toolbar-right">
+            <div class="btn-group">
+              <button class="btn btn-info" *ngIf="isEdit" (click)="lockSettingPoint = !lockSettingPoint">
+                {{lockSettingPoint ? 'Указать' : 'Зафиксировать'}}
+                <i class="fas fa-map-pin"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <app-med-map class="h-25 flex-default"
+          (onMapReady)="initMapPoint()"
+          (onClick)="setLocationFromClick($event)"
+        ></app-med-map>
+        <app-manual-coordinates
+          [coordinates]="coordinates"
+          [disabled]="lockSettingPoint"
+          (onDeleteCoordinates)="deleteCoordinates()"
+          (onSetCoordinates)="setLocationFromInput($event)"></app-manual-coordinates>
+      </div>
+    </div>
+  </div>
+</div>

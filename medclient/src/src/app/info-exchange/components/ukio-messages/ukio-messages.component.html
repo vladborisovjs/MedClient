@@ -1,0 +1,226 @@
+<div class="card full-height">
+  <div class="card-body full-height p-0">
+    <div class="full-height flexible" resizable="horizontal" saveName="patients-archive">
+      <div class="card message-list-block" fixed="450" leftResizable>
+        <div class="card-header toolbar">
+          <h5 class="center-me">
+            Список сообщений карты
+          </h5>
+          <div class="toolbar-right"><button class="btn btn-primary sm" *ngIf="callId" (click)="openCall()">Вызов</button></div>
+        </div>
+        <app-grid-table
+          [listSource]="listSource"
+          (onGridReady)="fitCol($event)"
+          (onRowSelect)="selectedMessage($event)"
+          [columnDefs]="colDefs"
+        ></app-grid-table>
+      </div>
+      <div class="vertical-resizer" resizer="2px"></div>
+      <div class="card message-block" rightResizable>
+        <div class="card-header" *ngIf="selectedItem">
+          <h5 class="center-me">
+            {{'Сообщение №' + selectedItem.id}}
+          </h5>
+        </div>
+        <div class="scrollable default-bg" *ngIf="selectedItem">
+          <div class="card-body d-flex p-0 full-height" *ngIf="selectedItem">
+            <div class="col-6">
+              <div class="card card-message">
+                <div class="card-header">
+                  Карта
+                </div>
+                <div class="card-body">
+                  <div class="ukio-info-block">
+                    <div class="ukio-info-title">Тип вызова:</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.callType === 'CALL'">автоматическое создание УКИО при поступлении входящего телефонного вызова на номер 112</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.callType === 'HAND'">ручное создание УКИО сотрудником системы-112</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.callType === 'GLONASS'">автоматическое создание УКИО при приеме сообщения от системы «ЭРА-ГЛОНАСС»;</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.callType === 'SMS'">автоматическое создание УКИО при поступлении входящего СМС сообщения на номер 112</div>
+                  </div>
+                  <app-info-plate
+                    [item]="selectedItem"
+                    [properties]="getPlateDescriptions('card')">
+                  </app-info-plate>
+                </div>
+              </div>
+
+              <div class="card card-message">
+                <div class="card-header">
+                  Пациент{{selectedItem.listUkioPatientBeanFK.length > 1 ? 'ы' : ''}}
+                </div>
+                <div class="card-body" *ngIf="selectedItem.listUkioPatientBeanFK.length">
+                  <div *ngFor="let pats of selectedItem.listUkioPatientBeanFK; index as i">
+                    <div><b>Пациент: {{i + 1}}</b></div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">ФИО:</div>
+                      <div class="ukio-info-value">{{pats.surname ? pats.surname : '' + ' '
+                        + pats.name ? pats.name : '' + ' '
+                        + pats.secondName ? pats.secondName : ''}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Дата рождения:</div>
+                      <div class="ukio-info-value">{{pats.birthDate}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Пол:</div>
+                      <div class="ukio-info-value" *ngIf="pats.gender === 0">мужской</div>
+                      <div class="ukio-info-value" *ngIf="pats.gender === 1">женский</div>
+                      <div class="ukio-info-value" *ngIf="pats.gender === 2">ребенок</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Возраст:</div>
+                      <div class="ukio-info-value">{{pats.age}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Причина вызова:</div>
+                      <div class="ukio-info-value">{{pats.callReason}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card card-message">
+                <div class="card-header">
+                  Данные об обработке сообщения о происшествии в ДДС
+                </div>
+                <div class="card-body" *ngIf="selectedItem.listInteriorBeanFK.length">
+                  <div *ngFor="let pats of selectedItem.listInteriorBeanFK; index as i">
+                    <div><b>Оператор: {{i + 1}}</b></div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Оператор ДДС:</div>
+                      <div class="ukio-info-value">{{pats.interiorOperator}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Код ДДС:</div>
+                      <div class="ukio-info-value">{{pats.interiorCode}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Название ДДС:</div>
+                      <div class="ukio-info-value">{{pats.interiorName}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Номер регистрации УКИО:</div>
+                      <div class="ukio-info-value">{{pats.interiorRegNumber}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card card-message">
+                <div class="card-header">
+                  Данные заявителя
+                </div>
+                <div class="card-body">
+                    <div class="ukio-info-block" *ngIf="selectedItem.ukioCallerInfoBeanFK">
+                      <div class="ukio-info-title">ФИО:</div>
+                      <div class="ukio-info-value">{{selectedItem.ukioCallerInfoBeanFK.surname + ' ' + selectedItem.ukioCallerInfoBeanFK.name + ' ' + selectedItem.ukioCallerInfoBeanFK.secondName}}</div>
+                    </div>
+                  <app-info-plate
+                    [item]="selectedItem"
+                    [properties]="getPlateDescriptions('declarant')">
+                  </app-info-plate>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card card-message">
+                <div class="card-header">
+                  Инцидент
+                </div>
+                <div class="card-body">
+                  <div class="ukio-info-block">
+                    <div class="ukio-info-title">Признак ЧС:</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.emergencySituation === 0">Нет угрозы ЧС</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.emergencySituation === 1">Угроза ЧС</div>
+                    <div class="ukio-info-value" *ngIf="selectedItem.emergencySituation === 2">ЧС</div>
+                  </div>
+                  <app-info-plate
+                    [item]="selectedItem"
+                    [properties]="getPlateDescriptions('incident')">
+                  </app-info-plate>
+                </div>
+              </div>
+              <div class="card card-message">
+                <div class="card-header">
+                  Регион{{selectedItem.listUkioRegionBeanFK.length > 1 ? 'ы' : ''}}
+                </div>
+                <div class="card-body" *ngIf="selectedItem.listUkioRegionBeanFK.length">
+                  <div *ngFor="let regs of selectedItem.listUkioRegionBeanFK; index as i">
+                    <div><b>Регион: {{i + 1}}</b></div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Регион:</div>
+                      <div class="ukio-info-value">{{regs.regionName}}</div>
+                    </div>
+                    <div class="ukio-info-block">
+                      <div class="ukio-info-title">Код региона:</div>
+                      <div class="ukio-info-value">{{regs.regionCode}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card card-message">
+                <div class="card-header">
+                  Адрес инцидента
+                </div>
+                <div class="card-body">
+                  <app-info-plate
+                    [item]="selectedItem"
+                    [properties]="getPlateDescriptions('incidentLocation')">
+                  </app-info-plate>
+                </div>
+              </div>
+              <div class="card card-message">
+                <div class="card-header">
+                  Статусы карты УКИО
+                </div>
+                <div class="card-body" *ngIf="cardStatuses.length">
+                  <div *ngFor="let status of cardStatuses | orderBy: 'time'" class="d-flex justify-content-between">
+                    <div class="card-message">
+                      <div class="ukio-info-block">
+                        <div class="ukio-info-title">Статус:</div>
+                        <div class="ukio-info-value">{{getStatusCard(status.status)}}</div>
+                      </div>
+                      <div class="ukio-info-block">
+                        <div class="ukio-info-title">Время:</div>
+                        <div class="ukio-info-value">{{status.time? (status.time | date : 'dd.MM.yyyy HH:mm')  : 'Карта не дошла до системы 112'}}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card card-message">
+                <div class="card-header">
+                  Обновление УКИО из 103
+                </div>
+                <div class="card-body" *ngIf="updatesUkioFrom103.length">
+                  <div *ngFor="let update of updatesUkioFrom103 | orderBy: 'time'">
+                    <div class="card-message">
+                      <div class="ukio-info-block">
+                        <div class="ukio-info-title">Тип:</div>
+                        <div class="ukio-info-value">{{update.updateType}}</div>
+                      </div>
+                      <div class="ukio-info-block">
+                        <div class="ukio-info-title">Код:</div>
+                        <div class="ukio-info-value">{{update.responseCode === 0 || update.responseCode? update.responseCode : 'Карта не передалась в 112'}}</div>
+                      </div>
+                      <div class="ukio-info-block">
+                        <div class="ukio-info-title">Время:</div>
+                        <div class="ukio-info-value">{{update.time | date : 'dd.MM.yyyy HH:mm'}}</div>
+                      </div>
+                      <div class="ukio-info-block" *ngIf="update.responseMessage">
+                        <div class="ukio-info-title">Сообщение:</div>
+                        <div class="ukio-info-value">{{update.responseMessage}}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="patch" *ngIf="!selectedItem">
+          <i class="far fa-comment-dots"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

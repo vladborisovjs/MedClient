@@ -1,0 +1,20 @@
+<div class="card">
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <div class="card-title">
+      Список укладок
+    </div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" (click)="createNewBag()">
+          <i class="fas fa-plus"></i> Создать укладку
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<app-grid-table
+  (onRowSelect)="selectBagFromTable($event)"
+  [columnDefs]="colDefTmp"
+  [dataSource]="ds.drugBagsDataSource"
+  [filter]="filters"></app-grid-table>

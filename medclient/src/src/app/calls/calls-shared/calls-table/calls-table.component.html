@@ -1,0 +1,13 @@
+<div class="d-flex h-100">
+  <app-grid-table
+    [columnDefs]="colDef"
+    [dataSource]="dataSource"
+    [gridOptions]="gridOptions"
+    [filter]="filters"
+    (onGridReady)="getGridApi($event)"
+    (onRowDblClick)="goToCall($event)"
+    (onRowClick)="selectCall($event)"
+  ></app-grid-table>
+  <app-call-info [call]="selectedCall" (whenCollapse)="fitTable()"></app-call-info>
+</div>
+

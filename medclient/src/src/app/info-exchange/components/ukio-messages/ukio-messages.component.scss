@@ -1,0 +1,40 @@
+:host{
+  height: 100%;
+}
+
+.card-message {
+  margin-top: 1rem;
+}
+.message-list-block{
+  min-width: 450px;
+  //height: 100%;
+}
+
+.message-block{
+  min-width: 300px;
+  //height: 100%;
+}
+
+.common-plate{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 0.3rem 1rem 0.3rem 0.3rem;
+}
+
+.ukio-info-title{
+  //width: 8rem;
+  text-align: end;
+}
+
+.ukio-info-value{
+  font-weight: 500;
+  padding-left: 10px;
+}
+
+.ukio-info-block{
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px dotted rgba(black, 0.2);
+  border-left: 1px dotted rgba(black, 0.2);
+}

@@ -1,0 +1,83 @@
+
+<div class="flexible default-bg full-height">
+  <div class="col-4">
+    <div class="card">
+      <div class="card-header">
+        Выбор пациента
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('patient-template')"
+          [row]="true"
+          [preprocessed]="true"
+          [item]="card"
+          [form]="formPatientTemplate"></app-simple-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header flexible">
+        <div class="toolbar-left">
+          {{card.patientFK ? card.patientFK.id ? 'Пациент №'+ card.patientFK.id : 'Новый пациент' : ''}}
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-info" (click)="openPatientsArchive()" [disabled]="formPatientTemplate.disabled">
+            Найти пациента в архиве
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('patient-info')"
+          [row]="true"
+          [preprocessed]="true"
+          [item]="card.patientFK"
+          [form]="formPatient"></app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card">
+      <div class="card-header">
+        Дополнительная информация
+      </div>
+      <div class="card-body">
+        <app-simple-view
+          [descriptions]="getBlockDescriptions('patient-additional')"
+          [row]="true"
+          [preprocessed]="true"
+          [item]="card"
+          [form]="formCard"></app-simple-view>
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card">
+      <div class="card-header">
+       Документы
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item {{doc.document.isDeleted? 'bg-light' : ''}}" *ngFor="let doc of docForms; let i = index;">
+          <app-simple-view
+          [form]="doc.form"
+          [item]="doc.document"
+          [preprocessed]="true"
+          [row]="true"
+          [descriptions]="doc.description"
+          ></app-simple-view>
+          <div class="toolbar-right">
+            <button class="btn btn-danger" [disabled]="doc.form.disabled"  (click)="deleteDocument(doc, i)">
+              Удалить
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <button class="btn btn-success" [disabled]="!formPatient.enabled"  (click)="addDocument()">
+            Добавить документ
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+

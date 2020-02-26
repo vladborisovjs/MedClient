@@ -1,0 +1,46 @@
+<div class="card-header">
+  <div class="card-title center-me">Бригада</div>
+</div>
+<div class="flexible flex-row full-height default-bg">
+  <div class="card-wrapper col-4">
+    <div class="card bri-item">
+      <div class="card-header">
+        <div class="card-subtitle">
+          {{brigadeBean.name}}
+        </div>
+      </div>
+      <div class="card-body">
+        <p><em>Тип: </em>{{brigadeBean.brigadeTypeFK.name}}</p>
+        <p><em>Статус: </em>{{brigadeBean.brigadeStatusFK ? brigadeBean.brigadeStatusFK.name : '-'}}</p>
+        <div class="bri-control">
+          <button class="btn btn-sm btn-outline-primary" (click)="openBriStatuses(brigadeBean)">
+            Сообщение <i class="fas fa-envelope"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrapper col-8">
+
+    <div class="card  card-item">
+      <div class="card-body">
+          <button class="btn w-100 btn-success" (click)="createCard()">
+            Создать карту
+          </button>
+      </div>
+    </div>
+
+    <div class="card  card-item" *ngFor="let card of listSource">
+      <div class="card-header">
+        <div class="card-subtitle">
+          Карта № {{card.number}}
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="m-0"><em>Дата: </em>{{card.date | date: 'dd.MM HH:mm'}}</p>
+        <p class="m-0"><em>Результат: </em>{{card.resultTypeFK.name}}</p>
+      </div>
+    </div>
+
+  </div>
+</div>

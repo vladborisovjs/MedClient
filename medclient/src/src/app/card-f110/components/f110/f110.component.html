@@ -1,0 +1,125 @@
+<div class="nav-info-container">
+  <div class="card-header">
+    <div class="card-title center-me">
+      Ф-110 {{cardItem.number}} {{cardItem.cardStatus | cardStatus}}
+    </div>
+  </div>
+  <div class="nav-tabs toolbar-right nav-buttons">
+    <div
+      *ngIf="access.checkAccessWrite({level: ALevels.tcmkModule}) || access.checkAccessWrite({level: ALevels.callsModule})">
+      <button class="btn btn-success btn-sm mr-1 " *ngIf="isEditing === 'editing'"
+              (click)="saveCard()">Сохранить (shift+S)
+      </button>
+      <button *ngIf="isEditing === 'loading'" class="btn btn-primary btn-sm mr-1">
+        Загрузка <i class="fas fa-spin fa-spinner"></i>
+      </button>
+      <button
+        *ngIf="isEditing === 'disable' && (cardItem.cardStatus === null || cardItem.cardStatus === 0 || cardItem.cardStatus === 1 || cardItem.cardStatus === 2)"
+        class="btn btn-primary btn-sm mr-1" (click)="unlockCard()">
+        Редактировать
+        <!--          <i class="fa fa-pen"></i>-->
+      </button>
+
+      <button *ngIf="isEditing === 'disable' &&
+         (cardItem.cardStatus === null ||cardItem.cardStatus === 0 || cardItem.cardStatus === 2) &&
+         access.checkAccessForRoles([Roles.BRIGADE_MASTER, Roles.DISTRICT_ADMIN])"
+              (click)="sendCardStatus(cardStatuses.VERIFYING)"
+              class="btn btn-primary btn-sm mr-1">
+        На проверку
+      </button>
+      <button *ngIf="isEditing === 'disable' && cardItem.cardStatus === 1 &&
+         access.checkAccessForRoles([Roles.SUBDIVISION_HEAD, Roles.DISTRICT_ADMIN])"
+              (click)="sendCardStatus(cardStatuses.CHECKED)"
+              class="btn btn-primary btn-sm mr-1">
+        На доработку
+      </button>
+      <button *ngIf="isEditing === 'disable' && cardItem.cardStatus === 1 &&
+         access.checkAccessForRoles([Roles.SUBDIVISION_HEAD, Roles.DISTRICT_ADMIN])"
+              (click)="sendCardStatus(cardStatuses.ARCHIVED)"
+              ngbTooltip="Готово к отправке в ЕГИСЗ"
+              placement="bottom"
+              class="btn btn-primary btn-sm mr-1">
+        Проверено
+      </button>
+      <button
+        *ngIf="isEditing === 'disable' && cardItem.cardStatus === 1 &&
+         access.checkAccessForRoles([Roles.SUBDIVISION_HEAD, Roles.DISTRICT_ADMIN]) &&
+         checkCardForClosing()"
+        (click)="sendCardStatus(cardStatuses.ARCHIVED_NOT_EGISZ)"
+        ngbTooltip="Без отправки в ЕГИСЗ"
+        placement="bottom"
+        class="btn btn-primary btn-sm mr-1">
+        Закрыть
+      </button>
+    </div>
+
+    <div ngbDropdown class="d-inline-block" *ngIf="isEditing === 'disable'">
+      <button class="btn btn-primary btn-sm mr-1" id="dropdownPrint" ngbDropdownToggle>Печать <i
+        class="fas fa-print"></i></button>
+      <div ngbDropdownMenu aria-labelledby="dropdownPrint">
+        <button ngbDropdownItem (click)="printReport('f110')">Форма Ф110</button>
+        <button ngbDropdownItem (click)="printReport('carrySheet')">Сопр. талон</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="flexible pt-2 ">
+    <div class="toolbar-left ">
+      <ul class="nav nav-tabs nav-info full-width">
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'side-one'">
+            Первая сторона (ALT+1)
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'patient'">
+            Пациент (ALT+2)
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'anamnesis'">
+            Анамнез (ALT+3)
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'side-two'">
+            Объективные данные (ALT+4)
+          </a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link"
+             routerLinkActive="active"
+             [routerLink]="'result'">
+            Результат (ALT+5)
+          </a>
+        </li>
+        <!--        <li class="nav-item ml-1">-->
+        <!--          <a class="nav-link"-->
+        <!--             routerLinkActive="active"-->
+        <!--             [routerLink]="'status'">-->
+        <!--            Статус карты (ALT+6)-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--<li class="nav-item ml-1">-->
+        <!--<a class="nav-link"-->
+        <!--routerLinkActive="active"-->
+        <!--[routerLink]="'protocol'">-->
+        <!--Протокол-->
+        <!--</a>-->
+        <!--</li>-->
+      </ul>
+    </div>
+
+  </div>
+  <router-outlet></router-outlet>
+</div>
+
+

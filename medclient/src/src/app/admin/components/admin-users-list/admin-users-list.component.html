@@ -1,0 +1,19 @@
+<div class="user-table-wrapper">
+  <div class="filter-wrapper">
+      <app-simple-view
+        [form]="form"
+        [row]="true"
+        [descriptions]="descriptions"
+      ></app-simple-view>
+    <div class="toolbar-right">
+      <button *ngIf="access.checkAccessWrite({level: 'adminModule'})" class="btn btn-success" (click)="createUser()">Новый</button>
+    </div>
+  </div>
+  <app-grid-table
+    (onRowSelect)="selectUser($event)"
+    [columnDefs]="colDef"
+    (onGridReady)="onGridReady($event)"
+    [dataSource]="source"
+    [filter]="filters"></app-grid-table>
+</div>
+

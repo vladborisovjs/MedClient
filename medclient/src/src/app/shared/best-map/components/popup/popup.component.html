@@ -1,0 +1,37 @@
+<div class="card" *ngIf="featureType === 'subdivision'">
+  <div class="card-header p-1">
+    <div class="card-title">
+      <i class="fas fa-clinic-medical"></i> {{subdivision.typeFK.name}}
+    </div>
+  </div>
+  <div class="card-body p-1">
+    <a [href]="'./#/dictionaries/subdivisions/' + subdivision.id" target="_blank">{{subdivision.name}}</a>
+  </div>
+</div>
+
+<div class="card" *ngIf="featureType === 'call'">
+  <div class="card-header p-1">
+    <div class="card-title">
+      <i class="fas fa-phone-square-alt"></i> {{call.number}}
+    </div>
+  </div>
+  <div class="card-body p-1">
+    <a [href]="'./#/calls/' + call.id" target="_blank">{{call.reasonFK.reason}}</a>
+    <p class="text-secondary m-0">{{call.date | date: 'dd.MM.yyyy HH:mm'}}</p>
+  </div>
+</div>
+
+<div class="card" *ngIf="featureType === 'transport'">
+  <div class="card-header p-1">
+    <div class="card-title">
+     Бригада: {{transport.brigadeContainer.brigade.name}} ({{transport?.brigadeContainer?.brigade?.subdivisionFK?.shortName}})
+    </div>
+  </div>
+  <div class="card-body p-1">
+    <b>{{transport.brigadeContainer.transportBean.name}} - {{transport.brigadeContainer.transportBean.code}}</b><br>
+    <b>Статус бригады: </b> {{transport.brigadeContainer.brigade.brigadeStatusFK.name}}<br>
+    <b>Актуальность: </b> {{transport.transportMonitoringBean.navigationTime | date: 'dd.MM.yyyy HH:mm:ss'}}<br>
+<!--    <b>Скорость: </b> {{ (transport.transportMonitoringBean.isInMotion ? transport.transportMonitoringBean.speed * 3.6 / 1000  : 0) | number: '1.0-2' }} км/ч-->
+    <b>Скорость: </b> {{ (transport.transportMonitoringBean.isInMotion ? transport.transportMonitoringBean.speed  / 10  : 0) | number: '1.0-2' }} км/ч
+  </div>
+</div>

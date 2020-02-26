@@ -1,0 +1,147 @@
+<form novalidate #ele class="sc-form form-group {{postLabel? 'input-group': ''}}">
+  <p-checkbox
+    [ngModelOptions]="{standalone: true}"
+    class="sc-control-checkbox"
+    binary="true"
+    [disabled]="alwaysDisabled ? true : disabled"
+    *ngIf="type === 'checkbox'" type="checkbox"
+    [(ngModel)]="value"></p-checkbox>
+
+  <p-triStateCheckbox
+    [ngModelOptions]="{standalone: true}"
+    class="sc-control-tricheckbox"
+    [disabled]="alwaysDisabled ? true : disabled"
+    *ngIf="type === 'tricheckbox'"
+    [(ngModel)]="value"></p-triStateCheckbox>
+
+  <div *ngIf="label" class="sc-label" [ngClass]="{'label-after': type === 'checkbox' || type === 'tricheckbox'}">
+    {{label}} <span *ngIf="isError" style="color: red">{{errorText}}</span>
+  </div>
+
+
+  <button *ngIf="type === 'btn'"
+          [class]="btnClass"
+          [disabled]="alwaysDisabled ? true : disabled"
+          (click)="action()"
+  >{{placeholder}}
+  </button>
+
+  <input *ngIf="type === 'text' || type === 'number'" #ctrl
+         [ngModelOptions]="{standalone: true}"
+         class="sc-control form-control"
+         [readonly]="readonly"
+         (blur)="onInputBlur($event)"
+         [(ngModel)]="value"
+         [title]="value ? value : ''"
+         [disabled]="alwaysDisabled ? true : disabled"
+         [type]="type"
+         [attr.aria-describedby]="'post-label'"
+         [placeholder]="placeholder ? placeholder : label ? label : ''"
+         [tabIndex]="tabIndex">
+
+
+  <input *ngIf="type === 'password'" #ctrl
+         [ngModelOptions]="{standalone: true}"
+         class=" form-control"
+         (blur)="onInputBlur($event)"
+         [(ngModel)]="value"
+         [disabled]="alwaysDisabled ? true : disabled"
+         [type]="type"
+         [attr.aria-describedby]="'post-label'"
+         [placeholder]="placeholder ? placeholder : label ? label : ''"
+         [tabIndex]="tabIndex">
+
+
+  <textarea *ngIf="type === 'textarea'" #ctrl
+            [ngModelOptions]="{standalone: true}"
+            class="sc-control form-control"
+            [readonly]="readonly"
+            [rows]="rows"
+            (blur)="onInputBlur($event)"
+            [(ngModel)]="value"
+            [title]="value ? value : ''"
+            [attr.aria-describedby]="'post-label'"
+            [disabled]="alwaysDisabled ? true : disabled"
+            [placeholder]="placeholder ? placeholder : label ? label : ''"
+            [tabIndex]="tabIndex"></textarea>
+
+  <!--<dictionary-template *ngIf="type === 'template'" #ctrl-->
+  <!--[rows]="rows"-->
+  <!--(blur)="onInputBlur($event)"-->
+  <!--[(model)]="value"-->
+  <!--[title]="value ? value : ''"-->
+  <!--[short]="shortDict"-->
+  <!--[field]="templateField"-->
+  <!--[disabled]="alwaysDisabled ? true : disabled"-->
+  <!--[searchField]="dictSearchField"-->
+  <!--[dict]="dict"-->
+  <!--[filters]="dictFilters"-->
+  <!--[filtersOrder]="dictFiltersOrder"-->
+  <!--[bindValue]="bindValue"-->
+  <!--[bindLabel]="bindLabel"-->
+  <!--[placeholder]="placeholder ? placeholder : label ? label : ''"-->
+  <!--[tabIndex]="tabIndex"></dictionary-template>-->
+
+  <dictionary *ngIf="type ==='dict'" #ctrl
+              [(model)]="value"
+              (blur)="onInputBlur($event)"
+              [dict]="dict"
+              [short]="shortDict"
+              [searchField]="dictSearchField"
+              [placeholder]="placeholder ? placeholder : label ? label : ''"
+              [dropdownPosition]="dropdownPosition"
+              [filters]="dictFilters"
+              [filtersOrder]="dictFiltersOrder"
+              (dictSelect)="onDictSelect($event)"
+              [disabled]="alwaysDisabled ? true : disabled"
+              [bindValue]="bindValue"
+              [readonly]="readonly"
+              [addLabel]="addLabel"
+              [attr.aria-describedby]="'post-label'"
+              [bindLabel]="bindLabel"></dictionary>
+
+  <p-calendar *ngIf="type === 'date'" #ctrl
+              [disabled]="alwaysDisabled ? true : disabled"
+              [placeholder]="placeholder ? placeholder : label ? label : ''"
+              [locale]="ru"
+              [ngModelOptions]="{standalone: true}"
+              class="sc-control-calendar"
+              [(ngModel)]="value"
+              [showTime]="showTime"
+              [timeOnly]="false"
+              [maxDate]="timeOnlyWithDate ? maxDate : null"
+              [minDate]="timeOnlyWithDate ? minDate : null"
+              hourFormat="24"
+              [yearNavigator]="yearNavigator"
+              [yearRange]="'1920:2099'"
+              (onBlur)="onInputBlur($event)"
+              [dateFormat]="dateFormat"></p-calendar>
+
+
+  <ng-select *ngIf="type === 'select'" #ctrl
+             class="archive-select"
+             [placeholder]="placeholder ? placeholder : label ? label : ''"
+             [(ngModel)]="value"
+             [ngModelOptions]="{standalone: true}"
+             [addTag]="false"
+             [disabled]="alwaysDisabled ? true : disabled ? disabled : readonly"
+             [bindLabel]="'name'"
+             [bindValue]="bindValue? (bindValue ==='selfObject') ? null : bindValue : 'id'"
+             [items]="selectList"></ng-select>
+
+  <p-inputMask *ngIf="type === 'mask'" #ctrl
+               [ngModelOptions]="{standalone: true}"
+               [styleClass]="'sc-control form-control'"
+               [readonly]="readonly"
+               (blur)="onInputBlur($event)"
+               [(ngModel)]="value"
+               [title]="value ? value : ''"
+               [disabled]="alwaysDisabled ? true : disabled"
+               [mask]="mask"></p-inputMask>
+
+  <!--<div *ngIf="postLabel" class="sc-post-label">{{postLabel}}</div>-->
+  <div *ngIf="postLabel" class="input-group-append">
+    <span class="input-group-text" id="post-label">{{postLabel}}</span>
+  </div>
+
+</form>

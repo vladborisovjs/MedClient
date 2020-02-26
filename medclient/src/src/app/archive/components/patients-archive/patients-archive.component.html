@@ -1,0 +1,57 @@
+<div class="card full-height">
+  <div class="card-header toolbar">
+    <div class="toolbar-left"></div>
+    <h5 class="center-me">
+      Поиск пациента
+    </h5>
+    <div class="toolbar-right">
+      <button class="btn btn-danger mr-1" *ngIf="selectedPatient && access.checkAccessForRoles([ Roles.ADMIN]) && !filters.isDeleted" (click)="deletePatient()">Удалить</button>
+      <button class="btn btn-warning mr-1" *ngIf="selectedPatient && access.checkAccessForRoles([ Roles.ADMIN]) && filters.isDeleted" (click)="restorePatient()">Восстановить</button>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <div class="full-height flexible" resizable="horizontal" saveName="patients-archive">
+      <div class="card filter-patients-block" leftResizable fixed="400">
+        <div class="scrollable full-height">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-subtitle">
+                Пациент
+              </div>
+            </div>
+            <div class="p-1">
+              <app-simple-view
+                [descriptions]="getBlockDescriptions('patient')"
+                [preprocessed]="true"
+                [form]="form"
+                [row]="true"
+                [item]="filters">
+              </app-simple-view>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="btn-group w-100 p-1">
+            <button class="btn btn-success" [disabled]="loading || form.invalid" (click)="search()">
+              <i class="fas fa-search" *ngIf="!loading"></i>
+              <i class="fas fa-cog fa-spin" *ngIf="loading"></i>
+              Найти
+            </button>
+            <button class="btn btn-warning" (click)="eraseFilters()"><i class="fas fa-eraser"></i> Очистить</button>
+          </div>
+        </div>
+      </div>
+      <div class="vertical-resizer" resizer="2px"></div>
+      <div class="card table-patients-block" rightResizable>
+        <app-grid-table
+          [dataSource]="dataSource"
+          [columnDefs]="colDefs"
+          [filter]="filters"
+          (onRowDblClick)="goToPatient($event)"
+          (onRowSelect)="selectPatient($event)"
+          (onGridReady)="fitCol($event)">
+        </app-grid-table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+@import "../../../../styles/variables";
+
+:host{
+  //height: 100%;
+  display: flex;
+  //flex-grow: 1;
+  flex-direction: column;
+}
+.bri-table-wrapper{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 38rem;
+}
+
+.collapsible-info{
+  min-height: 16rem;
+  height: 100%;
+}
+
+.collapse-panel{
+  background-color: $card-cap-bg;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.collapse-panel:hover{
+  background-color: $gray-300;
+}
+
+

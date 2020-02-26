@@ -1,0 +1,30 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Архив пациентов
+    </div>
+  </div>
+  <div class="flexible h-100">
+    <div class="card-body col-3">
+      <app-simple-view
+        [descriptions]="filterDescriptions"
+        [row]="true"
+        [item]="filter"
+        [preprocessed]="true"
+        [form]="filterForm"></app-simple-view>
+      <div class="flex-column">
+        <button class="btn btn-primary m-1 w-100" (click)="choosePatient()" [disabled]="!selectedPatient">Выбрать пациента</button>
+        <button class="btn btn-secondary m-1 w-100" (click)="back()">Отмена</button>
+      </div>
+    </div>
+    <div class="col-9 p-0">
+      <app-grid-table
+        [dataSource]="source"
+        [columnDefs]="colDef"
+        [filter]="filter"
+        (onRowSelect)="selectPatient($event)"
+        [enableFilter]="false"
+      ></app-grid-table>
+    </div>
+  </div>
+</div>

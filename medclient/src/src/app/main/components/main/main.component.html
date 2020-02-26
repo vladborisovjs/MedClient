@@ -1,0 +1,13 @@
+<header>
+  <!--<p-progressBar [hidden]="!lState" mode="indeterminate" class="customProgress"></p-progressBar>-->
+  <app-nav-bar [items]="menuItems" [performer]="user.mePerformer" (onExit)="logOut()"></app-nav-bar>
+  <div class="flexible w-100">
+    <app-breadcrumbs class="w-100"></app-breadcrumbs>
+    <app-socket-control></app-socket-control>
+  </div>
+</header>
+<main>
+  <div class="card full-height main-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+</main>

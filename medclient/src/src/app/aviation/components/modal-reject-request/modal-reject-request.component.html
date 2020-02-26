@@ -1,0 +1,26 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Отклонение завки
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="description"
+      [form]="form"
+      [preprocessed]="true"
+    ></app-simple-view>
+  </div>
+  <div class="card-footer toolbar">
+
+    <div class="toolbar-left">
+      <button class="btn btn-secondary" (click)="back()">Отмента</button>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-success" [disabled]="form.invalid" (click)="submit()">Отклонить заявку</button>
+    </div>
+  </div>
+</div>

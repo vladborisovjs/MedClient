@@ -1,0 +1,33 @@
+<div class="card default-bg">
+  <div class="card-header">
+    <div class="card-title">
+      Добавление сотрудника
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body default-bg">
+    <app-simple-view
+      [form]="form"
+      [descriptions]="descriptions"
+      [preprocessed]="true"
+    ></app-simple-view>
+    <div class="flexible flex-column" *ngIf="!loading && performers && performers.length">
+      <div class="card-subtitle">
+        Выберите сотрудника:
+      </div>
+      <button class="btn btn-primary mt-2" *ngFor="let p of performers" (click)="selectPerformer(p)">
+        {{p.performerFK.name}}
+        {{p.performerFK.surname}} -
+        {{p.performerFK.typeFK.name}}
+      </button>
+    </div>
+    <div class="alert alert-warning" role="alert" *ngIf="!loading && (!performers || !performers.length)">
+      Не найдено свободных сотрудников в этот период
+    </div>
+    <div class="patch" *ngIf="loading">
+      <i class="fas fa-spin fa-spinner"></i>
+    </div>
+  </div>
+</div>

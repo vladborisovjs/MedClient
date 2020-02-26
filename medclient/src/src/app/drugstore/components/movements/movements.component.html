@@ -1,0 +1,36 @@
+<div class="card full-height">
+  <div class="card-header">
+    <h5 class="center-me">
+      Движения медсредств
+    </h5>
+  </div>
+
+  <div class="card h-100">
+    <app-grid-table
+      [dataSource]="movementsSource"
+      [columnDefs]="colDef"
+      [filter]="filters"
+    ></app-grid-table>
+  </div>
+
+  <!--<div class="flexible h-100 w-100" resizable="horizontal" saveName="drug-movements">-->
+    <!--<div class="movements-list" leftResizable fixed="500px">-->
+      <!--<div class="card h-100">-->
+        <!--<div class="card-header">-->
+          <!--<div class="card-title">Список перемещений</div>-->
+        <!--</div>-->
+        <!--<app-grid-table-->
+          <!--[dataSource]="movementsSource"-->
+          <!--[columnDefs]="colDef"-->
+          <!--[filter]="filters"-->
+        <!--&gt;</app-grid-table>-->
+      <!--</div>-->
+    <!--</div>-->
+    <!--<div class="vertical-resizer" resizer="2px"></div>-->
+    <!--<div class="movements-item default-bg" rightResizable >-->
+      <!--<div class="patch" >-->
+        <!--<i class="fas fa-random"></i>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+</div>

@@ -1,0 +1,75 @@
+<div class="card full-height">
+  <div class="card-body scrollable p-0 pr-3">
+    <div class="patch" *ngIf="!userItem">
+      <i class="fas fa-lg fa-user-edit"></i>
+    </div>
+    <div class="p-1 default-bg" *ngIf="userItem">
+      <div class="row no-gutters">
+        <div class="col-md-12 p-2">
+          <div class="card">
+            <div class="card-header toolbar">
+              <div class="toolbar-left"></div>
+              <div class="card-title">{{userItem.id ? 'Сотрудник' : 'Новый сотрудник'}}</div>
+              <div class="toolbar-right">
+                <button class="btn btn-primary btn-sm ml-2" (click)="showLog()">Журнал</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <app-simple-view
+                [descriptions]="getBlockDescriptions('general')"
+                [form]="form"
+                [preprocessed]="true"
+                [row]="true"></app-simple-view>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12 p-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title center-me">
+                Пользователь
+              </div>
+            </div>
+            <div class="card-body">
+              <app-simple-view
+                [descriptions]="getBlockDescriptions('login')"
+                [preprocessed]="true"
+                [form]="loginForm"
+                [item]="userItem"
+                [row]="true"></app-simple-view>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12 p-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title center-me">
+                Роли
+              </div>
+            </div>
+            <div class="card-body">
+              <div *ngIf="rolesForm" class="flexible flex-column">
+                <app-simple-view
+                  [form]="rolesForm"
+                  [preprocessed]="true"
+                  [descriptions]="rolesDescriptions"
+                  [item]="userRolesInterface"
+                ></app-simple-view>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer" *ngIf="userItem && access.checkAccessWrite({level: 'adminModule'})">
+    <div class="toolbar-right m-1">
+      <button class="btn btn-danger mx-2" *ngIf="!userItem.isDeleted" (click)="deleteUserItem()">Удалить</button>
+      <button class="btn btn-success" *ngIf="!userItem.isDeleted" (click)="saveUserItem()"
+              [disabled]="!samePassword || form.invalid">Сохранить
+      </button>
+      <button class="btn btn-success" *ngIf="userItem.isDeleted" (click)="restoreUserItem()">Восстановить</button>
+    </div>
+  </div>
+</div>
+

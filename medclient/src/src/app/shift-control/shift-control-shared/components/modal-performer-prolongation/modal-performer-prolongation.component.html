@@ -1,0 +1,23 @@
+<div class="card default-bg">
+  <div class="card-header">
+    <div class="card-title">
+      Пролонгация
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [form]="form"
+      [row]="true"
+      [preprocessed]="true"
+      [descriptions]="descriptions"></app-simple-view>
+  </div>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group">
+      <button class="btn btn-success" [disabled]="!(canSubmit)" (click)="submit()">Применить</button>
+      <button class="btn btn-secondary" (click)="back()">Отмена</button>
+    </div>
+  </div>
+</div>

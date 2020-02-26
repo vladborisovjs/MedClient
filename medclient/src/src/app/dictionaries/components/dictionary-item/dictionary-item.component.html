@@ -1,0 +1,78 @@
+<div class="flexible">
+  <div class="w-50 m-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          {{title}} - {{item.id !== 0 ? 'Редактирование' : 'Новая запись'}}
+        </div>
+      </div>
+      <div class="card-body">
+        <div *ngFor="let b of dictItem.blocks">
+          <div class="card-subtitle">
+            {{b.title}}
+          </div>
+          <!-- todo: сейчас при заполнении поля, которое является endField древовидные справочники не покажут детей-->
+          <!-- todo: нада сделать метод, возвращающий количество детей у нода по id, если оно не 0, блокировать поле endField-->
+          <app-simple-view
+            [descriptions]="getBlockDescriptions(b.key)"
+            [form]="form"
+            [preprocessed]="true"
+            [item]="item"
+            [row]="true"
+          ></app-simple-view>
+<!--          <app-simple-view *ngIf="reason"-->
+<!--                           [descriptions]="getBlockDescriptions('reasonInquirer')"-->
+<!--                           [form]="form"-->
+<!--                           [preprocessed]="true"-->
+<!--                           [item]="item"-->
+<!--                           [row]="true"-->
+<!--          ></app-simple-view>-->
+        </div>
+      </div>
+      <div class="card-footer toolbar">
+        <div class="toolbar-left">
+          <button class="btn btn-secondary" (click)="back()">Назад</button>
+        </div>
+        <div class="toolbar-right">
+          <div class="btn-group" *ngIf="!dictItem.readOnly && access.checkAccessWrite({level: 'dictModule'}) || (dictItem.editInSubdivision && access.checkAccessForRoles([Roles.DISTRICT_ADMIN]))">
+            <button class="btn btn-primary" (click)="openLog()" *ngIf="dictItem.recordType">Журнал</button>
+            <button class="btn btn-danger" (click)="delete()" *ngIf="item.id !== 0 && !item.isDeleted">Удалить</button>
+            <button class="btn btn-success" (click)="save()"
+                    *ngIf="item.id !== 0 && !item.isDeleted">Сохранить
+            </button>
+            <button class="btn btn-success" (click)="restore()" *ngIf="item.id !== 0 && item.isDeleted">Восстановить
+            </button>
+            <button class="btn btn-success" (click)="create()" [disabled]="form.pristine || form.invalid"
+                    *ngIf="item.id === 0">Создать
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-50 m-2" *ngIf="dictItem.location">
+    <div class="card">
+      <div class="card-header toolbar">
+        <div class="card-title">
+          Местоположение
+        </div>
+        <div class="toolbar-right">
+          <div class="btn-group">
+            <button class="btn btn-info" (click)="lockSettingPoint = !lockSettingPoint">
+              {{lockSettingPoint ? 'Указать' : 'Зафиксировать'}}
+              <i class="fas fa-map-pin"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <app-med-map (onMapReady)="initMapPoint()" (onClick)="setLocationFromClick($event)"></app-med-map>
+      <app-manual-coordinates
+        [coordinates]="coordinates"
+        [disabled]="lockSettingPoint"
+        (onDeleteCoordinates)="deleteCoordinates()"
+        (onSetCoordinates)="setLocationFromInput($event)"></app-manual-coordinates>
+    </div>
+  </div>
+</div>
+

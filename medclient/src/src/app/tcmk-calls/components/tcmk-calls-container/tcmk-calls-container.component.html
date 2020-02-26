@@ -1,0 +1,146 @@
+<div class="card-header toolbar">
+  <div class="toolbar-left">
+    <button class="btn  btn-success" ngbTooltip="Shift+N"
+            placement="right" (click)="newCall()">Новый вызов
+    </button>
+  </div>
+  <div class="toolbar-right">
+    <button class="btn btn-sm btn-primary ml-1" ngbTooltip="Shift+C"
+            placement="left" (click)="changeMode()">
+      {{mode === 'calls' ? 'Таблица Ф-110' : 'Таблица вызовов'}}
+    </button>
+    <button class="btn btn-sm btn-primary ml-1" (click)="goToCallArchive()"
+            ngbTooltip="Shift+A" placement="bottom">
+      Архив вызовов
+    </button>
+    <button class="btn btn-sm btn-primary ml-1" (click)="goToCardArchive()"
+            ngbTooltip="Shift+F" placement="bottom-left">Архив Ф-110</button>
+  </div>
+</div>
+<div class="card-header toolbar pt-2">
+  <div class="toolbar-left">
+    <div ngbDropdown display="dynamic" class="d-inline-block">
+      <div class="navbar-nav">
+        <button class="btn btn-primary" id="drop-filters" ngbDropdownToggle>Фильтры</button>
+      </div>
+      <div ngbDropdownMenu aria-labelledby="drop-filters" class="">
+        <div class="drop-filters-desc">
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.UNDONE"
+                        (ngModelChange)="clickStatus($event)"
+                        [(ngModel)]="filters.statuses"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-exclamation-circle text-danger"></i>
+            Бригада не назначена
+          </div>
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.UNCONFIRM"
+                        [(ngModel)]="filters.statuses"
+                        (ngModelChange)="clickStatus($event)"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-exclamation-circle text-warning"></i>
+            Не принят бригадой
+          </div>
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.CONFIRM"
+                        [(ngModel)]="filters.statuses"
+                        (ngModelChange)="clickStatus($event)"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-clipboard-check text-primary"></i>
+            Принят бригадой
+          </div>
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.ACTIVE"
+                        [(ngModel)]="filters.statuses"
+                        (ngModelChange)="clickStatus($event)"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-cog text-primary"></i>
+            В работе
+          </div>
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.EVACUATION_REQUIRED"
+                        [(ngModel)]="filters.statuses"
+                        (ngModelChange)="clickStatus($event)"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-people-carry text-primary"></i>
+            Требуется мед. эвакуация
+          </div>
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.TRANSPORTING"
+                        [(ngModel)]="filters.statuses"
+                        (ngModelChange)="clickStatus($event)"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-ambulance text-primary"></i>
+            Транспортировка
+          </div>
+          <div class="filter-row">
+            <p-checkbox class="sc-control-checkbox"
+                        [value]="callStatusList.DONE"
+                        [(ngModel)]="filters.statuses"
+                        (ngModelChange)="clickStatus($event)"
+                        (onChange)="updateFilter()"></p-checkbox>
+            <i class="fas fa-check-circle text-success"></i>
+            Завершен
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-statuses">
+
+      <div class="status-counter">
+        <i
+          class="fas fa-exclamation-circle {{selectedStatuses[callStatusList.UNDONE] ? 'text-danger' : 'text-secondary'}}"></i>
+        <div class="counter">{{statusCounters ? statusCounters[callStatusList.UNDONE] || '0' : '0'}}</div>
+      </div>
+
+      <div class="status-counter">
+        <i
+          class="fas fa-exclamation-circle {{selectedStatuses[callStatusList.UNCONFIRM] ? 'text-warning' : 'text-secondary'}} "></i>
+        <div class="counter">{{statusCounters ? statusCounters[callStatusList.UNCONFIRM] || '0' : '0'}}</div>
+      </div>
+
+      <div class="status-counter">
+        <i
+          class="fas fa-clipboard-check {{selectedStatuses[callStatusList.CONFIRM] ? 'text-primary' : 'text-secondary'}}"></i>
+        <div class="counter">{{statusCounters ? statusCounters[callStatusList.CONFIRM] || '0' : '0'}}</div>
+      </div>
+
+      <div class="status-counter">
+        <i class="fas fa-cog {{selectedStatuses[callStatusList.ACTIVE] ? 'text-primary' : 'text-secondary'}}"></i>
+        <div class="counter">{{statusCounters ? statusCounters[callStatusList.ACTIVE] || '0' : '0'}}</div>
+      </div>
+
+      <div class="status-counter">
+        <i
+          class="fas fa-people-carry  {{selectedStatuses[callStatusList.EVACUATION_REQUIRED] ? 'text-primary' : 'text-secondary'}}"></i>
+        <div class="counter">{{statusCounters ? statusCounters[callStatusList.EVACUATION_REQUIRED] || '0' : '0'}}</div>
+      </div>
+
+      <div class="status-counter">
+        <i
+          class="fas fa-ambulance  {{selectedStatuses[callStatusList.TRANSPORTING] ? 'text-primary' : 'text-secondary'}}"></i>
+        <div class="counter">{{statusCounters ? statusCounters[callStatusList.TRANSPORTING] || '0' : '0'}}</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="toolbar-right">
+    <div class="w-50">
+      <app-simple-view
+        [form]="filterForm"
+        [descriptions]="filterDescription"
+        [row]="true"
+        [preprocessed]="true"></app-simple-view>
+    </div>
+  </div>
+</div>
+<app-calls-table *ngIf="mode === 'calls'" [filters]="filters"></app-calls-table>
+<app-card-table *ngIf="mode === 'cards'" [filters]="filters"></app-card-table>
+<app-aviation-requests></app-aviation-requests>
+

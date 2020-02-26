@@ -1,0 +1,9 @@
+<div class="card pt-2">
+  <form [formGroup]="form" class="sc-form form-group flexible mt-1">
+    <input formControlName="long" class="sc-control form-control col-4 mx-1" type="number">
+    <input formControlName="lat" class="sc-control form-control col-4 mx-1" type="number">
+    <button class="btn btn-warning mx-1" (click)="deleteCoordinates()"><i class="fa fa-eraser"></i></button>
+  </form>
+</div>
+
+

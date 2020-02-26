@@ -1,0 +1,12 @@
+@import "../../../../../styles/variables";
+
+.performer-card{
+  .card{
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+  }
+  .performer-info{
+    color: $gray-600;
+    font-style: italic;
+  }
+}

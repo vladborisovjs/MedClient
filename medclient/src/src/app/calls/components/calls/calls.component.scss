@@ -1,0 +1,18 @@
+:host{
+  overflow: auto;
+  height: 100%;
+}
+
+.calls-wrapper{
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+.calls-lst{
+  min-height: 300px;
+}
+
+.brigades-lst{
+  min-height: 280px;
+}

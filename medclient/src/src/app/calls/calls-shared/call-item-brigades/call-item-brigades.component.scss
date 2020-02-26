@@ -1,0 +1,58 @@
+@import "../../../../styles/variables";
+:host{
+  height: 100%;
+  background-color: $yellow-sand;
+}
+
+.card-pack{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  align-items: stretch;
+  background-color: $yellow-sand;
+  //align-content: stretch;
+  //height: 100%;
+  width: 100%;
+
+}
+
+.card-wrapper{
+  width: 12rem;
+  max-width: 16rem;
+  padding: 0.5rem;
+  flex-grow: 1;
+}
+
+.new-bri-item{
+  height: 100%;
+  min-height: 11rem;
+  .card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.bri-item{
+  .card{
+    min-width: 20rem;
+  }
+  .card-body{
+    padding: 0.75rem;
+  }
+  p{
+    font-size: 0.8rem;
+    margin: 0;
+  }
+  em{
+    color: grey;
+  }
+  .bri-control{
+    margin-top: 0.8rem;
+    width: 100%;
+    .btn-sm{
+      width: 100%;
+      line-height: 1;
+    }
+  }
+}

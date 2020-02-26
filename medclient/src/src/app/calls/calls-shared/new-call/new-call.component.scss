@@ -1,0 +1,28 @@
+:host{
+  height: 100%;
+  overflow: auto;
+}
+
+.new-call-block{
+  height: 100%;
+  min-width: 678px;
+}
+
+.map-block-call-block{
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-height {
+  height: 100%;
+}
+
+.repeated-calls-block {
+  min-height: 200px;
+  height: 270px;
+}
+
+.map-new-call {
+  min-height: 200px;
+}

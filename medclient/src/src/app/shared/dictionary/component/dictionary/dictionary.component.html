@@ -1,0 +1,25 @@
+<ng-select [items]="list"
+           (scrollToEnd)="onScrollToEnd($event)"
+           [bindLabel]="bindLabel"
+           [virtualScroll]="true"
+           [title]="title"
+           [placeholder]="placeholder"
+           class="archive-select"
+           [(ngModel)]="_value"
+           (search)="onSearch($event)"
+           [searchFn]="search"
+           [loading]="loading"
+           (clear)="onClear($event)"
+           [ngClass]="{'hide-cross': !showCross}"
+           [bindValue]="bindValue"
+           (open)="onOpen()"
+           [dropdownPosition]="dropdownPosition"
+           [disabled]="disabled || readonly"
+           (blur)="onBlur($event)"
+           loadingText="Загрузка..."
+           notFoundText="Ничего не найдено"
+           (change)="onSelectChange($event)">
+  <ng-template ng-option-tmp let-item="item" let-index="index">
+    <span [title]="item[bindLabel]">{{item[bindLabel]}} {{item[addLabel] ? ' ' + item[addLabel] : ''}}</span>
+  </ng-template>
+</ng-select>

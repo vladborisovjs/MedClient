@@ -1,0 +1,79 @@
+:host {
+  height: 100%;
+}
+
+.qwe {
+  flex: 1 1 auto;
+}
+
+.flexible {
+  flex: 1 1 auto;
+}
+
+.map-wrapper {
+  height: 100%;
+  min-width: 350px;
+}
+
+.toolbar-wrapper {
+  height: 100%;
+  min-width: 330px;
+}
+
+.legend-icon {
+  width: 30px
+}
+
+.fa-warn {
+  color: goldenrod;
+}
+
+.bri-item {
+  .card {
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  p {
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
+  em {
+    color: grey;
+  }
+
+  .bri-control {
+    margin-top: 0.8rem;
+    width: 100%;
+
+    .btn-sm {
+      width: 100%;
+      line-height: 1;
+    }
+  }
+
+  .card-label {
+    color: grey;
+  }
+
+  .lb {
+    border-left: 1px solid #323676;
+  }
+
+  .map-position {
+    background-color: transparent;
+    border: none;
+
+    &:hover {
+      color: #323676;
+    }
+
+    &:focus,
+    &.focus {
+      box-shadow: none;
+    }
+  }
+}

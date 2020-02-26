@@ -1,0 +1,53 @@
+:host{
+  height: 100%;
+  overflow: auto;
+}
+
+.cards-block{
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.calls-block{
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bri-info-title{
+  width: 8rem;
+  text-align: end;
+}
+
+.bri-info-value{
+  font-weight: 500;
+  padding-left: 10px;
+}
+
+.bri-info-block{
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px dotted rgba(black, 0.2);
+}
+
+.calls-wrapper{
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+.common-plate{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 0.3rem 1rem 0.3rem 0.3rem;
+}
+
+.filter-statuses{
+  i{
+    vertical-align: middle;
+    margin-left: 0.7rem;
+    margin-right: 0.25rem;
+  }
+}

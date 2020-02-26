@@ -1,0 +1,58 @@
+<div class="flexible">
+  <form class="sc-form form-group col-10" [formGroup]="form">
+    <div class="sc-label">
+      Улица
+    </div>
+    <ng-select
+      (search)="onSearchStreet($event)"
+      (change)="onSelectStreet($event)"
+      [loading]="loadingStreets"
+      [formControlName]="'address'"
+      bindValue="addressCropped"
+      bindLabel="addressCropped"
+      [items]="streets"
+      [searchFn]="search"
+      [addTag]="addStreet"
+      addTagText="Выбрать улицу"
+      class="archive-select"
+      [placeholder]="'Введите улицу'"
+      loadingText="Загрузка..."
+      notFoundText="Ничего не найдено">
+      <ng-template ng-label-tmp let-item="item">
+        <span [title]="item[name]">{{item.addressCropped || '-'}}</span>
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item" let-index="index">
+        <span [title]="item[name]">{{item.addressCropped}}</span>
+      </ng-template>
+    </ng-select>
+  </form>
+  <form class="sc-form form-group col-2" [formGroup]="form">
+    <div class="sc-label">
+      Дом
+    </div>
+    <ng-select
+      (change)="onSelectBuilding($event)"
+      [formControlName]="'houseNum'"
+      [loading]="loadingBuilding"
+      [items]="buildings"
+      [searchFn]="searchBuilding"
+      bindValue="nameFull"
+      bindLabel="nameFull"
+      class="archive-select"
+      [placeholder]="'№'"
+      [addTag]="addBuilding"
+      loadingText="Загрузка..."
+      notFoundText="Не найдено"
+      addTagText="Добавить №"
+    >
+      <!--<ng-template ng-label-tmp let-item="item">-->
+      <!--<span [title]="item.houseNumber">{{item.houseNumber}}</span>-->
+      <!--</ng-template>-->
+<!--      <ng-template ng-option-tmp let-item="item" let-index="index">-->
+<!--        <span [title]="item.nameFull">{{item.houseNumber}}</span>-->
+<!--      </ng-template>-->
+    </ng-select>
+  </form>
+</div>
+
+

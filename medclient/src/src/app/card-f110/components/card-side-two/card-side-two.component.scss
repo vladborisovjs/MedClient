@@ -1,0 +1,14 @@
+@import "../../../../styles/variables";
+:host{
+  height: 100%;
+  overflow: auto;
+  background-color: $yellow-sand;
+}
+
+.card{
+  margin-top: 1rem;
+}
+
+//::ng-deep .range {
+//  width: 100px;
+//}

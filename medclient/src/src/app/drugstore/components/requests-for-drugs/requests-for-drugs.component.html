@@ -1,0 +1,53 @@
+<div class="card full-height">
+  <div class="card-header">
+    <h5 class="center-me">
+      Заявки на пополнение укадок
+    </h5>
+  </div>
+  <div class="flexible h-100 w-100" resizable="horizontal" saveName="drug-request">
+    <div class="req-list" leftResizable fixed="500px">
+      <div class="card h-100">
+        <div class="card-header">
+          <div class="card-title">Список заявок</div>
+        </div>
+        <app-grid-table
+          [dataSource]="drugRequestsSource"
+          [columnDefs]="colDef"
+          [filter]="filters"
+          (onRowSelect)="selectRequest($event)"
+        ></app-grid-table>
+      </div>
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="req-item default-bg" rightResizable >
+      <div class="card m-2" *ngIf="requestItem">
+        <div class="card-header">
+          <div class="card-title">
+            Заявка на пополнение укладки
+          </div>
+        </div>
+        <div class="card-body">
+          №: {{requestItem.id}} <br>
+          Укладка: {{requestItem.bagFK.name}} <br>
+          Бригада: {{requestItem.bagFK.brigadeFK.name}} <br>
+          Описание: {{requestItem.bagFK.description}} <br>
+          Медикаменты:
+          <ul>
+            <li *ngFor="let drug of requestItem.needDrugs">
+              {{drug.drugFK.name}} {{drug.drugFK.amount}} {{drug.drugFK.measurementFK ? drug.drugFK.measurementFK.name : 'ед.'}}
+            </li>
+          </ul>
+        </div>
+        <div class="card-footer toolbar-right">
+          <div class="btn-group">
+            <button class="btn btn-outline-danger" (click)="deleteRequest()">Удалить</button>
+            <button class="btn btn-success" (click)="acceptRequest()">Пополнить</button>
+          </div>
+        </div>
+      </div>
+      <div class="patch" *ngIf="!requestItem">
+        <i class="fas fa-pills"></i>
+      </div>
+    </div>
+  </div>
+</div>

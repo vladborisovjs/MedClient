@@ -1,0 +1,100 @@
+<div class="card default-bg">
+  <div class="card-header">
+    <div class="card-title">
+      {{shiftItem.id ? 'Редактирование смены бригады' : 'Создание смены бригады'}}
+      {{brigade.name}} на {{date | date: 'dd.MM.yyyy'}}
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <ul class="list-group list-group-flush">
+
+    <!--    <li *ngIf="existingShifts" class="list-group-item">-->
+    <!--      <div class="card-subtitle">-->
+    <!--        Уже назначенные смены в этот день:-->
+    <!--      </div>-->
+    <!--      <p *ngFor="let shift of existingShifts;">-->
+    <!--        <b>C:</b> {{shift.dateFrom | date: 'dd.MM.yyyy HH:mm'}} <b>до:</b> {{shift.dateTo | date: 'dd.MM.yyyy HH:mm'}}-->
+    <!--      </p>-->
+    <!--    </li>-->
+
+    <li class="list-group-item default-bg">
+      <app-simple-view
+        [form]="form"
+        [row]="true"
+        [preprocessed]="true"
+        [descriptions]="descriptions"></app-simple-view>
+
+      <div *ngIf="shiftItem.dateTo && shiftItem.dateTo" class="flexible flex-column">
+        <div class="flexible flex-column">
+          <div class="card-subtitle">
+            Состав бригады
+          </div>
+          <div class="performer-card" *ngFor="let performer of shiftItem.performerScheduleList">
+            <div class="card">
+              <div class="flexible">
+                <div class="card-subtitle">
+                  {{performer.performerFK.surname}} {{performer.performerFK.name}} {{performer.performerFK.patronymic}}
+                </div>
+<!--                <div class="toolbar-right">-->
+<!--                    <button class="btn btn-tiny btn-outline-danger">-->
+<!--                      Удалить-->
+<!--                    </button>-->
+<!--                </div>-->
+              </div>
+              <div class="performer-info">
+                Должность: <b>{{performer.performerFK.typeFK.name}}</b>
+              </div>
+            </div>
+          </div>
+          <div class="toolbar-left">
+            <button class="btn btn-success" (click)="addPerformer()">
+              Добавить сотрудника
+            </button>
+          </div>
+        </div>
+        <div class="flexible flex-column mt-4">
+          <div class="performer-card" *ngFor="let transport of shiftItem.transportScheduleList">
+            <div class="card">
+              <div class="flexible">
+                <div class="card-subtitle">
+                  {{transport.transportFK.name}}
+                </div>
+<!--                <div class="toolbar-right">-->
+<!--                    <button class="btn btn-tiny btn-outline-danger">-->
+<!--                      Удалить-->
+<!--                    </button>-->
+<!--                </div>-->
+              </div>
+              <div class="performer-info">
+                Гос. номер: <b>{{transport.transportFK.code}}</b><br>
+                <button class="btn btn-tiny btn-warning" (click)="addTransport()">Заменить</button>
+              </div>
+            </div>
+          </div>
+          <div class="toolbar-left">
+            <button class="btn btn-success" *ngIf="!shiftItem.transportScheduleList || !shiftItem.transportScheduleList.length" (click)="addTransport()">
+              Выбрать транспорт
+            </button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!(shiftItem.dateTo && shiftItem.dateTo)" class="alert alert-warning mt-2" role="alert">
+       Укажите время работы бригады!
+      </div>
+      <div *ngIf="notEquipped" class="alert alert-warning mt-2" role="alert">
+       Бригада не укомплектована!
+      </div>
+      <div *ngIf="!correctTime" class="alert alert-warning mt-2" role="alert">
+        Укажите корректное время работы бригады!
+      </div>
+    </li>
+  </ul>
+  <div class="card-footer toolbar-right">
+    <div class="btn-group ">
+      <button class="btn btn-secondary" (click)="back()">Отмена</button>
+      <button class="btn btn-success"  (click)="updateShift()">Сохранить</button>
+    </div>
+  </div>
+</div>

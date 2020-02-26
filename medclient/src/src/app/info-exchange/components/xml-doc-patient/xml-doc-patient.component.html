@@ -1,0 +1,31 @@
+<div class="flexible full-height" resizable="horizontal" saveName="logs-patient">
+  <div class="card request-block" leftResizable>
+    <div class="full-height">
+      <div class="card-header">
+        <div class="card-subtitle">
+          Запрос
+        </div>
+      </div>
+      <div class="card-body scrollable">
+        <div class="xml-block">
+          {{relatedLogFK.first}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="vertical-resizer" resizer="2px"></div>
+  <div class="card response-block" rightResizable fixed="300">
+    <div class="full-height">
+      <div class="card-header">
+        <div class="card-subtitle">
+          Ответ
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="xml-block">
+          {{relatedLogFK.second}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+:host{
+  overflow: auto;
+  height: 100%;
+}
+
+.list-block{
+  min-width: 600px;
+  height: 100%;
+}
+
+
+.preview-block{
+  min-width: 620px;
+  height: 100%;
+
+}
+
+
+.bri-info-title{
+  width: 8rem;
+  text-align: end;
+}
+
+.bri-info-value{
+  font-weight: 500;
+  padding-left: 10px;
+}
+
+.bri-info-block{
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px dotted rgba(black, 0.2);
+}
+

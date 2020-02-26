@@ -1,0 +1,12 @@
+<div class="plate-list" *ngIf="item">
+  <div *ngFor="let property of properties" class="gen-info-char">
+    <div class="plate-title">{{property.title}}</div>
+    <div class="plate-value" *ngIf="property.type==='text'">{{item[property.field]}}</div>
+    <div class="plate-value" *ngIf="property.type==='bean' && !property.datePipeFormat">{{item[property.field] ? item[property.field][property.subField] : ''}}</div>
+    <div class="plate-value" *ngIf="property.type==='bean' && property.datePipeFormat">{{item[property.field] ? (item[property.field][property.subField] | date: property.datePipeFormat ): ''  }}</div>
+    <div class="plate-value" *ngIf="property.type==='number'">{{item[property.field]}}</div>
+    <div class="plate-value" *ngIf="property.type==='date' && !property.datePipeFormat">{{item[property.field] | date}}</div>
+    <div class="plate-value" *ngIf="property.type==='date' && property.datePipeFormat">{{item[property.field] | date: property.datePipeFormat}}</div>
+    <div class="plate-value" *ngIf="property.type==='boolean'">{{item[property.field] ? 'Да': 'Нет'}}</div>
+  </div>
+</div>

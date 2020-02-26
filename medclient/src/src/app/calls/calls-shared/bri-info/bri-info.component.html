@@ -1,0 +1,54 @@
+<div class="card info-wrapper" *ngIf="brigade">
+  <div class="card-header">
+    <span class="h6">{{brigade.first.name}}</span>
+    <!--    <span> {{brigade.first.brigadeTypeFK.name}}</span>-->
+  </div>
+  <div class="brigade-control">
+    <div class="performers-block">
+      <div class="mt-2"><i class="far fa-clock"></i> {{brigade.second[0].dateFrom | date: "MM.dd HH:mm"}} -
+        {{brigade.second[0].dateTo | date: "MM.dd HH:mm"}} </div>
+      <div class="alert alert-warning m-1 center-me" *ngIf="!brigadeContainer">
+        <i class="fas fa-spinner fa-spin"></i> Загрузка...
+      </div>
+      <div class="mt-1" *ngIf="brigadeContainer">
+        <div *ngFor="let performer of brigadeContainer.performerList">
+          <i *ngIf="performer.typeFK.groupCode === 0" class="fas fa-briefcase-medical"></i>
+          <i *ngIf="performer.typeFK.groupCode === 1" class="fas fa-car"></i>
+          <i *ngIf="performer.typeFK.groupCode === 2" class="fas fa-phone-alt"></i>
+          <i *ngIf="performer.typeFK.groupCode === 5" class="fas fa-user"></i>
+          {{performer | fullnameShorter}}
+        </div>
+      </div>
+      <div class="mt-2" *ngIf="brigadeContainer && brigadeContainer.transportBean">
+        <span class="h6">{{brigadeContainer.transportBean.name}}</span> <span
+        class="card badge badge-light h6 ml-2">{{brigadeContainer.transportBean.code}}</span>
+      </div>
+    </div>
+
+    <div class="buttons-block" *ngIf="mode === 'online'">
+      <button class="btn btn-success mr-1" (click)="sendOnBase()">На станции</button>
+      <button class="btn btn-warning mr-1" (click)="endDuty()">Уход с линии</button>
+      <button class="btn btn-danger mr-1" (click)="sendAlarm()">Тревога</button>
+    </div>
+    <div class="buttons-block" *ngIf="mode === 'offline'">
+      <button class="btn btn-success mr-1" (click)="startDuty()">Вывести на линию</button>
+    </div>
+  </div>
+</div>
+
+<div class="call-n-logs card" *ngIf="brigade">
+  <div class="card-header toolbar">
+    <div class="h6 toolbar-left">Вызовы бригады</div>
+    <div class="toolbar-right"><button class="btn btn-sm py-0 btn-primary" (click)="openLog()">Журнал</button></div>
+  </div>
+  <app-grid-table
+    [columnDefs]="colDef"
+    [listSource]="callList"
+    [pagination]="false"
+    (onRowDblClick)="goToCall($event)"
+  ></app-grid-table>
+</div>
+
+<div class="patch w-100" *ngIf="!brigade">
+  <i class="fas fa-ambulance"></i>
+</div>

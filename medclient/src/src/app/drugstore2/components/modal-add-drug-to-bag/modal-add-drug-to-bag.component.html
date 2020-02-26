@@ -1,0 +1,75 @@
+<div class="card">
+  <div class="card-header toolbar">
+    <div class="toolbar-left">
+
+    </div>
+    <div class="card-title">
+      Добавление лекарства
+    </div>
+    <div class="toolbar-right">
+      <span class="text-right">*Для множественного выделения Ctrl+левая кнопка мыши</span>
+    </div>
+  </div>
+  <div class="p-2 header-wrapper">
+    <div class="">
+      <!--<app-simple-view-->
+        <!--[descriptions]="description"-->
+        <!--[form]="formDrugs"-->
+        <!--[row]="true"-->
+      <!--&gt;</app-simple-view>-->
+
+    </div>
+    <div class="control-wrapper">
+      <!--<button class="btn btn-sm btn-success mr-2" [disabled]="!addCountItem || addCountItem < 0 || !selectedItem" (click)="addItemFromTable()">-->
+        <!--Добавить-->
+      <!--</button>-->
+      <!--<input-->
+        <!--class="sc-control form-control"-->
+        <!--type="number"-->
+        <!--[placeholder]="'кол-во'"-->
+        <!--[(ngModel)]="addCountItem">-->
+      <!--<div class="ml-1">-->
+        <!--шт.-->
+      <!--</div>-->
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <app-grid-table *ngIf="mode === 'Drugs'"
+      [columnDefs]="colDefDrugs"
+      [dataSource]="dataDrugs"
+      [multiSelect]="true"
+      (onRowSelect)="selectItemFromTable($event)"
+      (onGridReady)="fitCol($event)"
+    ></app-grid-table>
+    <app-grid-table *ngIf="mode === 'Wares'"
+      [columnDefs]="colDefWares"
+      [dataSource]="dataWares"
+      [multiSelect]="true"
+      (onRowSelect)="selectItemFromTable($event)"
+      (onGridReady)="fitCol($event)"
+    ></app-grid-table>
+    <app-grid-table *ngIf="mode === 'Other'"
+      [columnDefs]="colDefOthers"
+      [dataSource]="dataOthers"
+      [multiSelect]="true"
+      (onRowSelect)="selectItemFromTable($event)"
+      (onGridReady)="fitCol($event)"
+    ></app-grid-table>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-sm btn-success mr-2" [disabled]="!selectedItems"
+              (click)="addItemFromTable()">
+        Добавить
+      </button>
+    </div>
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-secondary" (click)="back()">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

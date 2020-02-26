@@ -1,0 +1,45 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Смены бригады {{brigade.name}}
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <ul class="list-group list-group-flush" *ngIf="shifts">
+    <li class="list-group-item" *ngFor="let shift of shifts">
+
+      <b>C:</b> {{shift.dateFrom | date: 'dd.MM.yyyy HH:mm'}}
+      <b>до:</b> {{shift.dateTo | date: 'dd.MM.yyyy HH:mm'}}
+
+      <div class="card-subtitle mt-2 mb-0">Сотрудники:</div>
+      <div *ngFor="let performer of shift.performerScheduleList">
+        {{performer.performerFK.name}} {{performer.performerFK.surname}} - {{performer.performerFK.typeFK.name}}
+      </div>
+
+      <div class="card-subtitle mt-2 mb-0">Транспорт:</div>
+      <div *ngFor="let transport of shift.transportScheduleList">
+        {{transport.transportFK.name}} - {{transport.transportFK.code}}
+      </div>
+      <div class="toolbar-right">
+        <div class="btn-group">
+          <button class="btn btn-primary" (click)="updateShift(shift)">Редактировать</button>
+          <button class="btn btn-danger" (click)="deleteShift(shift)">Удалить</button>
+        </div>
+      </div>
+
+    </li>
+  </ul>
+  <div class="patch" *ngIf="!shifts">
+    <i class="fas fa-spin fa-spinner"></i>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-success" (click)="createShift()">Добавить смену</button>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-secondary" (click)="back()">Назад</button>
+    </div>
+  </div>
+</div>

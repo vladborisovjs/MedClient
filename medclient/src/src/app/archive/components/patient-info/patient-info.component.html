@@ -1,0 +1,87 @@
+<div class="card full-height">
+  <div class="card-body full-height p-0">
+    <div class="full-height flexible" resizable="horizontal" saveName="patients-info-archive">
+      <div class="card cards-list-block" fixed="550" leftResizable>
+        <div class="card-header flexible justify-content-center">
+          <h5>Список карт пациента</h5>
+        </div>
+        <div class="card-body null-padding">
+          <app-grid-table
+            [dataSource]="dataSourceCards"
+            [columnDefs]="colDefsCards"
+            [pagination]="true"
+            [filter]="filters"
+            (onRowDblClick)="goToCard($event)"
+            (onGridReady)="fitCol($event)">
+          </app-grid-table>
+        </div>
+      </div>
+      <div class="vertical-resizer" resizer="2px"></div>
+      <div class="card patient-info-block" rightResizable>
+        <div class="card-header flexible justify-content-center">
+          <h5>
+            {{patItem ? 'Пациент №' + patItem.id : ''}}
+          </h5>
+        </div>
+        <div class="card-body d-flex p-0 full-height scrollable default-bg">
+          <!-- 1я колонка карточек-->
+          <div class="w-50 p-2">
+            <div class="card">
+              <div class="card-header">
+                Общая информация
+              </div>
+              <div class="card-body">
+                <app-simple-view
+                  [descriptions]="getBlockDescriptions('patient-info')"
+                  [row]="true"
+                  [preprocessed]="true"
+                  [item]="patItem"
+                  [form]="formPatient"></app-simple-view>
+              </div>
+            </div>
+          </div>
+          <!-- 2я колонка карточек-->
+          <div class="w-50 p-2">
+            <div class="card">
+              <div class="card-header">
+                Документы
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item pr-0 pl-0 {{doc.document.isDeleted? 'bg-light' : ''}}"
+                      *ngFor="let doc of docForms; let i = index;">
+                    <app-simple-view
+                      [form]="doc.form"
+                      [item]="doc.document"
+                      [preprocessed]="true"
+                      [row]="true"
+                      [descriptions]="doc.description"
+                    ></app-simple-view>
+                    <div class="toolbar-right">
+                      <button class="btn btn-danger" [disabled]="doc.document.isDeleted"
+                              (click)="deleteDocument(doc, i)">
+                        Удалить
+                      </button>
+                    </div>
+                  </li>
+                  <li class="list-group-item last-list-item">
+                    <button class="btn btn-success" (click)="addDocument()">
+                      Добавить документ
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="btn-group w-100 p-1">
+            <button class="btn btn-success btn-sm" (click)="savePatient()"><i class="fas fa-save"></i> Сохранить
+              изменения
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

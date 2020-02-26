@@ -1,0 +1,26 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Заполнение укладки по шаблону или набору
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="table-wrapper">
+    <app-grid-table
+      [columnDefs]="colDefTemplates"
+      [dataSource]="ds.drugBagTemplatesDataSource"
+      (onRowSelect)="selectTemplateFromTable($event)"
+      [filter]="filters"
+    ></app-grid-table>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" [disabled]="!selectedTemplateFromTable || template.length !==3" (click)="fillUpBag()">Заполнить</button>
+        <button class="btn btn-secondary" (click)="back()">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>

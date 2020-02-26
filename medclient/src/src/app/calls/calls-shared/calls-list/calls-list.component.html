@@ -1,0 +1,145 @@
+<div class="flexible flex-column full-height">
+  <div class="flexible call-toolbar default-bg">
+    <div class="toolbar-left">
+      <div class="btn-group">
+        <button class="btn btn-success"
+                *ngIf="calls.mode === 'tcmk' ? access.checkAccessWrite({level: 'tcmkModule'}) : access.checkAccessWrite({level: 'callsModule'})"
+                (click)="createCall()" >
+          <i class="fas fa-sm fa-plus"></i>
+          Новый вызов  (shift+N)
+        </button>
+        <button class="btn btn-primary" (click)="goToArchive()">
+          Архив {{mode === 'calls' ? 'вызовов': 'карт'}} (shift+A)
+        </button>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-primary" (click)="changeMode()">
+        {{mode === 'calls' ? 'Карты' : 'Вызовы'}} (shift+C)
+      </button>
+    </div>
+  </div>
+  <div class="flexible full-height" resizable="horizontal" saveName="calls-cards" *ngIf="mode === 'calls'">
+    <div class="card full-height calls-block" leftResizable>
+      <div class="card-header toolbar">
+        <div class="toolbar-left">
+          <div class="filter-statuses">
+            <i class="fas fa-exclamation-circle text-danger"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNDONE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-exclamation-circle text-warning"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNCONFIRM" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-clipboard-check text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.CONFIRM" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-cog text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.ACTIVE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-people-carry text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.EVACUATION_REQUIRED" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-ambulance text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.TRANSPORTING" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-check-circle text-success"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.DONE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+          </div>
+        </div>
+        <h5>
+          Актуальные вызовы
+          <span *ngIf="calls.mode === 'tcmk'">ЧС </span>
+          <span class="badge badge-pill badge-primary">
+            {{callCount !== undefined ? callCount : ''}}
+            <i *ngIf="callCount === undefined" class="fas fa-spin fa-spinner"></i>
+          </span>
+        </h5>
+        <div class="toolbar-right">
+          <form [formGroup]="form" novalidate autocomplete="off" class="sc-form form-group subdivision-select flexible  col-8">
+            <ng-select
+              [placeholder]="'Подразделение'"
+              [bindLabel]="'name'"
+              [bindValue]="'id'"
+              [items]="subdivisionList"
+              class="archive-select subdivision-select"
+              [formControlName]="'subdivision'">
+            </ng-select>
+          </form>
+        </div>
+      </div>
+      <div class="card-body full-height null-padding">
+        <app-grid-table
+          [dataSource]="dataSource"
+          [columnDefs]="colDefs"
+          [pagination]="true"
+          [filter]="filter"
+          [gridOptions]="gridOptions"
+          (onRowSelect)="selectCall($event)"
+          (onGridReady)="fitCol($event)"
+          (onFilterChanged)="filterSource($event)"
+          (onSortChanged)="sortSource($event)"
+          (onRowDblClick)="goToCall($event)">
+        </app-grid-table>
+      </div>
+    </div>
+    <div class="vertical-resizer" resizer="2px"></div>
+    <div class="full-height cards-block" rightResizable fixed="300">
+      <div class="card h-50">
+        <div class="card-header toolbar">
+          <div class="toolbar-left"></div>
+          <div class="card-title">Карты вызова</div>
+          <div class="toolbar-right"></div>
+        </div>
+        <div class="card-body p-0 full-height scrollable">
+          <table *ngIf="!cardLoading && selectedCall && callsCards.length > 0"
+                 class="table table-sm  m-0 table-hover">
+            <thead>
+            <tr>
+              <th scope="col">№</th>
+              <!--<th scope="col">Статус</th>-->
+              <th scope="col">Бригада</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let card of callsCards" [routerLink]="card.call+'/card/'+card.id">
+              <td>{{card.number}}</td>
+              <!--<td><a>{{card.card_status_name}}</a></td>-->
+              <td>{{card.brigadeFK.name}}</td>
+            </tr>
+            </tbody>
+          </table>
+          <div *ngIf="!cardLoading && selectedCall &&callsCards.length === 0" class="patch">
+            <h2>У вызова нет карт</h2>
+          </div>
+          <div *ngIf="cardLoading" class="patch">
+            <h2>Загрузка...</h2>
+          </div>
+          <div *ngIf="!selectedCall" class="patch">
+            <i class="fas fa-file-medical-alt"></i>
+          </div>
+        </div>
+      </div>
+      <div class="card h-50">
+        <div class="card-header toolbar">
+          <div class="toolbar-left"></div>
+          <div class="card-title">Контроль времени</div>
+          <div class="toolbar-right"></div>
+        </div>
+        <div *ngIf="!selectedCall" class="patch">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+        <div class="card-body" *ngIf="selectedCall">
+          <div>
+            <i class="fa fa-phone"></i> {{selectedCall.date | date: 'dd.MM.yyyy HH:mm'}} <br>
+            <i class="fas fa-hourglass-half fa-spin"></i> {{timeControlValue.minutes}} мин. {{timeControlValue.seconds}}
+            сек.
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-card-list *ngIf="mode === 'cards'"></app-card-list>
+</div>
+

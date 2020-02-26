@@ -1,0 +1,626 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../styles/variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~ag-grid-community/dist/styles/ag-grid.css";
+@import "~ag-grid-community/dist/styles/ag-theme-bootstrap.css";
+
+@import "~primeicons/primeicons.css";
+@import "~primeng/resources/themes/omega/theme.css";
+@import "~primeng/resources/primeng.css";
+
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+
+.default-bg {
+  background-color: $yellow-sand;
+}
+
+.ui-state-active {
+  background-color: lighten($blue, 80%);
+}
+
+.ui-accordion .ui-accordion-content {
+  padding: 0;
+  height: 300px;
+}
+
+html, body, main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+body {
+  position: relative;
+}
+
+header {
+  border-right: 1px solid $secondary;
+  border-left: 1px solid $secondary;
+  flex: 0 0 auto;
+}
+
+main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.full-height {
+  min-height: 0;
+  height: 100%;
+}
+
+.center-me {
+  text-align: center;
+}
+
+.full-width {
+  min-width: 0;
+  width: 100%;
+}
+
+.flexible {
+  display: flex;
+}
+
+.flex-default {
+  flex: 1 1 auto;
+}
+
+.null-padding {
+  padding: 0;
+}
+
+.null-margin {
+  margin: 0;
+}
+
+.btn-wide {
+  width: 75px;
+}
+
+.ic-small {
+  cursor: pointer;
+  padding: 0;
+}
+
+.card {
+  .card-header {
+    flex: 0 0 auto;
+  }
+
+  .card-footer {
+    flex: 0 0 auto;
+  }
+
+  .card-title {
+    font-weight: 700;
+  }
+
+  .card-subtitle {
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 0.325rem;
+  }
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 0.5rem;
+
+  label {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.main-wrapper {
+  min-height: 0;
+  height: 100%;
+  flex: 1 1 auto;
+  border: 0;
+}
+
+.ag-theme-bootstrap {
+  .ag-header {
+    border-bottom: 1px solid $gray-500;
+  }
+
+  .ag-header-cell {
+    border-right: 1px solid $gray-500;
+    box-sizing: border-box;
+  }
+
+  .ag-ltr {
+    border-right: 1px solid $gray-500;
+  }
+
+  .ag-root {
+    border-color: $blue;
+  }
+
+}
+
+.toolbar {
+  padding: .15rem 0.5rem;
+  display: flex;
+}
+
+.toolbar-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.toolbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sc {
+  .sc-form {
+    .sc-control {
+      height: fit-content;
+      flex: 1 1 auto;
+      transition: background-color 0.25s ease;
+      min-width: 0;
+
+      &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $gray-400;
+      }
+
+      &::-moz-placeholder { /* Chrome/Opera/Safari */
+        color: $gray-400;
+      }
+    }
+
+    .sc-label {
+      font-weight: 600;
+      color: #000000;
+
+      &.label-after {
+        display: inline-block;
+      }
+    }
+
+    .sc-control-checkbox {
+      margin-right: 2px;
+      width: 1rem;
+      vertical-align: text-bottom;
+    }
+
+    .sc-control-tricheckbox {
+      margin-right: 2px;
+      width: 1rem;
+      vertical-align: text-bottom;
+    }
+
+    .sc-control-calendar {
+      width: 100%;
+
+      .ui-calendar {
+        width: 100%;
+      }
+
+      .ui-widget {
+        font-family: inherit;
+        color: $gray-700;
+
+        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+          color: $gray-400;
+        }
+
+        &:disabled {
+          background-color: $gray-200;
+          opacity: 1;
+        }
+      }
+
+      .ui-state-disabled {
+        background-color: $gray-200;
+        opacity: 1;
+      }
+
+      .ui-inputtext {
+        transition: background-color 0.25s ease;
+        width: 100%;
+        padding: $input-btn-padding-y $input-btn-padding-x;
+        font-size: $font-size-base;
+        line-height: $line-height-base;
+        background-color: $input-bg;
+        border-radius: $input-border-radius;
+        border: $input-border-width solid $input-border-color;
+      }
+
+      &.ui-inputwrapper-focus {
+        .ui-inputtext {
+          border-color: $input-focus-border-color;
+          box-shadow: $input-focus-box-shadow;
+        }
+      }
+    }
+
+    .archive-dictionary {
+      width: 100%;
+
+      .ng-select-container {
+        transition: background-color 0.25s ease;
+      }
+    }
+  }
+
+  &.ng-invalid {
+    &.ng-touched {
+      .sc-control {
+        background-color: rgba($red, 0.4);
+
+        &:focus {
+          border-color: $red;
+        }
+      }
+
+      .sc-control-calendar {
+        .ui-inputtext {
+          background-color: rgba($red, 0.4);
+        }
+
+        &.ui-inputwrapper-focus {
+          .ui-inputtext {
+            border-color: $red;
+          }
+        }
+      }
+
+      .archive-dictionary {
+        .archive-select {
+          &.ng-select-focused {
+            .ng-select-container {
+              border-color: $red;
+            }
+          }
+
+          .ng-select-container {
+            background-color: rgba($red, 0.4);
+          }
+        }
+      }
+
+      .ng-select { //todo: hot-fix -
+        &.ng-select-focused {
+          .ng-select-container {
+            border-color: $red;
+          }
+        }
+
+        .ng-select-container {
+          background-color: rgba($red, 0.4);
+        }
+      }
+    }
+  }
+}
+
+.order-checkbox {
+  .sc-form {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.inline-checkbox {
+  .sc-form {
+    display: inline-block;
+    width: unset;
+    margin-right: 4px;
+  }
+}
+
+.line-form {
+  .sc-form {
+    display: flex;
+
+    .sc-label {
+      padding-right: 0.25rem;
+      min-width: 90px;
+      flex: 0 0 auto;
+    }
+
+    .sc-post-label {
+      padding-left: 0.25rem;
+      padding-right: 1rem;
+      flex: 0 0 auto;
+      font-style: italic;
+      color: $gray-600;
+    }
+  }
+}
+
+.ng-select.archive-select {
+  width: 100%;
+  transition: background-color 0.25s ease;
+
+  &.hide-cross {
+    .ng-clear-wrapper {
+      display: none;
+    }
+  }
+
+  &.ng-select-single {
+    &.ng-select-disabled {
+      .ng-select-container {
+        background-color: $gray-200;
+        opacity: 1;
+      }
+
+      .ng-arrow-wrapper {
+        display: none;
+      }
+    }
+
+    &.ng-select-focused {
+      .ng-select-container {
+        //transition: background-color 0.25s ease;
+        background-color: $input-bg;
+        border-color: $input-focus-border-color;
+        box-shadow: $input-focus-box-shadow;
+        color: $input-focus-color;
+      }
+    }
+
+    .ng-select-container {
+      height: 100%;
+      min-height: 0;
+      background-color: $input-bg;
+      border-radius: $input-border-radius;
+      border: $input-border-width solid $input-border-color;
+
+      .ng-value-container {
+        padding-left: 0;
+
+        .ng-placeholder {
+          padding: $input-padding-y $input-padding-x;
+        }
+
+        .ng-value {
+          padding: $input-padding-y $input-padding-x;
+          font-size: $font-size-base;
+          line-height: $line-height-base;
+        }
+
+        .ng-input {
+          padding-left: 0;
+          top: 0;
+
+          input {
+            padding: $input-padding-y $input-padding-x;
+            font-size: $font-size-base;
+            line-height: $line-height-base;
+          }
+        }
+      }
+
+      .ng-arrow-wrapper {
+        padding: $input-btn-padding-y $input-btn-padding-x;
+      }
+    }
+  }
+}
+
+.ng-dropdown-panel.archive-select {
+  .ng-dropdown-panel-items {
+    .ng-option {
+      padding: $input-btn-padding-y $input-btn-padding-x;
+    }
+  }
+}
+
+.dict-item-control {
+  &.ng-invalid {
+    &.ng-touched {
+      .archive-select {
+        .ng-select-container {
+          background-color: rgba($red, 0.4);
+        }
+      }
+    }
+  }
+}
+
+.btn-tiny { // take from badge
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+
+.nav-info-container {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+ngb-tabset.flex-ngb-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .tab-content {
+    flex-grow: 1;
+    overflow: auto;
+  }
+
+  .tab-pane {
+    height: 100%;
+  }
+}
+
+.patch {
+  //background-color: rgba($black, .03);
+
+  .icon-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  background-color: $yellow-sand;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h1, h2, h3, h4, h5, h6 {
+    color: $gray-500;
+    width: 100%;
+    text-align: center;
+  }
+
+  i {
+    //color: $gray-300;
+    color: $yellow-sand-dark;
+    text-align: center;
+    font-size: 9rem;
+  }
+}
+
+.scrollable {
+  height: 100%;
+  overflow: auto;
+}
+
+.blinking {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.2
+  }
+  50% {
+    opacity: 1
+  }
+  100% {
+    opacity: 0.2
+  }
+}
+
+.vertical-resizer {
+  width: 8px;
+  padding: 0 2px;
+  margin-left: -2px;
+  margin-right: -2px;
+  z-index: 4;
+
+  &::after {
+    content: " ";
+    display: block;
+    width: 4px;
+    background-color: $gray-500;
+    height: 100%;
+  }
+}
+
+.horizontal-resizer {
+  height: 8px;
+  padding: 2px 0;
+  margin-bottom: -2px;
+  margin-top: -2px;
+  z-index: 4;
+
+  &::after {
+    content: " ";
+    display: block;
+    height: 4px;
+    background-color: $gray-500;
+    width: 100%;
+  }
+}
+
+::-webkit-scrollbar-track {
+  //-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: $gray-500;
+}
+
+.emergency-row {
+  &.ag-row-even {
+    background-color: lighten(rgba($red, 0.5), 10%);
+  }
+
+  &.ag-row-odd {
+    background-color: rgba($red, 0.5);
+  }
+
+  &.ag-row-hover {
+    background-color: darken(rgba($red, 0.5), 10%);
+  }
+
+  &.ag-row-selected {
+    background-color: darken(rgba($red, 0.5), 20%);
+  }
+}
+
+.may-emergency-row {
+  &.ag-row-even {
+    background-color: lighten(rgba($orange, 0.5), 10%);
+  }
+
+  &.ag-row-odd {
+    background-color: rgba($orange, 0.5);
+  }
+
+  &.ag-row-hover {
+    background-color: darken(rgba($orange, 0.5), 10%);
+  }
+
+  &.ag-row-selected {
+    background-color: darken(rgba($orange, 0.5), 20%);
+  }
+}
+
+.priority-row {
+  &.ag-row-even {
+    background-color: lighten(rgba($yellow, 0.5), 10%);
+  }
+
+  &.ag-row-odd {
+    background-color: rgba($yellow, 0.5);
+  }
+
+  &.ag-row-hover {
+    background-color: darken(rgba($yellow, 0.5), 10%);
+  }
+
+  &.ag-row-selected {
+    background-color: darken(rgba($yellow, 0.5), 20%);
+  }
+}
+
+.overdue-row{
+  animation: blink 0.5s infinite;
+  font-size: 1rem;
+}
+
+
+.app-notification{
+  margin-top:1.75rem;
+}
+
+

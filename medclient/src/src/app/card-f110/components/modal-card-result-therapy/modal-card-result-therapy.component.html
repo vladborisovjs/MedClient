@@ -1,0 +1,55 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      {{therapy.id ? 'Редактирование' : 'Добавление'}} терапии
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="descriptions"
+      [form]="form"
+      [item]="therapy"
+    ></app-simple-view>
+    <div *ngIf="bagDrugList.length > 0 && newItem">
+      <app-simple-view
+        [descriptions]="drugDescription"
+        [form]="drugForm"
+        [row]="true"
+      ></app-simple-view>
+      <button class="btn btn-primary" (click)="addDrug()" [disabled]="drugForm.invalid">Добавить</button>
+    </div>
+    <div *ngIf="!(bagDrugList.length > 0) && newItem">
+      <i class="fas fa-spin fa-spinner"></i> Загрузка медикаментов...
+    </div>
+    <table *ngIf="therapy.therapyItemList && therapy.therapyItemList.length"
+           class="table table-sm table-striped table-bordered mt-2">
+      <thead>
+      <tr>
+        <th scope="col">№</th>
+        <th scope="col">Медикамент</th>
+        <th scope="col">Кол-во</th>
+        <th scope="col">Ед.</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let d of therapy.therapyItemList; let i = index">
+        <td>{{i+1}}</td>
+        <td>{{d.drugFK.name}}</td>
+        <td>{{d.count}}</td>
+        <td>{{d.drugFK.measurementFK ? d.drugFK.measurementFK.name: 'шт'}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer toolbar">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" [disabled]="form.invalid" (click)="submit()">Сохранить</button>
+        <button class="btn btn-secondary" (click)="back()">Назад</button>
+      </div>
+    </div>
+  </div>
+</div>

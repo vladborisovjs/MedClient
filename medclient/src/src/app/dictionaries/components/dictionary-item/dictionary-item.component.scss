@@ -1,0 +1,13 @@
+@import "~src/styles/variables";
+
+:host{
+  height: 100%;
+  background-color: $yellow-sand;
+  overflow: auto;
+}
+
+.dict-item-body{
+  margin: 1rem;
+  width: 50%;
+
+}

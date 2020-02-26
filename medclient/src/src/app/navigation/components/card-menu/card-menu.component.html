@@ -1,0 +1,20 @@
+<div class="card h-100">
+  <div class="card-header flexible justify-content-around">
+    <h3 *ngIf="headerLabel">{{headerLabel}}</h3>
+  </div>
+  <div class="card-body default-bg scrollable">
+    <div class="row">
+      <ng-container *ngFor="let item of items">
+        <div class="col-lg-4 col-xl-3" *ngIf="!item.accessLevel || access.checkAccessRead({level: item.accessLevel})">
+          <a class="title-box btn-primary" href="#" [routerLink]=item.routerLink>
+            <div class="title-box-header">{{item.label}}</div>
+            <div class="title-box-content-wrapper">
+              <i [class]=item.iconClass></i>
+            </div>
+          </a>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+

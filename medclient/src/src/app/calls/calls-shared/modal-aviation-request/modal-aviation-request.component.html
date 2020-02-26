@@ -1,0 +1,38 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      Заявка на авиацию
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="back()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-simple-view
+      [descriptions]="getBlockDescriptions('main')"
+      [form]="form"
+      [item]="requestItem"
+    ></app-simple-view>
+    <app-simple-view
+      *ngIf="requestItem.isInterHospital"
+      [descriptions]="getBlockDescriptions('interHospital')"
+      [form]="form"
+      [item]="requestItem"
+    ></app-simple-view>
+
+    <!--<app-full-address-->
+      <!--[form]="form"-->
+      <!--[valueBuilding]="requestItem.departureHouseNum"-->
+      <!--[valueStreet]="requestItem.departureAddress"-->
+      <!--(setPolygon)="setAddressPoint($event.geometry)"-->
+    <!--&gt;</app-full-address>-->
+  </div>
+  <div class="card-footer">
+    <div class="toolbar-right">
+      <div class="btn-group">
+        <button class="btn btn-success" (click)="sendRequest()">Отправить</button>
+        <button class="btn btn-secondary" (click)="back()">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<div class="flexible default-bg">
+  <div class="col-6 full-width">
+    <div class="card">
+      <div class="card-header">
+        Карта вызова
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="card"
+          [properties]="getPlateDescriptions('card')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="toolbar justify-content-between">
+          <div class="card-subtitle">Данные о вызове</div>
+          <div class="toolbar-right">
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="callContainer.call"
+          [properties]="getPlateDescriptions('call')"></app-info-plate>
+        <div class="plate-list">
+          <div class="gen-info-char">
+            <div class="plate-title">Приоритет:</div>
+            <div class="plate-value">{{callContainer.call.priority ?  'Экстренный' : 'Неотложный'}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Адрес вызова
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="callContainer.call"
+          [properties]="getPlateDescriptions('address')"></app-info-plate>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        Заявитель
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="callContainer.call"
+          [properties]="getPlateDescriptions('declarant')"></app-info-plate>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 full-width">
+    <div class="card" *ngIf="callContainer.brigadeList">
+      <div class="card-header">
+        Бригада
+      </div>
+      <div class="card-body">
+        <app-info-plate
+          [item]="brigadeContainer?.brigade"
+          [properties]="getPlateDescriptions('brigade')"></app-info-plate>
+        <div *ngFor="let per of brigadeContainer?.performerList">
+          <div class="plate-list">
+            <div class="gen-info-char">
+              <div class="plate-title">{{per.typeFK.name}}:</div>
+              <div class="plate-value">{{per.surname}}</div>
+              <div class="plate-value">{{per.name}}</div>
+              <div class="plate-value">{{per.patronymic}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="toolbar justify-content-between">
+          <div class="card-subtitle">Хронология отработки</div>
+          <div class="toolbar-right">
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ol>
+          <li *ngFor="let s of messagesHistory">
+            {{s.messageTypeFK.name}} - {{s.receivingTypeFK.name}} - {{s.date | date: "dd.MM HH:mm:ss"}}
+          </li>
+        </ol>
+        <!--        <app-info-plate-->
+        <!--          [item]="card"-->
+        <!--          [properties]="getPlateDescriptions('time')"></app-info-plate>-->
+        <!--      </div>-->
+      </div>
+      <div class="card">
+        <div class="card-header">
+          Подписи
+        </div>
+        <div class="card-body null-padding">
+          <table class="table table-bordered table-sm table-striped null-margin">
+            <thead>
+            <tr>
+              <th scope="col">Действие</th>
+              <th scope="col">ФИО сотрудника</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngIf="card.brigadeDoctorFK">
+              <td>Создание</td>
+              <td>{{card.brigadeDoctorFK.surname + ' ' + card.brigadeDoctorFK.name + ' ' + card.brigadeDoctorFK.patronymic}}</td>
+            </tr>
+            <tr *ngIf="card.shiftSeniorDoctorFK">
+              <td>Проверка</td>
+              <td>{{card.shiftSeniorDoctorFK.surname + ' ' + card.shiftSeniorDoctorFK.name + ' ' + card.shiftSeniorDoctorFK.patronymic}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+

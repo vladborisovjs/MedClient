@@ -1,0 +1,134 @@
+<div class="patch" *ngIf="loading">
+  <h2>Загрузка...</h2>
+</div>
+
+<div class="patch" *ngIf="!loading && !isInBrigade">
+  <h2>Вы не назначены в бригаду в данный момент</h2>
+</div>
+
+<div class="flexible flex-column full-height" *ngIf="!loading && isInBrigade">
+  <div class="flexible p-2 default-bg">
+      <div class="card mr-2 full-width">
+        <div class="card-header">
+          <div class="card-title center-me">Информация о бригаде</div>
+        </div>
+        <div class="">
+          <div class="common-plate">
+            <div class="bri-info-block">
+              <div class="bri-info-title">Наименование:</div>
+              <div class="bri-info-value">{{currentBrigade.name}}</div>
+            </div>
+            <div class="bri-info-block">
+              <div class="bri-info-title">Тип:</div>
+              <div class="bri-info-value">{{currentBrigade.brigadeTypeFK.name}}</div>
+            </div>
+          </div>
+          <div class="common-plate">
+            <div class="bri-info-block"
+                 *ngFor="let performers of currentBrigadeSchedule.performerScheduleList; index as i">
+              <div class="bri-info-title">Сотрудник {{i + 1}}:</div>
+              <div class="bri-info-value">
+                {{
+                performers.performerFK.surname + ' ' +
+                performers.performerFK.name + ' ' +
+                performers.performerFK.patronymic
+                }} - {{performers.performerFK.typeFK.groupName}}
+              </div>
+            </div>
+          </div>
+          <div class="common-plate">
+            <div class="bri-info-block">
+              <div class="bri-info-title">Транспорт:</div>
+              <div class="bri-info-value">{{currentBrigadeSchedule.transportScheduleList[0].transportFK.name}}
+              </div>
+            </div>
+            <div class="bri-info-block m-1" >
+              <div class="bri-info-title">График:</div>
+              <div class="bri-info-value">
+                {{currentBrigadeSchedule.dateFrom | date: 'dd.MM HH:mm'}} -
+                {{currentBrigadeSchedule.dateTo | date: 'dd.MM HH:mm'}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card w-25">
+        <div class="card-header">
+          <div class="card-title center-me">Управление бригадой</div>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-success mb-2 full-width" (click)="freeOnBase()">Готова (На станции) <i
+            class="fas fa-hospital-alt"></i></button>
+          <button class="btn btn-primary mb-2 full-width" (click)="returnOnBase()">Готова (В пути на станцию) <i
+            class="fas fa-arrow-circle-up"></i></button>
+          <button class="btn btn-danger mb-2 full-width" (click)="sendAlarm()">Подать сигнал тревоги <i
+            class="fas fa-exclamation-triangle"></i></button>
+          <button class="btn btn-warning mb-2 full-width"
+                  (click)="notReady()">Не готова <i
+            class="fas fa-frown"></i>
+          </button>
+          <app-simple-view
+            [descriptions]="descriptions"
+            [row]="true"
+            [item]="currentBrigade"
+            [preprocessed]="true"
+            [form]="form">
+          </app-simple-view>
+        </div>
+      </div>
+    </div>
+  <div class="calls-wrapper" resizable="vertical" saveName="arm-brigades-blocks">
+    <div class="calls-block card mx-2 full-height" upResizable>
+      <div class="card-header toolbar">
+        <div class="toolbar-left">
+          <div class="filter-statuses" *ngIf="!loading && currentBrigade">
+            <i class="fas fa-exclamation-circle text-danger"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNDONE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-exclamation-circle text-warning"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNCONFIRM" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-clipboard-check text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.CONFIRM" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-cog text-primary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.ACTIVE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <!--<i class="fas fa-ambulance text-primary"></i>-->
+            <!--<p-checkbox class="sc-control-checkbox"  [value]="callStatusList.TRANSPORTATION" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>-->
+
+            <i class="fas fa-check-circle text-success"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.DONE" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+
+            <i class="fas fa-ban text-secondary"></i>
+            <p-checkbox class="sc-control-checkbox"  [value]="callStatusList.UNFOUNDED" [(ngModel)]="filter.statuses" (onChange)="updateFilter()"></p-checkbox>
+          </div>
+        </div>
+        <div class="card-title">Журнал вызовов</div>
+        <div class="toolbar-right"></div>
+      </div>
+        <app-grid-table *ngIf="currentBrigade"
+                        [dataSource]="dataSourceCalls"
+                        [columnDefs]="colDefsCalls"
+                        [pagination]="true"
+                        [filter]="filter"
+                        (onRowDblClick)="goToCall($event)"
+                        (onGridReady)="fitColCalls($event)">
+        </app-grid-table>
+    </div>
+    <div class="horizontal-resizer my-1" resizer="2px"></div>
+    <div class="cards-block card mx-2" bottomResizable fixed="300">
+      <div class="card-header">
+        <div class="card-title center-me">Список карт</div>
+      </div>
+        <app-grid-table *ngIf="currentBrigade"
+                        [dataSource]="dataSourceCards"
+                        [columnDefs]="colDefsCards"
+                        [pagination]="true"
+                        [filter]="filter"
+                        (onRowDblClick)="goToCard($event)"
+                        (onGridReady)="fitColCards($event)">
+        </app-grid-table>
+    </div>
+  </div>
+</div>
